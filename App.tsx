@@ -7,11 +7,15 @@ import { ActivityIndicator, View } from "react-native";
 import SplashScreen from "./screens/OnBoardingScreens/SplashScreen";
 import OnboardingScreen from "./screens/OnBoardingScreens/OnBoardingScreen";
 import TabNavigator from "./navigation/TabNavigator";
+import BPInputScreen from "./screens/BPInputScreen";
+import WeightInputScreen from "./screens/WeightInputScreen";
 
 export type RootStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
   MainApp: undefined;
+  BPInputScreen: undefined;
+  WeightInputScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -54,9 +58,15 @@ export default function App() {
             <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="Onboarding" component={OnboardingScreen} />
             <Stack.Screen name="MainApp" component={TabNavigator} />
+            <Stack.Screen name="BPInputScreen" component={BPInputScreen} />
+            <Stack.Screen name="WeightInputScreen" component={WeightInputScreen} />
           </>
         ) : (
-          <Stack.Screen name="MainApp" component={TabNavigator} />
+          <>
+            <Stack.Screen name="MainApp" component={TabNavigator} />
+            <Stack.Screen name="BPInputScreen" component={BPInputScreen} />
+            <Stack.Screen name="WeightInputScreen" component={WeightInputScreen} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

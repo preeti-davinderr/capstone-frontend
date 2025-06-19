@@ -1,12 +1,7 @@
 {
   "expo": {
-    "name": "capstonefrontend",
-    "slug": "capstonefrontend",
-    "scheme": "capstonefrontend",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "name": "capstone-frontend",
+    "slug": "capstone-frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,16 +13,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.khushpreetcapstone.capstonefrontend"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.khushpreetcapstone.capstonefrontend"
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -2,7 +2,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Fitbit from '../screens/Fitbit/Fitbit';
+
 import HomeScreen from '../screens/HomeScreen';
 import HealthScreen from '../screens/HealthScreen';
 import JournalScreen from '../screens/JournalScreen';
@@ -37,18 +37,9 @@ export default function TabNavigator() {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="Journal"
-        component={JournalScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="notebook" color={color} size={24} />
-          ),
-        }}
-      /> */}
       <Tab.Screen
         name="Journal"
-        component={Fitbit} // 👈 NEW
+        component={JournalScreen}
         options={{
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="notebook" color={color} size={24} />
