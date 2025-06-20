@@ -4,6 +4,7 @@
     "jsx": "react-native",
     "strict": true,
     "esModuleInterop": true,
+<<<<<<< HEAD
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
@@ -12,4 +13,24 @@
     "isolatedModules": true,
     "skipLibCheck": true
   }
+=======
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "customConditions": [
+      "react-native"
+    ],
+    "types": [
+      "react",
+      "react-native",
+      "expo-router"
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "paths": {
+  "@fitbit/*": ["screens/Fitbit/*"]
+}
+>>>>>>> f83cc1e77eda4f4f5e17b6d2fba047834f096fc1
 }

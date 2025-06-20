@@ -4,8 +4,13 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
+<<<<<<< HEAD
     "android": "expo start --android",
     "ios": "expo start --ios",
+=======
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+>>>>>>> f83cc1e77eda4f4f5e17b6d2fba047834f096fc1
     "web": "expo start --web"
   },
   "dependencies": {
@@ -14,9 +19,20 @@
     "@react-navigation/native": "^7.1.10",
     "@react-navigation/native-stack": "^7.3.16",
     "expo": "~53.0.11",
+<<<<<<< HEAD
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.3",
+=======
+    "expo-auth-session": "~6.2.0",
+    "expo-image-picker": "~16.1.4",
+    "expo-sensors": "~14.1.4",
+    "expo-status-bar": "~2.2.3",
+    "react": "19.0.0",
+    "react-native": "0.79.3",
+    "react-native-chart-kit": "^6.12.0",
+    "react-native-fs": "^2.20.0",
+>>>>>>> f83cc1e77eda4f4f5e17b6d2fba047834f096fc1
     "react-native-gesture-handler": "~2.24.0",
     "react-native-onboarding-swiper": "^1.3.0",
     "react-native-paper": "^5.14.5",
@@ -28,8 +44,20 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
+<<<<<<< HEAD
     "@types/react-native-onboarding-swiper": "^1.1.9",
     "typescript": "~5.8.3"
   },
   "private": true
+=======
+    "@types/react-native": "^0.73.0",
+    "@types/react-native-onboarding-swiper": "^1.1.9",
+    "typescript": "~5.8.3"
+  },
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+>>>>>>> f83cc1e77eda4f4f5e17b6d2fba047834f096fc1
 }
