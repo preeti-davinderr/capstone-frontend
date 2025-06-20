@@ -1,18 +1,68 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  FontAwesome5,
-} from "@expo/vector-icons";
 
-export default function HealthScreen({ navigation }: any) {
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../App'; // adjust path as needed
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+
+
+export default function HealthScreen() {
+
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+      const [bpReading, setBpReading] = useState<{
+      systolic: string;
+      diastolic: string;
+      status: string;
+    } | null>(null);
+
+     const [weightReading, setWeightReading] = useState<{
+        value: string;
+        unit: 'kg' | 'lbs';
+        date: string;
+      } | null>(null);
+
+      useFocusEffect(
+        useCallback(() => {
+          const fetchBpData = async () => {
+            try {
+              const data = await AsyncStorage.getItem('bpHistory');
+              if (data) {
+                const parsed = JSON.parse(data);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  setBpReading(parsed[0]);
+                }
+              }
+            } catch (err) {
+              console.error('❌ Failed to load blood pressure:', err);
+            }
+          };
+
+          const fetchWeightData = async () => {
+            try {
+              const data = await AsyncStorage.getItem('weightHistory');
+              if (data) {
+                const parsed = JSON.parse(data);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  setWeightReading(parsed[0]);
+                }
+              }
+            } catch (err) {
+              console.error('❌ Failed to load weight:', err);
+            }
+          };
+
+          fetchBpData();
+          fetchWeightData();
+        }, [])
+      );
+
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -25,11 +75,18 @@ export default function HealthScreen({ navigation }: any) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Log Health Data</Text>
         <View style={styles.cardRow}>
-          <TouchableOpacity style={styles.card_log}>
+          <TouchableOpacity
+            style={styles.card_log}
+            onPress={() => navigation.navigate('BloodPressure')}
+          >
             <Ionicons name="heart" size={24} color="#333" />
             <Text>Blood Pressure</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.card_log}>
+
+          <TouchableOpacity
+            style={styles.card_log}
+            onPress={() => navigation.navigate('Weight')}
+          >
             <Ionicons name="scale" size={24} color="#333" />
             <Text>Weight</Text>
           </TouchableOpacity>
@@ -62,35 +119,36 @@ export default function HealthScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
         <View style={styles.card}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={24}
-            color="#888"
-            style={styles.icon}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>Blood Pressure</Text>
-            <Text style={styles.value}>120/80 mmHg</Text>
+
+            <MaterialCommunityIcons name="heart-pulse" size={24} color="#888" style={styles.icon} />
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>Blood Pressure</Text>
+              <Text style={styles.value}>
+                {bpReading ? `${bpReading.systolic}/${bpReading.diastolic} mmHg` : 'No Data'}
+              </Text>
+            </View>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>
+                {bpReading?.status || 'Unknown'}
+              </Text>
+            </View>
           </View>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>Normal</Text>
-          </View>
-        </View>
         <View style={styles.card}>
-          <MaterialCommunityIcons
-            name="weight"
-            size={24}
-            color="#888"
-            style={styles.icon}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>Weight</Text>
-            <Text style={styles.value}>68.5 kg (+0.5kg)</Text>
+            <MaterialCommunityIcons name="weight" size={24} color="#888" style={styles.icon} />
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>Weight</Text>
+              <Text style={styles.value}>
+                {weightReading ? `${weightReading.value} ${weightReading.unit}` : 'No Data'}
+              </Text>
+            </View>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>
+                {weightReading ? 'Tracked' : 'Unknown'}
+              </Text>
+            </View>
           </View>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>Good</Text>
-          </View>
-        </View>
+  
+
       </View>
 
       {/* Connected Devices */}
