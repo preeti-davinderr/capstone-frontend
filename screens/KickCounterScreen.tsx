@@ -56,7 +56,7 @@ export default function KickCounterScreen() {
     try {
       const formattedDate = date.toISOString().split("T")[0]; // e.g., "2025-06-15"
       const res = await fetch(
-        `http://10.128.5.3:5002/api/kicks/date/${uid}?date=${formattedDate}`
+        `http://192.168.1.24:5002/api/kicks/date/${uid}?date=${formattedDate}`
       );
       const data = await res.json();
       console.log("Kick response:", data);
@@ -93,19 +93,19 @@ export default function KickCounterScreen() {
   //     console.error("Save to DB failed:", err);
   //   }
   // };
-  const saveToBackend = async (entry: KickEntry) => {
+  const  saveToBackend = async (entry: KickEntry) => {
     try {
       const response = await fetch("http://192.168.1.24:5002/api/kicks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...entry, userId }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok && data._id) {
         const updatedEntry = { ...entry, _id: data._id };
-  
+
         // // ✅ Save the entry with _id into the activity state
         // setActivity((prev) => [updatedEntry, ...prev.filter(e => e.id !== entry.id)]);
       } else {
@@ -115,7 +115,6 @@ export default function KickCounterScreen() {
       console.error("Save to DB failed:", err);
     }
   };
-  
 
   const deleteFromBackend = async (_id?: string) => {
     if (!_id) return;
@@ -140,7 +139,7 @@ export default function KickCounterScreen() {
         text: "Delete",
         style: "destructive",
         onPress: () => {
-          console.log("Deleting", entry._id,entry); // Add this
+          console.log("Deleting", entry._id, entry); // Add this
           setActivity((prev) => prev.filter((e) => e.id !== entry.id));
           deleteFromBackend(entry._id);
         },
