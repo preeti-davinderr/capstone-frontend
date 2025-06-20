@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native-paper';
-import { View } from 'react-native';
+import { View, Button } from 'react-native';
 import {
   StyleSheet,
   ScrollView,
@@ -8,10 +8,67 @@ import {
 } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons, Entypo } from '@expo/vector-icons';
 import CommonButton from '../components/CommonButton';
+// import RNFS from 'react-native-fs';
+// const imageFolder = `${RNFS.DocumentDirectoryPath}/journal_photos`;
+// import { useEffect } from 'react';
+// import * as ImagePicker from 'expo-image-picker';
+
+// const ensureImageFolder = async () => {
+//   const exists = await RNFS.exists(imageFolder);
+//   if (!exists) {
+//     await RNFS.mkdir(imageFolder);
+//     console.log('📁 journal_photos folder created.');
+//   } else {
+//     console.log('📁 journal_photos folder already exists.');
+//   }
+// };
+
+// useEffect(() => {
+//   ensureImageFolder();
+// }, []);
+
+// const imageFolder = `${RNFS.DocumentDirectoryPath}/journal_photos`;
+
+// const pickImagesAndStore = async () => {
+//   // Ask permission
+//   const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+//   if (!permissionResult.granted) {
+//     alert("Permission to access gallery is required!");
+//     return;
+//   }
+
+//   // Launch image picker
+//   const result = await ImagePicker.launchImageLibraryAsync({
+//     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+//     allowsMultipleSelection: true, // Expo SDK 49+
+//     quality: 1,
+//   });
+
+//   if (result.canceled) return;
+
+//   const assets = result.assets || [result]; // support both single/multiple selection
+
+//   // Ensure folder exists
+//   const folderExists = await RNFS.exists(imageFolder);
+//   if (!folderExists) await RNFS.mkdir(imageFolder);
+
+//   // Copy images
+//   await Promise.all(
+//     assets.map((asset, index) => {
+//       const sourcePath = asset.uri;
+//       const destPath = `${imageFolder}/img_${index + 1}.jpg`;
+//       return RNFS.copyFile(sourcePath, destPath);
+//     })
+//   );
+
+//   console.log('✅ Images copied to journal_photos folder.');
+// };
+
 
 export default function JournalScreen() {
   return (
     <ScrollView style={styles.container}>
+      {/* <Button title="Select Journal Images" onPress={pickImagesAndStore} /> */}
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.iconPlaceholder} />
