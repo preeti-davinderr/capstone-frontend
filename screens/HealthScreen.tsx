@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import { fetchFitbitData } from './Fitbit/fetchFitbitData';
 
 
 export default function HealthScreen() {
@@ -23,6 +24,13 @@ export default function HealthScreen() {
         value: string;
         unit: 'kg' | 'lbs';
         date: string;
+      } | null>(null);
+
+      const [fitbitData, setFitbitData] = useState<{
+        steps: number;
+        heartRate: number;
+        sleep: string;
+        lastSync: string;
       } | null>(null);
 
       useFocusEffect(
@@ -55,6 +63,12 @@ export default function HealthScreen() {
             }
           };
 
+          const fetchData = async () => {
+            const data = await fetchFitbitData();
+            setFitbitData(data);
+          };
+
+          fetchData();
           fetchBpData();
           fetchWeightData();
         }, [])
@@ -152,23 +166,29 @@ export default function HealthScreen() {
               <Text style={styles.deviceMeta}>Last sync: 2 hours ago</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.syncButton}>
-            <Text style={styles.syncButtonText}>Sync Now</Text>
-          </TouchableOpacity>
+          <TouchableOpacity
+              style={styles.syncButton}
+              onPress={async () => {
+                const newData = await fetchFitbitData();
+                setFitbitData(newData);
+              }}
+            >
+              <Text style={styles.syncButtonText}>Sync Now</Text>
+            </TouchableOpacity>
         </View>
 
         <View style={styles.metricsRow}>
           <View style={styles.metric}>
             <Text style={styles.metricLabel}>Steps</Text>
-            <Text style={styles.metricValue}>8,432</Text>
+            <Text style={styles.metricValue}>{fitbitData?.steps ?? '--'}</Text>
           </View>
           <View style={styles.metric}>
             <Text style={styles.metricLabel}>Heart Rate</Text>
-            <Text style={styles.metricValue}>78 bpm</Text>
+            <Text style={styles.metricValue}>{fitbitData?.heartRate ?? '--'} bpm</Text>
           </View>
           <View style={styles.metric}>
             <Text style={styles.metricLabel}>Sleep</Text>
-            <Text style={styles.metricValue}>7h 23m</Text>
+            <Text style={styles.metricValue}>{fitbitData?.sleep ?? '--'}</Text>
           </View>
         </View>
       </View>
