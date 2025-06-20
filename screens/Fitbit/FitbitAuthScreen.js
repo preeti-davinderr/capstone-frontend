@@ -3,13 +3,13 @@ import FitbitDataScreen from './FitbitDataScreen';
 import {
   makeRedirectUri,
   ResponseType,
-  useAuthRequest
+  useAuthRequest,
 } from 'expo-auth-session';
 import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
 const CLIENT_ID = '23QKK4';
-const CLIENT_SECRET = 'YOUR_CLIENT_SECRET'; // ← Add this
+const CLIENT_SECRET = 'bd7b638eb2b56ad437f0bbd9038e8db8'; // ✅ Your actual secret
 
 const discovery = {
   authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
@@ -20,12 +20,12 @@ const FitbitAuthScreen = () => {
   const [accessToken, setAccessToken] = useState(null);
   const [error, setError] = useState(null);
 
-  
   const redirectUri = makeRedirectUri({
     scheme: 'capstonefrontend',
     path: 'fitbit',
-    preferLocalhost: false
-    });
+  });
+
+  console.log('📍 Redirect URI:', redirectUri);
 
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -33,6 +33,8 @@ const FitbitAuthScreen = () => {
       scopes: ['sleep', 'activity', 'profile', 'heartrate'],
       redirectUri,
       responseType: ResponseType.Code,
+      usePKCE: true,
+      codeChallengeMethod: 'S256',
     },
     discovery
   );
@@ -41,7 +43,7 @@ const FitbitAuthScreen = () => {
     const fetchToken = async () => {
       if (response?.type === 'success') {
         const code = response.params.code;
-        console.log('🔑 Code:', code);
+        console.log('🔑 Authorization code:', code);
 
         const basicAuth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
 
@@ -49,48 +51,49 @@ const FitbitAuthScreen = () => {
           const tokenResponse = await fetch(discovery.tokenEndpoint, {
             method: 'POST',
             headers: {
-              'Authorization': `Basic ${basicAuth}`,
+              Authorization: `Basic ${basicAuth}`,
               'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams({
-              clientId: CLIENT_ID,
               grant_type: 'authorization_code',
-              redirect_uri: redirectUri,
               code,
+              redirect_uri: redirectUri,
+              client_id: CLIENT_ID,
+              code_verifier: request?.codeVerifier || '',
             }).toString(),
           });
 
           const tokenData = await tokenResponse.json();
-          console.log('✅ Token Result:', tokenData);
+          console.log('✅ Token response:', tokenData);
 
-          if (tokenData.access_token) {
-            setAccessToken(tokenData.access_token);
-          } else {
-            setError(JSON.stringify(tokenData));
+          if (!tokenResponse.ok) {
+            throw new Error(tokenData.errors?.[0]?.message || 'Token exchange failed');
           }
+
+          setAccessToken(tokenData.access_token);
         } catch (err) {
           console.error('❌ Token exchange error:', err);
           setError(err.message);
         }
+      } else if (response?.type === 'error') {
+        setError(response.error || 'Authorization failed');
       }
     };
 
     fetchToken();
   }, [response]);
 
-
-  console.log('📍 Redirect URI:', redirectUri);
-  console.log('🔗 Generated Auth URL:', request?.url);
-
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-      {accessToken ? (
-        <FitbitDataScreen accessToken={accessToken} />
-      ) : (
-        <Button title="Connect Fitbit" disabled={!request} onPress={() => promptAsync()} />
+      {error && <Text style={{ color: 'red', marginBottom: 20 }}>Error: {error}</Text>}
+      <Button title="Connect Fitbit" disabled={!request} onPress={() => promptAsync()} />
+      {accessToken && (
+        <View style={{ marginTop: 20 }}>
+          <Text style={{ fontWeight: 'bold' }}>Access Token:</Text>
+          <Text numberOfLines={2} selectable>{accessToken}</Text>
+          <FitbitDataScreen accessToken={accessToken} />
+        </View>
       )}
-      {accessToken && <Text style={{ marginTop: 20 }}>Token: {accessToken}</Text>}
-      {error && <Text style={{ color: 'red', marginTop: 20 }}>{error}</Text>}
     </View>
   );
 };

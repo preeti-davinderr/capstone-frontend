@@ -50,6 +50,15 @@ export default function TabNavigator() {
           ),
         }}
       />
+      {/* <Tab.Screen
+        name="Journal"
+        component={JournalScreen}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="notebook" color={color} size={24} />
+          ),
+        }}
+      /> */}
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
