@@ -4,6 +4,16 @@
     "jsx": "react-native",
     "strict": true,
     "esModuleInterop": true,
+<<<<<<< HEAD
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  }
+=======
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "customConditions": [
@@ -22,4 +32,5 @@
   "paths": {
   "@fitbit/*": ["screens/Fitbit/*"]
 }
+>>>>>>> f83cc1e77eda4f4f5e17b6d2fba047834f096fc1
 }
