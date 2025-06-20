@@ -1,12 +1,12 @@
 //Bottom Navigation don't change anything here
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Fitbit from '../screens/Fitbit/Fitbit';
-import HomeScreen from '../screens/HomeScreen';
-import HealthScreen from '../screens/HealthScreen';
-import JournalScreen from '../screens/JournalScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Fitbit from "../screens/Fitbit/Fitbit";
+import HomeScreen from "../screens/HomeScreen";
+import HealthScreen from "../screens/HealthScreen";
+import JournalScreen from "../screens/JournalScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -15,8 +15,8 @@ export default function TabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#6200ee',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: "#6200ee",
+        tabBarInactiveTintColor: "gray",
       }}
     >
       <Tab.Screen
@@ -33,7 +33,11 @@ export default function TabNavigator() {
         component={HealthScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="heart-pulse" color={color} size={24} />
+            <MaterialCommunityIcons
+              name="heart-pulse"
+              color={color}
+              size={24}
+            />
           ),
         }}
       />
@@ -48,7 +52,7 @@ export default function TabNavigator() {
       />
       {/* <Tab.Screen
         name="Journal"
-        component={Fitbit} // 👈 NEW
+        component={JournalScreen}
         options={{
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="notebook" color={color} size={24} />
@@ -60,7 +64,11 @@ export default function TabNavigator() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="account-circle" color={color} size={24} />
+            <MaterialCommunityIcons
+              name="account-circle"
+              color={color}
+              size={24}
+            />
           ),
         }}
       />

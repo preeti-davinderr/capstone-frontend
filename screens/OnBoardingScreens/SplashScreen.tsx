@@ -1,20 +1,33 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Splash">;
 
-const SplashScreen = ({ navigation }: Props) => {
+export default function SplashScreen({ navigation }: Props) {
   useEffect(() => {
     const checkStatus = async () => {
-      const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
-      setTimeout(() => {
-        navigation.replace(hasOnboarded === "true" ? "MainApp" : "Onboarding");
-      }, 2000);
+      try {
+        const onboarded = await AsyncStorage.getItem("hasOnboarded");
+        const token = await AsyncStorage.getItem("token");
+        console.log("onboarded:", onboarded, "| token:", token);
+
+        if (onboarded !== "true") {
+          navigation.replace("Onboarding");
+        } else if (!token) {
+          navigation.replace("SignIn");
+        } else {
+          navigation.replace("MainApp");
+        }
+      } catch (error) {
+        console.error("SplashScreen error:", error);
+        navigation.replace("SignIn"); // fallback
+      }
     };
-    checkStatus();
+
+    setTimeout(checkStatus, 1000);
   }, []);
 
   return (
@@ -23,7 +36,7 @@ const SplashScreen = ({ navigation }: Props) => {
       <ActivityIndicator size="large" color="#6200ee" />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -36,7 +49,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#6200ee",
   },
 });
-
-export default SplashScreen;
