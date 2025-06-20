@@ -18,12 +18,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-<<<<<<< HEAD
-      "supportsTablet": true
-=======
       "supportsTablet": true,
       "bundleIdentifier": "com.khushpreetcapstone.capstonefrontend"
->>>>>>> f83cc1e77eda4f4f5e17b6d2fba047834f096fc1
     },
     "android": {
       "adaptiveIcon": {
