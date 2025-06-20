@@ -6,10 +6,10 @@ export default function HealthScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
 
-      <View style={{ alignItems: 'center', marginBottom: 20 }}>
-        <Text style={styles.header}>Health Tracker</Text>
-        <Text style={styles.week}>Week 24</Text>
-        <Text style={styles.trimester}>Second Trimester</Text>
+      <View style={styles.header}>
+        <View style={styles.iconPlaceholder} />
+        <Text style={styles.headerTitle}>My Journal</Text>
+        <Ionicons name="notifications-outline" size={24} color="#333" />
       </View>
       
 
@@ -72,7 +72,7 @@ export default function HealthScreen() {
         <View style={styles.card_connected}>
         <View style={styles.topRow}>
           <View style={styles.deviceHeader}>
-            <View style={styles.iconPlaceholder}>
+            <View style={styles.iconPlaceholder1}>
               <Text style={styles.iconText}>?</Text>
             </View>
             <View style={{ marginLeft: 10 }}>
@@ -137,10 +137,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    fontSize: 20,
-    fontWeight: '300',
-    marginBottom: 10,
-  },
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 16,
+  marginTop: 35,
+},
+
+headerTitle: {
+  fontSize: 18,
+  fontWeight: '500',
+  textAlign: 'center',
+  flex: 1, // Ensures it takes up middle space
+},
+
+iconPlaceholder: {
+  width: 24, // same as bell icon width
+},
   week: {
     fontSize: 22,
     fontWeight: '400',
@@ -228,7 +241,7 @@ deviceMeta: {
   marginTop: 2,
 },
 
-  iconPlaceholder: {
+  iconPlaceholder1: {
   width: 40,
   height: 40,
   borderRadius: 10,
