@@ -9,7 +9,7 @@ export default function SignInScreen({ navigation }: any) {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    const response = await fetch("http://192.168.1.121:5002/api/auth/login", {
+    const response = await fetch("http://192.168.1.24:5002/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -19,6 +19,8 @@ export default function SignInScreen({ navigation }: any) {
 
     if (response.ok) {
       await AsyncStorage.setItem("token", data.token);
+      await AsyncStorage.setItem("user", JSON.stringify({ id: data.user.id }));
+
       navigation.replace("MainApp");
     } else {
       alert(data.message);

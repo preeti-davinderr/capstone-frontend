@@ -8,6 +8,7 @@ import SignInScreen from "./screens/Auth/SignInScreen";
 import SignUpScreen from "./screens/Auth/SignUpScreen";
 import WhoForScreen from "./screens/Auth/WhoForScreen";
 import TabNavigator from "./navigation/TabNavigator";
+import KickCounterScreen from "./screens/KickCounterScreen";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -16,6 +17,7 @@ export type RootStackParamList = {
   SignUp: { userType: string };
   WhoFor: undefined;
   MainApp: undefined;
+  KickCounter: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -30,6 +32,7 @@ export default function App() {
         <Stack.Screen name="WhoFor" component={WhoForScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="MainApp" component={TabNavigator} />
+        <Stack.Screen name="KickCounter" component={KickCounterScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
