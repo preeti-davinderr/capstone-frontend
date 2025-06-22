@@ -9,9 +9,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import { useFitbitAuth } from './Fitbit/FitbitAuthScreen'; // adjust path as needed
+import { fetchFitbitData } from './Fitbit/fetchFitbitData'; 
+import { formatDistanceToNow } from 'date-fns';
 
 
 export default function HealthScreen() {
+
+  const [fitbitData, setFitbitData] = useState<FitbitData | null>(null);
+
+  type FitbitData = {
+      activity: any;
+      sleep: any;
+      heart: any;
+    };
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
       const [bpReading, setBpReading] = useState<{
@@ -61,13 +72,34 @@ export default function HealthScreen() {
         }, [])
       );
 
+      const { promptAsync } = useFitbitAuth(async (token) => {
+          try {
+            if (!token?.accessToken) {
+              console.error('❌ No access token returned');
+              return;
+            }
+
+            const data = await fetchFitbitData(token.accessToken);
+            setFitbitData(data);
+          } catch (err) {
+            console.error('❌ Fitbit fetch error:', err);
+          }
+        });
+
+      const formatMinutes = (totalMinutes: number) => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}h ${minutes}m`;
+};
+
+
 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <View style={styles.iconPlaceholder} />
-        <Text style={styles.headerTitle}>My Journal</Text>
+        <Text style={styles.headerTitle}>My Health</Text>
         <Ionicons name="notifications-outline" size={24} color="#333" />
       </View>
 
@@ -151,41 +183,62 @@ export default function HealthScreen() {
 
       </View>
 
+
       {/* Connected Devices */}
       <Text style={styles.sectionTitle}>Connected Devices</Text>
       <View style={styles.card_connected}>
         <View style={styles.topRow}>
           <View style={styles.deviceHeader}>
             <View style={styles.iconPlaceholder1}>
-              <Text style={styles.iconText}>?</Text>
+              <Text style={styles.iconText}>⌚</Text>
             </View>
             <View style={{ marginLeft: 10 }}>
               <Text style={styles.deviceName}>Fitbit Versa 3</Text>
-              <Text style={styles.deviceMeta}>Last sync: 2 hours ago</Text>
+              <Text style={styles.deviceMeta}>
+                Last sync:{' '}
+                {fitbitData?.sleep?.[0]?.endTime
+                  ? formatDistanceToNow(new Date(fitbitData.sleep[0].endTime), { addSuffix: true })
+                  : 'Not available'}
+              </Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.syncButton}>
-            <Text style={styles.syncButtonText}>Sync Now</Text>
-          </TouchableOpacity>
+          <TouchableOpacity style={styles.syncButton} onPress={() => {
+              console.log('🌀 Syncing with Fitbit...');
+              promptAsync();
+            }}>
+              <Text style={styles.syncButtonText}>Sync Now</Text>
+            </TouchableOpacity>
         </View>
 
         <View style={styles.metricsRow}>
           <View style={styles.metric}>
             <Text style={styles.metricLabel}>Steps</Text>
-            <Text style={styles.metricValue}>8,432</Text>
+            <Text style={styles.metricValue}>
+              {fitbitData?.activity?.summary?.steps ?? 'N/A'}
+            </Text>
           </View>
+
           <View style={styles.metric}>
             <Text style={styles.metricLabel}>Heart Rate</Text>
-            <Text style={styles.metricValue}>78 bpm</Text>
+            <Text style={styles.metricValue}>
+              {fitbitData?.heart?.['activities-heart']?.[0]?.value?.restingHeartRate
+                ? `${fitbitData.heart['activities-heart'][0].value.restingHeartRate} bpm`
+                : 'N/A'}
+            </Text>
           </View>
+
           <View style={styles.metric}>
             <Text style={styles.metricLabel}>Sleep</Text>
-            <Text style={styles.metricValue}>7h 23m</Text>
+            <Text style={styles.metricValue}>
+              {fitbitData?.sleep?.summary?.totalMinutesAsleep
+                ? formatMinutes(fitbitData.sleep.summary.totalMinutesAsleep)
+                : 'N/A'}
+            </Text>
           </View>
         </View>
       </View>
 
-      {/* AI Recommendations */}
+            {/* AI Recommendations */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>AI Recommendations</Text>
         <View style={styles.aiCard}>
