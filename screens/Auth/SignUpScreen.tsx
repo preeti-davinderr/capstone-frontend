@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { TextInput, Text, Checkbox } from "react-native-paper";
 import CommonButton from "../../components/CommonButton";
-import { API_URL } from "@env";
+// import { API_URL } from "@env";
 
 const SignUpScreen = ({ navigation, route }: any) => {
   const userType = route.params?.userType;
@@ -36,7 +36,7 @@ const SignUpScreen = ({ navigation, route }: any) => {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/auth/signup`,
+        `${process.env.EXPO_PUBLIC_API_URL}/api/auth/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -3,14 +3,14 @@ import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Text, TextInput } from "react-native-paper";
 import CommonButton from "../../components/CommonButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_URL } from "@env";
+// import { API_URL } from "@env";
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    const response = await fetch(`${API_URL}/api/auth/login`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

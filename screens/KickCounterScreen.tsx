@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { BarChart } from "react-native-chart-kit";
-import { API_URL } from "@env";
+// import { API_URL } from "@env";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -55,17 +55,16 @@ export default function KickCounterScreen() {
 
   const fetchKicks = async (uid: string, date: Date) => {
     try {
-      const formattedDate = kickDate.toLocaleDateString();
+      const formattedDate = date.toISOString().split("T")[0]; // e.g. "2025-06-20"
       const res = await fetch(
-        `${API_URL}/api/kicks/api/kicks/date/${uid}?date=${formattedDate}`
+        `${process.env.EXPO_PUBLIC_API_URL}/api/kicks/date/${uid}?date=${formattedDate}`
       );
       const data = await res.json();
       console.log("Kick response:", data);
-
       if (Array.isArray(data)) {
         const formatted: KickEntry[] = data.map((k: any) => ({
-          _id: k._id,
-          id: new Date(k.date).getTime().toString(),
+          _id: k._id, // ✅ this is required
+          id: new Date(k.date).getTime().toString(), // UI id
           time: k.time,
           date: k.date,
           count: k.count,
@@ -81,19 +80,25 @@ export default function KickCounterScreen() {
 
   const saveToBackend = async (entry: KickEntry) => {
     try {
-      console.log("hi");
-
-      const response = await fetch(`${API_URL}/api/kicks`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...entry, userId }),
-      });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/kicks`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...entry, userId }),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok && data._id) {
-        const updatedEntry = { ...entry, _id: data._id };
-        console.log("x");
+        if (response.ok && data._id) {
+          const updatedEntry = { ...entry, _id: data._id };
+
+          setActivity((prev) =>
+            prev.map((e) => (e.id === entry.id ? updatedEntry : e))
+          );
+        }
       } else {
         console.error("Backend response missing _id:", data);
       }
@@ -104,13 +109,16 @@ export default function KickCounterScreen() {
 
   const deleteFromBackend = async (_id?: string) => {
     if (!_id) return;
+
     try {
-      const res = await fetch(`${API_URL}/api/kicks/${_id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/kicks/${_id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const data = await res.json();
-      console.log("Delete API response:", res.status, data);
 
       if (!res.ok) throw new Error(data.message);
     } catch (err) {
@@ -119,14 +127,18 @@ export default function KickCounterScreen() {
   };
 
   const handleDelete = (entry: KickEntry) => {
+    if (!entry._id) {
+      console.warn("Can't delete entry without _id");
+      return;
+    }
+
     Alert.alert("Delete Entry", "Are you sure you want to delete this entry?", [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
         onPress: () => {
-          console.log("Deleting", entry._id, entry);
-          setActivity((prev) => prev.filter((e) => e.id !== entry.id));
+          setActivity((prev) => prev.filter((e) => e._id !== entry._id));
           deleteFromBackend(entry._id);
         },
       },
@@ -145,9 +157,9 @@ export default function KickCounterScreen() {
 
     const entry: KickEntry = {
       id: now.getTime().toString(),
-      time: now.toLocaleTimeString(), // e.g. "2:14:17 PM"
-      date: now.toLocaleDateString(), // e.g. "6/20/2025"
-      count: num, // ✅ FIXED: use actual manual input
+      time: now.toTimeString().split(" ")[0], // "14:14:17"
+      date: now.toISOString().split("T")[0], // "2025-06-20"
+      count: num,
     };
 
     setActivity((prev) => [entry, ...prev]);
@@ -163,7 +175,6 @@ export default function KickCounterScreen() {
     const sub = Accelerometer.addListener(({ x, y, z }) => {
       const magnitude = Math.sqrt(x * x + y * y + z * z);
       if (magnitude > threshold) {
-        console.log("Kick detected!", magnitude);
         setLiveCount((prev) => prev + 1);
       }
     });
@@ -182,11 +193,10 @@ export default function KickCounterScreen() {
 
       const entry: KickEntry = {
         id: now.getTime().toString(),
-        time: now.toLocaleTimeString(), // "2:14:17 PM"
-        date: now.toLocaleDateString(), // "6/20/2025" ← LOCAL format
-        count: liveCount, // or manual count
+        time: now.toTimeString().split(" ")[0], // "14:14:17"
+        date: now.toISOString().split("T")[0], // "2025-06-20"
+        count: liveCount,
       };
-      console.log("Saving entry:", entry);
       setActivity((prev) => [entry, ...prev]);
       saveToBackend(entry);
     } else {
@@ -218,7 +228,7 @@ export default function KickCounterScreen() {
   };
 
   const todayActivity = activity.filter(
-    (e) => e.date === kickDate.toLocaleDateString()
+    (e) => e.date === kickDate.toISOString().split("T")[0]
   );
 
   const formattedDate = kickDate.toLocaleDateString(undefined, {
@@ -303,7 +313,7 @@ export default function KickCounterScreen() {
       ) : (
         <FlatList
           data={todayActivity}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id ?? item.id}
           renderItem={({ item }) => (
             <View style={styles.activityItem}>
               <Text>
