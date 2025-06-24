@@ -2,7 +2,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Fitbit from "../screens/Fitbit/Fitbit";
+import Fitbit from "../screens/Fitbit/fitbitConfig";
 import HomeScreen from "../screens/HomeScreen";
 import HealthScreen from "../screens/HealthScreen";
 import JournalScreen from "../screens/JournalScreen";
