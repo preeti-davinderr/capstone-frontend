@@ -54,17 +54,16 @@ export default function KickCounterScreen() {
 
   const fetchKicks = async (uid: string, date: Date) => {
     try {
-      const formattedDate = date.toISOString().split("T")[0]; // e.g., "2025-06-15"
+      const formattedDate = date.toISOString().split("T")[0]; // e.g. "2025-06-20"
       const res = await fetch(
-        `http://192.168.1.24:5002/api/kicks/date/${uid}?date=${formattedDate}`
+        `${process.env.EXPO_PUBLIC_API_URL}/api/kicks/date/${uid}?date=${formattedDate}`
       );
       const data = await res.json();
       console.log("Kick response:", data);
-
       if (Array.isArray(data)) {
         const formatted: KickEntry[] = data.map((k: any) => ({
-          _id: k._id,
-          id: new Date(k.date).getTime().toString(),
+          _id: k._id, // ✅ this is required
+          id: new Date(k.date).getTime().toString(), // UI id
           time: k.time,
           date: k.date,
           count: k.count,
@@ -78,36 +77,27 @@ export default function KickCounterScreen() {
     }
   };
 
-  // const saveToBackend = async (entry: KickEntry) => {
-  //   try {
-  //     const response = await fetch("http://192.168.1.121:5002/api/kicks", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ ...entry, userId }),
-  //     });
-  //     const data = await response.json();
-  //     if (response.ok && data._id) {
-  //       entry._id = data._id;
-  //     }
-  //   } catch (err) {
-  //     console.error("Save to DB failed:", err);
-  //   }
-  // };
-  const  saveToBackend = async (entry: KickEntry) => {
+  const saveToBackend = async (entry: KickEntry) => {
     try {
-      const response = await fetch("http://192.168.1.24:5002/api/kicks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...entry, userId }),
-      });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/kicks`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...entry, userId }),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok && data._id) {
-        const updatedEntry = { ...entry, _id: data._id };
+        if (response.ok && data._id) {
+          const updatedEntry = { ...entry, _id: data._id };
 
-        // // ✅ Save the entry with _id into the activity state
-        // setActivity((prev) => [updatedEntry, ...prev.filter(e => e.id !== entry.id)]);
+          setActivity((prev) =>
+            prev.map((e) => (e.id === entry.id ? updatedEntry : e))
+          );
+        }
       } else {
         console.error("Backend response missing _id:", data);
       }
@@ -118,13 +108,16 @@ export default function KickCounterScreen() {
 
   const deleteFromBackend = async (_id?: string) => {
     if (!_id) return;
+
     try {
-      const res = await fetch(`http://192.168.1.24:5002/api/kicks/${_id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/kicks/${_id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const data = await res.json();
-      console.log("Delete API response:", res.status, data);
 
       if (!res.ok) throw new Error(data.message);
     } catch (err) {
@@ -133,14 +126,18 @@ export default function KickCounterScreen() {
   };
 
   const handleDelete = (entry: KickEntry) => {
+    if (!entry._id) {
+      console.warn("Can't delete entry without _id");
+      return;
+    }
+
     Alert.alert("Delete Entry", "Are you sure you want to delete this entry?", [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
         onPress: () => {
-          console.log("Deleting", entry._id, entry); // Add this
-          setActivity((prev) => prev.filter((e) => e.id !== entry.id));
+          setActivity((prev) => prev.filter((e) => e._id !== entry._id));
           deleteFromBackend(entry._id);
         },
       },
@@ -148,29 +145,39 @@ export default function KickCounterScreen() {
   };
 
   const handleManualAdd = () => {
-    const num = parseInt(manualCount);
-    if (!isNaN(num) && num > 0) {
-      const now = new Date();
-      const entry: KickEntry = {
-        id: now.getTime().toString(),
-        time: now.toLocaleTimeString(),
-        date: now.toISOString(),
-        count: num,
-      };
-      setActivity((prev) => [entry, ...prev]);
-      setManualCount("");
-      saveToBackend(entry);
+    const num = parseInt(manualCount.trim());
+
+    if (isNaN(num) || num <= 0) {
+      Alert.alert("Invalid Entry", "Please enter a number greater than 0.");
+      return;
     }
+
+    const now = new Date();
+
+    const entry: KickEntry = {
+      id: now.getTime().toString(),
+      time: now.toTimeString().split(" ")[0], // "14:14:17"
+      date: now.toISOString().split("T")[0], // "2025-06-20"
+      count: num,
+    };
+
+    setActivity((prev) => [entry, ...prev]);
+    setManualCount("");
+    saveToBackend(entry);
   };
 
   const startDetection = () => {
     if (!isToday(kickDate)) return;
     setLiveCount(0);
     setShowModal(true);
+
     const sub = Accelerometer.addListener(({ x, y, z }) => {
       const magnitude = Math.sqrt(x * x + y * y + z * z);
-      if (magnitude > threshold) setLiveCount((prev) => prev + 1);
+      if (magnitude > threshold) {
+        setLiveCount((prev) => prev + 1);
+      }
     });
+
     Accelerometer.setUpdateInterval(200);
     setSubscription(sub);
   };
@@ -179,17 +186,22 @@ export default function KickCounterScreen() {
     subscription?.remove();
     setSubscription(null);
     setShowModal(false);
+
     if (liveCount > 0) {
       const now = new Date();
+
       const entry: KickEntry = {
         id: now.getTime().toString(),
-        time: now.toLocaleTimeString(),
-        date: now.toISOString(),
+        time: now.toTimeString().split(" ")[0], // "14:14:17"
+        date: now.toISOString().split("T")[0], // "2025-06-20"
         count: liveCount,
       };
       setActivity((prev) => [entry, ...prev]);
       saveToBackend(entry);
+    } else {
+      console.log("No kicks detected, nothing to save.");
     }
+
     setLiveCount(0);
   };
 
@@ -215,7 +227,7 @@ export default function KickCounterScreen() {
   };
 
   const todayActivity = activity.filter(
-    (e) => new Date(parseInt(e.id)).toDateString() === kickDate.toDateString()
+    (e) => e.date === kickDate.toISOString().split("T")[0]
   );
 
   const formattedDate = kickDate.toLocaleDateString(undefined, {
@@ -300,7 +312,7 @@ export default function KickCounterScreen() {
       ) : (
         <FlatList
           data={todayActivity}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id ?? item.id}
           renderItem={({ item }) => (
             <View style={styles.activityItem}>
               <Text>
