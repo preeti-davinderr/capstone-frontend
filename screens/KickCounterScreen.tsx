@@ -16,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { BarChart } from "react-native-chart-kit";
+import { API_URL } from "@env";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -54,9 +55,9 @@ export default function KickCounterScreen() {
 
   const fetchKicks = async (uid: string, date: Date) => {
     try {
-      const formattedDate = date.toISOString().split("T")[0]; // e.g., "2025-06-15"
+      const formattedDate = kickDate.toLocaleDateString();
       const res = await fetch(
-        `http://192.168.1.24:5002/api/kicks/date/${uid}?date=${formattedDate}`
+        `${API_URL}/api/kicks/api/kicks/date/${uid}?date=${formattedDate}`
       );
       const data = await res.json();
       console.log("Kick response:", data);
@@ -78,24 +79,11 @@ export default function KickCounterScreen() {
     }
   };
 
-  // const saveToBackend = async (entry: KickEntry) => {
-  //   try {
-  //     const response = await fetch("http://192.168.1.121:5002/api/kicks", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ ...entry, userId }),
-  //     });
-  //     const data = await response.json();
-  //     if (response.ok && data._id) {
-  //       entry._id = data._id;
-  //     }
-  //   } catch (err) {
-  //     console.error("Save to DB failed:", err);
-  //   }
-  // };
-  const  saveToBackend = async (entry: KickEntry) => {
+  const saveToBackend = async (entry: KickEntry) => {
     try {
-      const response = await fetch("http://192.168.1.24:5002/api/kicks", {
+      console.log("hi");
+
+      const response = await fetch(`${API_URL}/api/kicks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...entry, userId }),
@@ -105,9 +93,7 @@ export default function KickCounterScreen() {
 
       if (response.ok && data._id) {
         const updatedEntry = { ...entry, _id: data._id };
-
-        // // ✅ Save the entry with _id into the activity state
-        // setActivity((prev) => [updatedEntry, ...prev.filter(e => e.id !== entry.id)]);
+        console.log("x");
       } else {
         console.error("Backend response missing _id:", data);
       }
@@ -119,7 +105,7 @@ export default function KickCounterScreen() {
   const deleteFromBackend = async (_id?: string) => {
     if (!_id) return;
     try {
-      const res = await fetch(`http://192.168.1.24:5002/api/kicks/${_id}`, {
+      const res = await fetch(`${API_URL}/api/kicks/${_id}`, {
         method: "DELETE",
       });
 
@@ -139,7 +125,7 @@ export default function KickCounterScreen() {
         text: "Delete",
         style: "destructive",
         onPress: () => {
-          console.log("Deleting", entry._id, entry); // Add this
+          console.log("Deleting", entry._id, entry);
           setActivity((prev) => prev.filter((e) => e.id !== entry.id));
           deleteFromBackend(entry._id);
         },
@@ -148,29 +134,40 @@ export default function KickCounterScreen() {
   };
 
   const handleManualAdd = () => {
-    const num = parseInt(manualCount);
-    if (!isNaN(num) && num > 0) {
-      const now = new Date();
-      const entry: KickEntry = {
-        id: now.getTime().toString(),
-        time: now.toLocaleTimeString(),
-        date: now.toISOString(),
-        count: num,
-      };
-      setActivity((prev) => [entry, ...prev]);
-      setManualCount("");
-      saveToBackend(entry);
+    const num = parseInt(manualCount.trim());
+
+    if (isNaN(num) || num <= 0) {
+      Alert.alert("Invalid Entry", "Please enter a number greater than 0.");
+      return;
     }
+
+    const now = new Date();
+
+    const entry: KickEntry = {
+      id: now.getTime().toString(),
+      time: now.toLocaleTimeString(), // e.g. "2:14:17 PM"
+      date: now.toLocaleDateString(), // e.g. "6/20/2025"
+      count: num, // ✅ FIXED: use actual manual input
+    };
+
+    setActivity((prev) => [entry, ...prev]);
+    setManualCount("");
+    saveToBackend(entry);
   };
 
   const startDetection = () => {
     if (!isToday(kickDate)) return;
     setLiveCount(0);
     setShowModal(true);
+
     const sub = Accelerometer.addListener(({ x, y, z }) => {
       const magnitude = Math.sqrt(x * x + y * y + z * z);
-      if (magnitude > threshold) setLiveCount((prev) => prev + 1);
+      if (magnitude > threshold) {
+        console.log("Kick detected!", magnitude);
+        setLiveCount((prev) => prev + 1);
+      }
     });
+
     Accelerometer.setUpdateInterval(200);
     setSubscription(sub);
   };
@@ -179,17 +176,23 @@ export default function KickCounterScreen() {
     subscription?.remove();
     setSubscription(null);
     setShowModal(false);
+
     if (liveCount > 0) {
       const now = new Date();
+
       const entry: KickEntry = {
         id: now.getTime().toString(),
-        time: now.toLocaleTimeString(),
-        date: now.toISOString(),
-        count: liveCount,
+        time: now.toLocaleTimeString(), // "2:14:17 PM"
+        date: now.toLocaleDateString(), // "6/20/2025" ← LOCAL format
+        count: liveCount, // or manual count
       };
+      console.log("Saving entry:", entry);
       setActivity((prev) => [entry, ...prev]);
       saveToBackend(entry);
+    } else {
+      console.log("No kicks detected, nothing to save.");
     }
+
     setLiveCount(0);
   };
 
@@ -215,7 +218,7 @@ export default function KickCounterScreen() {
   };
 
   const todayActivity = activity.filter(
-    (e) => new Date(parseInt(e.id)).toDateString() === kickDate.toDateString()
+    (e) => e.date === kickDate.toLocaleDateString()
   );
 
   const formattedDate = kickDate.toLocaleDateString(undefined, {

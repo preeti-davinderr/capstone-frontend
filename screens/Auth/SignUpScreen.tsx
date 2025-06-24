@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { TextInput, Text, Checkbox } from "react-native-paper";
 import CommonButton from "../../components/CommonButton";
+import { API_URL } from "@env";
 
 const SignUpScreen = ({ navigation, route }: any) => {
   const userType = route.params?.userType;
@@ -35,7 +36,7 @@ const SignUpScreen = ({ navigation, route }: any) => {
 
     try {
       const response = await fetch(
-        "http://192.168.1.24:5002/api/auth/signup",
+        `${API_URL}/api/auth/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
