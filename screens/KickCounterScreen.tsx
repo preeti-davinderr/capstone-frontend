@@ -16,7 +16,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { BarChart } from "react-native-chart-kit";
-// import { API_URL } from "@env";
 
 const screenWidth = Dimensions.get("window").width;
 

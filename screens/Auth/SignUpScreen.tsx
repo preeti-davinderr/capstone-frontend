@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { TextInput, Text, Checkbox } from "react-native-paper";
 import CommonButton from "../../components/CommonButton";
-// import { API_URL } from "@env";
 
 const SignUpScreen = ({ navigation, route }: any) => {
   const userType = route.params?.userType;

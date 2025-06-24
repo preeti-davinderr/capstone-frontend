@@ -3,7 +3,6 @@ import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Text, TextInput } from "react-native-paper";
 import CommonButton from "../../components/CommonButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { API_URL } from "@env";
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState("");
