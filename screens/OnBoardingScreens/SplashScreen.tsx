@@ -11,10 +11,12 @@ export default function SplashScreen({ navigation }: Props) {
     const checkStatus = async () => {
       try {
 
+
         navigation.replace("MainApp")
         // const onboarded = await AsyncStorage.getItem("hasOnboarded");
         // const token = await AsyncStorage.getItem("token");
         // console.log("onboarded:", onboarded, "| token:", token);
+
 
         // if (onboarded !== "true") {
         //   navigation.replace("Onboarding");
