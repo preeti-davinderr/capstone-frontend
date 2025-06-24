@@ -8,6 +8,8 @@ import SignInScreen from "./screens/Auth/SignInScreen";
 import SignUpScreen from "./screens/Auth/SignUpScreen";
 import WhoForScreen from "./screens/Auth/WhoForScreen";
 import TabNavigator from "./navigation/TabNavigator";
+import BPInputScreen from './screens/Health/BloodPressureTracker';
+import WeightTracker from './screens/Health/Weighttracker';
 import KickCounterScreen from "./screens/KickCounterScreen";
 
 export type RootStackParamList = {
@@ -17,6 +19,8 @@ export type RootStackParamList = {
   SignUp: { userType: string };
   WhoFor: undefined;
   MainApp: undefined;
+  BloodPressure: undefined;
+  Weight: undefined;        
   KickCounter: undefined;
 };
 
@@ -32,6 +36,8 @@ export default function App() {
         <Stack.Screen name="WhoFor" component={WhoForScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="MainApp" component={TabNavigator} />
+        <Stack.Screen name="BloodPressure" component={BPInputScreen} />
+        <Stack.Screen name="Weight" component={WeightTracker} />
         <Stack.Screen name="KickCounter" component={KickCounterScreen} />
       </Stack.Navigator>
     </NavigationContainer>

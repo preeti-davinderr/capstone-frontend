@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList } from "../../App.js";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Splash">;
 
@@ -10,17 +10,21 @@ export default function SplashScreen({ navigation }: Props) {
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const onboarded = await AsyncStorage.getItem("hasOnboarded");
-        const token = await AsyncStorage.getItem("token");
-        console.log("onboarded:", onboarded, "| token:", token);
 
-        if (onboarded !== "true") {
-          navigation.replace("Onboarding");
-        } else if (!token) {
-          navigation.replace("SignIn");
-        } else {
-          navigation.replace("MainApp");
-        }
+
+        navigation.replace("MainApp")
+        // const onboarded = await AsyncStorage.getItem("hasOnboarded");
+        // const token = await AsyncStorage.getItem("token");
+        // console.log("onboarded:", onboarded, "| token:", token);
+
+
+        // if (onboarded !== "true") {
+        //   navigation.replace("Onboarding");
+        // } else if (!token) {
+        //   navigation.replace("SignIn");
+        // } else {
+        //   navigation.replace("MainApp");
+        // }
       } catch (error) {
         console.error("SplashScreen error:", error);
         navigation.replace("SignIn"); // fallback
