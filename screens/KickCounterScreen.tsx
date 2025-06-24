@@ -16,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { BarChart } from "react-native-chart-kit";
+import Header from "../components/Header"; 
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -254,111 +255,108 @@ export default function KickCounterScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={styles.backBtn}
-      >
-        <FontAwesome name="arrow-left" size={20} color="#000" />
-      </TouchableOpacity>
+    <>
+      <Header title="Baby's movement detection" />
 
-      <View style={styles.dateRow}>
-        <TouchableOpacity onPress={goToPreviousDay}>
-          <Text style={styles.arrow}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.dateHeader}>{formattedDate}</Text>
-        <TouchableOpacity onPress={goToNextDay} disabled={isToday(kickDate)}>
-          <Text style={[styles.arrow, isToday(kickDate) && { opacity: 0.3 }]}>
-            →
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.kickCard}>
-        <Text style={styles.kickLabel}>Total Kicks</Text>
-        <Text style={styles.kickCount}>{kicksToday}</Text>
-      </View>
-
-      {isToday(kickDate) && (
-        <>
-          <TouchableOpacity style={styles.detectBtn} onPress={startDetection}>
-            <Text style={styles.detectBtnText}>Start Detection</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.dateRow}>
+          <TouchableOpacity onPress={goToPreviousDay}>
+            <Text style={styles.arrow}>←</Text>
           </TouchableOpacity>
-
-          <View style={styles.manualBox}>
-            <Text>Manual Entry</Text>
-            <View style={styles.manualRow}>
-              <TextInput
-                value={manualCount}
-                onChangeText={setManualCount}
-                placeholder="Enter kicks"
-                keyboardType="numeric"
-                style={styles.manualInput}
-              />
-              <TouchableOpacity
-                onPress={handleManualAdd}
-                style={styles.manualAddBtn}
-              >
-                <Text style={{ color: "#fff" }}>Add</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </>
-      )}
-
-      <Text style={styles.sectionTitle}>Activity</Text>
-      {todayActivity.length === 0 ? (
-        <Text style={styles.emptyText}>No kicks recorded.</Text>
-      ) : (
-        <FlatList
-          data={todayActivity}
-          keyExtractor={(item) => item._id ?? item.id}
-          renderItem={({ item }) => (
-            <View style={styles.activityItem}>
-              <Text>
-                👣 {item.count} @ {item.time}
-              </Text>
-              <TouchableOpacity
-                onPress={() => handleDelete(item)}
-                style={styles.deleteBtn}
-              >
-                <FontAwesome name="trash" size={18} color="#900" />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-      )}
-
-      <Text style={styles.sectionTitle}>Weekly Kick Report</Text>
-      <BarChart
-        data={getWeeklyKickData()}
-        width={screenWidth - 40}
-        height={220}
-        fromZero
-        yAxisLabel=""
-        chartConfig={{
-          backgroundGradientFrom: "#fff",
-          backgroundGradientTo: "#fff",
-          decimalPlaces: 0,
-          color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
-          labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
-        }}
-        style={{ marginBottom: 20 }}
-        yAxisSuffix=""
-      />
-
-      <Modal visible={showModal} transparent>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Detecting Kicks...</Text>
-            <Text style={styles.modalCount}>{liveCount}</Text>
-            <TouchableOpacity onPress={stopDetection} style={styles.stopBtn}>
-              <Text style={styles.stopText}>Stop Detection</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.dateHeader}>{formattedDate}</Text>
+          <TouchableOpacity onPress={goToNextDay} disabled={isToday(kickDate)}>
+            <Text style={[styles.arrow, isToday(kickDate) && { opacity: 0.3 }]}>
+              →
+            </Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
-    </ScrollView>
+
+        <View style={styles.kickCard}>
+          <Text style={styles.kickLabel}>Total Kicks</Text>
+          <Text style={styles.kickCount}>{kicksToday}</Text>
+        </View>
+
+        {isToday(kickDate) && (
+          <>
+            <TouchableOpacity style={styles.detectBtn} onPress={startDetection}>
+              <Text style={styles.detectBtnText}>Start Detection</Text>
+            </TouchableOpacity>
+
+            <View style={styles.manualBox}>
+              <Text>Manual Entry</Text>
+              <View style={styles.manualRow}>
+                <TextInput
+                  value={manualCount}
+                  onChangeText={setManualCount}
+                  placeholder="Enter kicks"
+                  keyboardType="numeric"
+                  style={styles.manualInput}
+                />
+                <TouchableOpacity
+                  onPress={handleManualAdd}
+                  style={styles.manualAddBtn}
+                >
+                  <Text style={{ color: "#fff" }}>Add</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        )}
+
+        <Text style={styles.sectionTitle}>Activity</Text>
+        {todayActivity.length === 0 ? (
+          <Text style={styles.emptyText}>No kicks recorded.</Text>
+        ) : (
+          <FlatList
+            data={todayActivity}
+            keyExtractor={(item) => item._id ?? item.id}
+            renderItem={({ item }) => (
+              <View style={styles.activityItem}>
+                <Text>
+                  👣 {item.count} @ {item.time}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => handleDelete(item)}
+                  style={styles.deleteBtn}
+                >
+                  <FontAwesome name="trash" size={18} color="#900" />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        )}
+
+        <Text style={styles.sectionTitle}>Weekly Kick Report</Text>
+        <BarChart
+          data={getWeeklyKickData()}
+          width={screenWidth - 40}
+          height={220}
+          fromZero
+          yAxisLabel=""
+          chartConfig={{
+            backgroundGradientFrom: "#fff",
+            backgroundGradientTo: "#fff",
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+          }}
+          style={{ marginBottom: 20 }}
+          yAxisSuffix=""
+        />
+
+        <Modal visible={showModal} transparent>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalBox}>
+              <Text style={styles.modalTitle}>Detecting Kicks...</Text>
+              <Text style={styles.modalCount}>{liveCount}</Text>
+              <TouchableOpacity onPress={stopDetection} style={styles.stopBtn}>
+                <Text style={styles.stopText}>Stop Detection</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </ScrollView>
+    </>
   );
 }
 
