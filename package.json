@@ -17,6 +17,7 @@
     "expo": "53.0.12",
     "expo-auth-session": "~6.2.0",
     "expo-file-system": "~18.1.10",
+    "expo-dev-client": "~5.2.1",
     "expo-image-picker": "~16.1.4",
     "expo-sensors": "~14.1.4",
     "expo-status-bar": "~2.2.3",
