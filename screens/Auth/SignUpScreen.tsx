@@ -35,7 +35,7 @@ const SignUpScreen = ({ navigation, route }: any) => {
 
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/auth/signup`,
+        "http://192.168.1.24:5002/api/auth/signup",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
