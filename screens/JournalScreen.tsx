@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text } from 'react-native-paper';
 import { View, Button } from 'react-native';
 import {
@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons, Entypo } from '@expo/vector-icons';
 import CommonButton from '../components/CommonButton';
+import { useNavigation } from '@react-navigation/native';
 // import RNFS from 'react-native-fs';
 // const imageFolder = `${RNFS.DocumentDirectoryPath}/journal_photos`;
 // import { useEffect } from 'react';
@@ -64,8 +65,35 @@ import CommonButton from '../components/CommonButton';
 //   console.log('✅ Images copied to journal_photos folder.');
 // };
 
+type ImageEntry = {
+  url: string;
+  description: string;
+  addedAt: string;
+};
 
-export default function JournalScreen() {
+type Journal = {
+  _id: string;
+  title: string;
+  designTemplate: string;
+  createdAt: string;
+  images: ImageEntry[];
+};
+export default function JournalScreen({ navigation }: any) {
+  const [journals, setJournals] =  useState<Journal[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:5001/api/journal?id=68363fabfa6e794d7eac980a') // replace with actual user ID
+      .then(res => res.json())
+      .then(data => {
+        setJournals(data.data as Journal[]) // assuming the API returns an array of journals
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching journals:", err);
+        setLoading(false);
+      });
+  }, []);
   return (
     <ScrollView style={styles.container}>
       {/* <Button title="Select Journal Images" onPress={pickImagesAndStore} /> */}
@@ -93,11 +121,45 @@ export default function JournalScreen() {
 
       {/* My Active Journals */}
       <Text style={styles.sectionTitle}>My Active Journals</Text>
-      <View style={styles.activeBox}>
-        <FontAwesome name="book" size={28} color="#ccc" />
-        <Text style={styles.activeText}>No active journals yet</Text>
-        <Text style={styles.activeSub}>Start your first journal to see it here</Text>
+
+      {loading ? (
+  <Text style={styles.activeSub}>Loading...</Text>
+) : journals.length === 0 ? (
+  <View style={styles.activeBox}>
+    <FontAwesome name="book" size={28} color="#ccc" />
+    <Text style={styles.activeText}>No active journals yet</Text>
+    <Text style={styles.activeSub}>Start your first journal to see it here</Text>
+  </View>
+) : (
+  journals.map((journal, index) => (
+    <View key={index} style={styles.card}>
+      <View style={styles.cardLeft}>
+        <Ionicons name="book-outline" size={28} color="#aaa" />
       </View>
+      <View style={styles.cardCenter}>
+        <Text style={styles.cardTitle}>{journal.title}</Text>
+        <Text style={styles.cardSubtitle}>{journal.designTemplate}</Text>
+        <View style={styles.metaRow}>
+          <Ionicons name="time-outline" size={14} color="#888" />
+          <Text style={styles.metaText}>
+            {new Date(journal.createdAt).toLocaleDateString()}
+          </Text>
+        </View>
+      </View>
+      <CommonButton
+        label="Open"
+        onPress={() => {
+          navigation.navigate('journalEntry', {
+            journalId: journal._id,
+            title: journal.title,
+            template: journal.designTemplate,
+          });
+        }}
+        style={styles.startButton}
+      />
+    </View>
+  ))
+)}
 
       {/* Pre-designed Journals */}
       <View style={styles.rowBetween}>
@@ -121,7 +183,13 @@ export default function JournalScreen() {
           </View>
           <CommonButton
             label="Start"
-            onPress={() => {}}
+            onPress={() => {
+              navigation.navigate('journalEntery',{
+                title: 'Baby Bump Diary',
+                description: 'Track your growing belly week by week',
+                meta: '40 weeks',
+              });
+            }}
             style={styles.startButton}
           />
         </View>

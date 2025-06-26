@@ -180,12 +180,16 @@ export default function ImageUploader() {
     });
 
     try {
+      let description = "test"
+      let title ="NEW JOURNAL"
+      let userID = "68363fabfa6e794d7eac980a"
       setLoading(true);
-    //   const res = await fetch('http://localhost:5001/api/uploadImage', {
-      const res = await fetch('https://rsinnovates.com/api/uploadImage', {
+      const res = await fetch('http://localhost:5001/api/journal', {
+      // const res = await fetch('http://localhost:5001/api/uploadImage', {
+      // const res = await fetch('https://rsinnovates.com/api/uploadImage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ base64, fileName, contentType }),
+        body: JSON.stringify({ base64, fileName, contentType, description, title, userID }),
       });
 
       const text = await res.text();
