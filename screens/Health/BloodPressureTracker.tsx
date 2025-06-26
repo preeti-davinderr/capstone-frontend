@@ -1,20 +1,28 @@
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-const BP_HISTORY_KEY = 'bpHistory';
+const API_BASE_URL = 'http://192.168.1.112:5001/api/userHealth';; // ⬅️ Replace with your IP or domain
+const USER_ID = '68363fabfa6e794d7eac980a'; // ⬅️ This should ideally come from login/context
 
 type BPEntry = {
   systolic: string;
   diastolic: string;
   datetime: string;
   status: string;
+  userID: string,
 };
 
 function getBPStatus(systolic: string, diastolic: string): string {
-  if (!systolic || !diastolic) return '';
   const sys = parseInt(systolic, 10);
   const dia = parseInt(diastolic, 10);
   if (isNaN(sys) || isNaN(dia)) return '';
@@ -25,7 +33,7 @@ function getBPStatus(systolic: string, diastolic: string): string {
 }
 
 function formatDateTime(date: Date) {
-  const pad = (n: number) => n < 10 ? `0${n}` : n;
+  const pad = (n: number) => (n < 10 ? `0${n}` : n);
   const month = pad(date.getMonth() + 1);
   const day = pad(date.getDate());
   const year = date.getFullYear();
@@ -41,50 +49,77 @@ export default function BPInputScreen() {
   const [history, setHistory] = useState<BPEntry[]>([]);
   const navigation = useNavigation();
 
+  const fetchHistory = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/bp?id=${USER_ID}`);
+    const result = await res.json();
+    if (result.success) {
+      setHistory(result.data || []);
+    } else {
+      console.error('Fetch failed:', result.message);
+    }
+  } catch (err) {
+    console.error('Error fetching BP history:', err);
+  }
+};
+
   useEffect(() => {
-    const loadHistory = async () => {
-      const saved = await AsyncStorage.getItem(BP_HISTORY_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setHistory(parsed);
-        console.log('Blood pressure data loaded:', parsed);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          console.log('Blood pressure entry keys:', Object.keys(parsed[0]));
-        }
-      }
-    };
-    loadHistory();
-  }, []);
+  fetchHistory();
+}, []);
 
   const handleSave = async () => {
-    if (!systolic || !diastolic || !datetime) {
-      Alert.alert('Missing Fields', 'Please fill in all fields.');
-      return;
-    }
-    if (isNaN(Number(systolic)) || isNaN(Number(diastolic))) {
-      Alert.alert('Invalid Input', 'Systolic and Diastolic must be numbers.');
-      return;
-    }
-    const newEntry: BPEntry = {
-      systolic,
-      diastolic,
-      datetime,
-      status: getBPStatus(systolic, diastolic),
-    };
-    const newHistory = [newEntry, ...history];
-    setHistory(newHistory);
-    await AsyncStorage.setItem(BP_HISTORY_KEY, JSON.stringify(newHistory));
-    setSystolic('');
-    setDiastolic('');
-    setDatetime(formatDateTime(new Date()));
-    console.log('Blood pressure entry added:', newEntry);
-    console.log('All blood pressure entry keys:', Object.keys(newEntry));
+  if (!systolic || !diastolic || !datetime) {
+    Alert.alert('Missing Fields', 'Please fill in all fields.');
+    return;
+  }
+
+  if (isNaN(Number(systolic)) || isNaN(Number(diastolic))) {
+    Alert.alert('Invalid Input', 'Systolic and Diastolic must be numbers.');
+    return;
+  }
+
+  const newEntry = {
+    userID: USER_ID,
+    systolic,
+    diastolic,
+    datetime,
+    status: getBPStatus(systolic, diastolic),
   };
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/bp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newEntry),
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      console.log('✅ Saved to DB:', result.data);
+
+      // 🔁 Re-fetch full history to reflect updated entries
+      fetchHistory();
+
+      // Clear inputs
+      setSystolic('');
+      setDiastolic('');
+      setDatetime(formatDateTime(new Date()));
+    } else {
+      Alert.alert('Save Failed', result.message || 'Unknown error.');
+    }
+  } catch (err) {
+    console.error('Error saving BP:', err);
+    Alert.alert('Error', 'Failed to save BP entry.');
+  }
+};
+
 
   const current = history.length > 0 ? history[0] : null;
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f5f5f5', marginBottom: 12 }}>
         <TouchableOpacity onPress={() => navigation.goBack?.()} style={{ paddingHorizontal: 8 }}>
           <Ionicons name="arrow-back" size={24} color="#222" />
@@ -93,7 +128,7 @@ export default function BPInputScreen() {
         <View style={{ width: 32 }} />
       </View>
 
-      {/* Record Reading Card */}
+      {/* Input Card */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Record Reading</Text>
         <View style={styles.rowInputs}>
@@ -138,7 +173,7 @@ export default function BPInputScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Current Status Card */}
+      {/* Current Status */}
       <View style={styles.card}>
         <View style={styles.statusRow}>
           <View>
@@ -154,7 +189,7 @@ export default function BPInputScreen() {
         </View>
       </View>
 
-      {/* History Card */}
+      {/* History */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>History</Text>
         {history.length === 0 && (
@@ -179,6 +214,7 @@ export default function BPInputScreen() {
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   scrollContainer: {

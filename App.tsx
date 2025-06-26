@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
+  
 import SplashScreen from "./screens/OnBoardingScreens/SplashScreen";
 import OnboardingScreen from "./screens/OnBoardingScreens/OnBoardingScreen";
 import SignInScreen from "./screens/Auth/SignInScreen";
@@ -11,6 +11,7 @@ import TabNavigator from "./navigation/TabNavigator";
 import BPInputScreen from './screens/Health/BloodPressureTracker';
 import WeightTracker from './screens/Health/Weighttracker';
 import KickCounterScreen from "./screens/KickCounterScreen";
+
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -23,6 +24,8 @@ export type RootStackParamList = {
   Weight: undefined;        
   KickCounter: undefined;
 };
+
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -41,5 +44,6 @@ export default function App() {
         <Stack.Screen name="KickCounter" component={KickCounterScreen} />
       </Stack.Navigator>
     </NavigationContainer>
+
   );
 }
