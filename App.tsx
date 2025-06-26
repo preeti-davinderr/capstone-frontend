@@ -11,6 +11,7 @@ import TabNavigator from "./navigation/TabNavigator";
 import BPInputScreen from './screens/Health/BloodPressureTracker';
 import WeightTracker from './screens/Health/Weighttracker';
 import KickCounterScreen from "./screens/KickCounterScreen";
+import JournalEntryScreen from "./components/JounaryEnteryScreen";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   BloodPressure: undefined;
   Weight: undefined;        
   KickCounter: undefined;
+  journalEntery: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,6 +41,8 @@ export default function App() {
         <Stack.Screen name="BloodPressure" component={BPInputScreen} />
         <Stack.Screen name="Weight" component={WeightTracker} />
         <Stack.Screen name="KickCounter" component={KickCounterScreen} />
+
+        <Stack.Screen name="journalEntery" component={JournalEntryScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
