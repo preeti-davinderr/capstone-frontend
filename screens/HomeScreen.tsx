@@ -38,6 +38,7 @@ const HomeScreen = () => {
       <HorizontalScroll
         weekData={weekData}
         style={{ marginBottom: 16 }}
+        onWeekChange={(week) => setSelectedWeek(week)}
       />
 
       <Text style={styles.description}>{currentWeekData.description}</Text>

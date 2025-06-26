@@ -157,6 +157,7 @@ import {
     TouchableOpacity,
     View,
     ViewStyle,
+    Image,
 } from 'react-native';
 
 interface WeekInfo {
@@ -166,6 +167,7 @@ interface WeekInfo {
   weight: string;
   visualText: string;
   footer: string;
+  image: any;
 }
 
 interface WeekScrollProps {
@@ -214,9 +216,7 @@ const HorizontalScroll: React.FC<WeekScrollProps> = ({ weekData, style, onWeekCh
             <Text style={styles.sizeText}>Size: {currentWeek.size}</Text>
             <Text style={styles.sizeText}>Weight: {currentWeek.weight}</Text>
           </View>
-          <View style={styles.circle}>
-            <Text style={styles.circleText}>{currentWeek.visualText}</Text>
-          </View>
+          <Image source={currentWeek.image} style={styles.image} />
         </View>
         <Text style={styles.footer}>{currentWeek.footer}</Text>
       </View>
@@ -273,17 +273,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 4,
   },
-  circle: {
+  image: {
     width: 100,
     height: 100,
-    backgroundColor: '#888',
     borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  circleText: {
-    color: '#fff',
-    textAlign: 'center',
   },
   footer: {
     textAlign: 'center',
