@@ -14,6 +14,9 @@ import { fetchFitbitData } from './Fitbit/fetchFitbitData';
 import { formatDistanceToNow } from 'date-fns';
 
 
+
+
+
 export default function HealthScreen() {
 
   const [fitbitData, setFitbitData] = useState<FitbitData | null>(null);
@@ -38,39 +41,47 @@ export default function HealthScreen() {
       } | null>(null);
 
       useFocusEffect(
-        useCallback(() => {
-          const fetchBpData = async () => {
-            try {
-              const data = await AsyncStorage.getItem('bpHistory');
-              if (data) {
-                const parsed = JSON.parse(data);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                  setBpReading(parsed[0]);
-                }
-              }
-            } catch (err) {
-              console.error('❌ Failed to load blood pressure:', err);
-            }
-          };
+  useCallback(() => {
+    const USER_ID = '68363fabfa6e794d7eac980a';
+    const API_BASE = 'http://192.168.1.112:5001/api/userHealth';
 
-          const fetchWeightData = async () => {
-            try {
-              const data = await AsyncStorage.getItem('weightHistory');
-              if (data) {
-                const parsed = JSON.parse(data);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                  setWeightReading(parsed[0]);
-                }
-              }
-            } catch (err) {
-              console.error('❌ Failed to load weight:', err);
-            }
-          };
+    const fetchBpData = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/bp?id=${USER_ID}`);
+        const result = await res.json();
 
-          fetchBpData();
-          fetchWeightData();
-        }, [])
-      );
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+          const { systolic, diastolic, status } = result.data[0];
+          setBpReading({ systolic, diastolic, status });
+        } else {
+          setBpReading(null);
+        }
+      } catch (err) {
+        console.error('❌ Failed to load blood pressure from backend:', err);
+      }
+    };
+
+    const fetchWeightData = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/weight?id=${USER_ID}`);
+        const result = await res.json();
+
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+          const { value, unit, date } = result.data[0]; // latest entry
+          setWeightReading({ value, unit, date });
+        } else {
+          setWeightReading(null);
+        }
+      } catch (err) {
+        console.error('❌ Failed to load weight from backend:', err);
+      }
+    };
+
+    fetchBpData();
+    fetchWeightData();
+  }, [])
+);
+
 
       const { promptAsync } = useFitbitAuth(async (token) => {
           try {
@@ -90,9 +101,8 @@ export default function HealthScreen() {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   return `${hours}h ${minutes}m`;
+
 };
-
-
 
 
   return (
@@ -135,9 +145,11 @@ export default function HealthScreen() {
             />
             <Text>Kick Count</Text>
           </TouchableOpacity>
+          
           <TouchableOpacity style={styles.card_log}>
             <FontAwesome5 name="link" size={20} color="#333" />
-            <Text>Sync Device</Text>
+            <Text
+            >Sync Now</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -178,7 +190,7 @@ export default function HealthScreen() {
                 {weightReading ? 'Tracked' : 'Unknown'}
               </Text>
             </View>
-          </View>
+        </View>
   
 
       </View>
@@ -207,7 +219,7 @@ export default function HealthScreen() {
               promptAsync();
             }}>
               <Text style={styles.syncButtonText}>Sync Now</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.metricsRow}>

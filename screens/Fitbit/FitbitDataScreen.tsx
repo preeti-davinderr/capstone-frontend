@@ -110,7 +110,10 @@ export default function FitbitDataScreen({ accessToken }: FitbitDataScreenProps)
   const [sleepData, setSleepData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const today = new Date().toISOString().split('T')[0];
+  // const today = new Date().toISOString().split('T')[0];
+      const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const date = yesterday.toISOString().split('T')[0]; 
 
   useEffect(() => {
     if (!accessToken) return;
@@ -118,7 +121,7 @@ export default function FitbitDataScreen({ accessToken }: FitbitDataScreenProps)
     const fetchData = async () => {
       try {
         // Steps + Distance
-        const activityRes = await fetch(`https://api.fitbit.com/1/user/-/activities/date/${today}.json`, {
+        const activityRes = await fetch(`https://api.fitbit.com/1/user/-/activities/date/${date}.json`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         const activityJson = await activityRes.json();
@@ -128,7 +131,7 @@ export default function FitbitDataScreen({ accessToken }: FitbitDataScreenProps)
         setDistanceData(activityJson?.summary?.distances?.find((d: any) => d.activity === 'total')?.distance ?? 'N/A');
 
         // Heart Rate
-        const heartRes = await fetch(`https://api.fitbit.com/1/user/-/activities/heart/date/${today}/1d.json`, {
+        const heartRes = await fetch(`https://api.fitbit.com/1/user/-/activities/heart/date/${date}/1d.json`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         const heartJson = await heartRes.json();
@@ -137,7 +140,7 @@ export default function FitbitDataScreen({ accessToken }: FitbitDataScreenProps)
         setHeartData(heartJson?.['activities-heart']?.[0] ?? {});
 
         // Sleep
-        const sleepRes = await fetch(`https://api.fitbit.com/1.2/user/-/sleep/date/${today}.json`, {
+        const sleepRes = await fetch(`https://api.fitbit.com/1.2/user/-/sleep/date/${date}.json`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         const sleepJson = await sleepRes.json();

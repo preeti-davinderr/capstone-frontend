@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Alert 
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+const API_BASE_URL = 'http://192.168.1.112:5001/api/userHealth'; // ✅ replace with your IP
+const USER_ID = '68363fabfa6e794d7eac980a'; // ✅ should come from login in real app
 
 const WEIGHT_HISTORY_KEY = 'weightHistory';
 
@@ -49,34 +51,58 @@ export default function WeightInputScreen() {
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
-    const loadHistory = async () => {
-      const saved = await AsyncStorage.getItem(WEIGHT_HISTORY_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setHistory(parsed);
-        console.log('Weight data loaded:', parsed);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          console.log('Weight entry keys:', Object.keys(parsed[0]));
-        }
+  const fetchHistory = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/weight?id=${USER_ID}`);
+      const result = await res.json();
+      if (result.success && Array.isArray(result.data)) {
+        setHistory(result.data);
+      } else {
+        console.warn('No weight data found');
       }
-    };
-    loadHistory();
-  }, []);
-
-  const handleAddEntry = async () => {
-    if (!weight) {
-      Alert.alert('Missing Field', 'Please enter your weight.');
-      return;
+    } catch (err) {
+      console.error('Error fetching weight data:', err);
     }
-    const newEntry: WeightEntry = { value: weight, unit, date };
-    const newHistory = [newEntry, ...history];
-    setHistory(newHistory);
-    await AsyncStorage.setItem(WEIGHT_HISTORY_KEY, JSON.stringify(newHistory));
-    setWeight('');
-    setDate(formatDate(new Date()));
-    console.log('Weight entry added:', newEntry);
-    console.log('All weight entry keys:', Object.keys(newEntry));
   };
+
+  fetchHistory();
+}, []);
+
+ const handleAddEntry = async () => {
+  if (!weight) {
+    Alert.alert('Missing Field', 'Please enter your weight.');
+    return;
+  }
+
+  const newEntry = {
+    userID: '68363fabfa6e794d7eac980a', // Replace with dynamic userID if needed
+    value: weight,
+    unit,
+    date
+  };
+
+  try {
+    const res = await fetch('http://192.168.1.112:5001/api/userHealth/weight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newEntry),
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      console.log('✅ Saved to DB:', result);
+      setHistory([result.data.data, ...history]); // update list immediately
+      setWeight('');
+      setDate(formatDate(new Date()));
+    } else {
+      Alert.alert('Error', 'Failed to save weight.');
+    }
+  } catch (err) {
+    console.error('❌ Save weight error:', err);
+    Alert.alert('Error', 'Something went wrong.');
+  }
+};
 
   // Current weight
   const current = history.length > 0 ? history[0] : null;
@@ -179,7 +205,9 @@ export default function WeightInputScreen() {
             {/* For demo, show a random change and time */}
             <View style={{ alignItems: 'flex-end' }}>
               <Text style={styles.historyChange}>{idx === 0 ? '+0.2' : idx === 1 ? '-0.5' : idx === 2 ? '-0.3' : idx === 3 ? '+0.4' : '-0.6'}</Text>
-              <Text style={styles.historyTime}>{['09:30','08:15','07:45','08:00','09:20'][idx] || '08:00'}</Text>
+              <Text style={styles.historyTime}>
+                {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Text>
             </View>
           </View>
         ))}
