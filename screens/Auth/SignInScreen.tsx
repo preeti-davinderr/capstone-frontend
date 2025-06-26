@@ -9,7 +9,7 @@ export default function SignInScreen({ navigation }: any) {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    const response = await fetch("http://192.168.1.24:5002/api/auth/login", {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
