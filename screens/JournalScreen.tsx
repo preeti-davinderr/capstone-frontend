@@ -114,7 +114,13 @@ export default function JournalScreen({ navigation }: any) {
 
         <CommonButton
           label="Add Journal Book"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('journalEntery',{
+              title: 'Baby Bump Diary',
+              description: 'Track your growing belly week by week',
+              meta: '40 weeks',
+            });
+          }}
           style={{ marginTop: 12 }}
         />
       </View>
@@ -149,10 +155,12 @@ export default function JournalScreen({ navigation }: any) {
       <CommonButton
         label="Open"
         onPress={() => {
-          navigation.navigate('journalEntry', {
+          navigation.navigate('journalEntery', {
             journalId: journal._id,
             title: journal.title,
-            template: journal.designTemplate,
+            description: journal.designTemplate,  // This must match route param key in JournalEntryScreen
+            meta:journal.designTemplate,
+            isEdit: true,
           });
         }}
         style={styles.startButton}

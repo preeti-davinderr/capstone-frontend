@@ -12,6 +12,7 @@ import BPInputScreen from './screens/Health/BloodPressureTracker';
 import WeightTracker from './screens/Health/Weighttracker';
 import KickCounterScreen from "./screens/KickCounterScreen";
 import JournalEntryScreen from "./components/JounaryEnteryScreen";
+import JournalPreviewScreen from "./components/JournalPreviewScreen";
 
 
 export type RootStackParamList = {
@@ -24,7 +25,17 @@ export type RootStackParamList = {
   BloodPressure: undefined;
   Weight: undefined;        
   KickCounter: undefined;
-  journalEntery: undefined;
+  journalEntery:  {
+    journalId?: string;
+    title?: string;
+    description?: string;
+    meta?: string;
+    isEdit?: boolean;
+  };
+  JournalPreview: {
+    images: { uri: string; description: string }[];
+    title: string;
+  };
 };
 
 
@@ -46,6 +57,7 @@ export default function App() {
         <Stack.Screen name="KickCounter" component={KickCounterScreen} />
 
         <Stack.Screen name="journalEntery" component={JournalEntryScreen}/>
+        <Stack.Screen name="JournalPreview" component={JournalPreviewScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
 
