@@ -12,10 +12,7 @@ import { useCallback } from 'react';
 import { useFitbitAuth } from './Fitbit/FitbitAuthScreen'; // adjust path as needed
 import { fetchFitbitData } from './Fitbit/fetchFitbitData'; 
 import { formatDistanceToNow } from 'date-fns';
-
-
-
-
+import { FitbitSummaryCard } from './Health/SyncNowFitbitData'; // adjust path as needed// adjust path
 
 export default function HealthScreen() {
 
@@ -39,6 +36,31 @@ export default function HealthScreen() {
         unit: 'kg' | 'lbs';
         date: string;
       } | null>(null);
+
+    // const handleGenerateReport = async () => {
+    //     const token = await AsyncStorage.getItem('fitbit_access_token');
+    //     if (!token) {
+    //       // Alert.alert("Fitbit token missing");
+    //       return;
+    //     }
+
+    //     const today = new Date();
+    //     const reportWeek: any[] = [];
+
+    //     for (let i = 0; i < 7; i++) {
+    //       const date = new Date();
+    //       date.setDate(today.getDate() - i);
+    //       const formattedDate = date.toISOString().split('T')[0];
+
+    //       const dayData = await fetchFitbitData(token, formattedDate);
+    //       if (dayData) {
+    //         reportWeek.push({ date: formattedDate, ...dayData });
+    //       }
+    //     }
+
+    //     console.log('📆 Full Weekly Report:', reportWeek);
+    //     // You can now pass this to a modal or navigate to a screen to display
+    //   };
 
       useFocusEffect(
   useCallback(() => {
@@ -146,10 +168,11 @@ export default function HealthScreen() {
             <Text>Kick Count</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.card_log}>
+          <TouchableOpacity
+            style={styles.card_log}
+            onPress={() => navigation.navigate('FitBitSummary')}>
             <FontAwesome5 name="link" size={20} color="#333" />
-            <Text
-            >Sync Now</Text>
+            <Text>Sync Now</Text>
           </TouchableOpacity>
         </View>
       </View>

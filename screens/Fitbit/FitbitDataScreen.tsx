@@ -115,6 +115,8 @@ export default function FitbitDataScreen({ accessToken }: FitbitDataScreenProps)
     yesterday.setDate(yesterday.getDate() - 1);
     const date = yesterday.toISOString().split('T')[0]; 
 
+    // const date = '2025-06-25';
+
   useEffect(() => {
     if (!accessToken) return;
 

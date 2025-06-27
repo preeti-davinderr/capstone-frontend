@@ -1,9 +1,3 @@
-
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import {
-  Alert,
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -12,25 +6,23 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
-} from 'react-native';
-
-const API_BASE_URL = 'http://192.168.1.112:5001/api/userHealth';; // ⬅️ Replace with your IP or domain
-const USER_ID = '68363fabfa6e794d7eac980a'; // ⬅️ This should ideally come from login/context
   Alert,
 } from "react-native";
-import { DatePickerModal } from "react-native-paper-dates";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { DatePickerModal } from "react-native-paper-dates";
 import Header from "../../components/Header";
+import { useNavigation } from "@react-navigation/native";
 
-const BP_HISTORY_KEY = "bpHistory";
+const API_BASE_URL = "http://192.168.1.112:5001/api/userHealth"; // replace with your backend
+const USER_ID = "68363fabfa6e794d7eac980a";
+
 type BPEntry = {
   systolic: string;
   diastolic: string;
   datetime: string;
   status: string;
-  userID: string,
+  userID: string;
 };
 
 function getBPStatus(systolic: string, diastolic: string): string {
@@ -43,23 +35,13 @@ function getBPStatus(systolic: string, diastolic: string): string {
   return "Unknown";
 }
 
-
-function formatDateTime(date: Date) {
-  const pad = (n: number) => (n < 10 ? `0${n}` : n);
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const year = date.getFullYear();
-  const hour = pad(date.getHours());
-  const min = pad(date.getMinutes());
-  return `${month}/${day}/${year}, ${hour}:${min}`;
 function formatDateTime(d: Date): string {
   const pad = (n: number) => (n < 10 ? `0${n}` : n);
-  return `${pad(d.getMonth() + 1)}/${pad(
-    d.getDate()
-  )}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${pad(d.getMonth() + 1)}/${pad(d.getDate())}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 export default function BloodPressureTracker() {
+  const navigation = useNavigation();
   const [systolic, setSystolic] = useState("");
   const [diastolic, setDiastolic] = useState("");
   const [date, setDate] = useState<Date>(new Date());
@@ -70,56 +52,45 @@ export default function BloodPressureTracker() {
   try {
     const res = await fetch(`${API_BASE_URL}/bp?id=${USER_ID}`);
     const result = await res.json();
+
     if (result.success) {
-      setHistory(result.data || []);
+      console.log("✅ Fetched BP history from server:", result.data);
+      const previous = result.data.length > 1 ? result.data[1] : null;
+      console.log("🕓 Previous entry (2nd latest):", previous);
+
+      setHistory(result.data); // ✅ Set the state AFTER handling
     } else {
-      console.error('Fetch failed:', result.message);
+      console.error("❌ Fetch failed:", result.message);
     }
   } catch (err) {
-    console.error('Error fetching BP history:', err);
+    console.error("❌ Error fetching BP history:", err);
   }
 };
 
-  useEffect(() => {
-
+// ✅ Fetch once on mount
+useEffect(() => {
   fetchHistory();
 }, []);
 
-  const handleSave = async () => {
-  if (!systolic || !diastolic || !datetime) {
-    Alert.alert('Missing Fields', 'Please fill in all fields.');
-    return;
-  }
+// ✅ Log history after it's been set
+useEffect(() => {
+  console.log("📚 Updated BP history state:", history);
+}, [history]);
 
-  if (isNaN(Number(systolic)) || isNaN(Number(diastolic))) {
-    Alert.alert('Invalid Input', 'Systolic and Diastolic must be numbers.');
-    return;
-  }
-
-  const newEntry = {
-    userID: USER_ID,
-    systolic,
-    diastolic,
-    datetime,
-    status: getBPStatus(systolic, diastolic),
-    const loadHistory = async () => {
-      const stored = await AsyncStorage.getItem(BP_HISTORY_KEY);
-      if (stored) {
-        setHistory(JSON.parse(stored));
-      }
-    };
-    loadHistory();
-  }, []);
 
   const saveToBackend = async () => {
-    const user = await AsyncStorage.getItem("user");
-    const parsed = user ? JSON.parse(user) : null;
-    if (!parsed?.id) {
-      Alert.alert("Error", "User not found");
+    if (!systolic || !diastolic) {
+      Alert.alert("Missing Fields", "Please fill in all fields.");
+      return;
+    }
+
+    if (isNaN(Number(systolic)) || isNaN(Number(diastolic))) {
+      Alert.alert("Invalid Input", "Systolic and Diastolic must be numbers.");
       return;
     }
 
     const newEntry: BPEntry = {
+      userID: USER_ID,
       systolic,
       diastolic,
       datetime: formatDateTime(date),
@@ -128,96 +99,42 @@ export default function BloodPressureTracker() {
 
     const updatedHistory = [newEntry, ...history];
     setHistory(updatedHistory);
-    await AsyncStorage.setItem(BP_HISTORY_KEY, JSON.stringify(updatedHistory));
+    await AsyncStorage.setItem("bpHistory", JSON.stringify(updatedHistory));
 
     try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/bp`, {
+      const res = await fetch(`${API_BASE_URL}/bp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: parsed.id,
-          systolic,
-          diastolic,
-          datetime: date,
-          status: newEntry.status,
-        }),
+        body: JSON.stringify(newEntry),
       });
+
       const result = await res.json();
-      if (res.ok) {
-        Alert.alert("Saved", "Blood pressure data saved successfully.");
+
+      if (res.ok && result.success) {
+        // Alert.alert("Saved", "Blood pressure data saved successfully.");
         setSystolic("");
         setDiastolic("");
         setDate(new Date());
       } else {
         Alert.alert("Error", result.message || "Save failed");
       }
+
+      // ✅ Always fetch latest from server (regardless of POST success/failure)
+      fetchHistory();
     } catch (err) {
       console.error("Save failed", err);
       Alert.alert("Error", "Network/server error");
     }
   };
 
-  try {
-    const res = await fetch(`${API_BASE_URL}/bp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newEntry),
-    });
-
-    const result = await res.json();
-
-    if (result.success) {
-      console.log('✅ Saved to DB:', result.data);
-
-      // 🔁 Re-fetch full history to reflect updated entries
-      fetchHistory();
-
-      // Clear inputs
-      setSystolic('');
-      setDiastolic('');
-      setDatetime(formatDateTime(new Date()));
-    } else {
-      Alert.alert('Save Failed', result.message || 'Unknown error.');
-    }
-  } catch (err) {
-    console.error('Error saving BP:', err);
-    Alert.alert('Error', 'Failed to save BP entry.');
-  }
-};
-
-
   const current = history.length > 0 ? history[0] : null;
+  console.log("Current (most recent):", current);
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f5f5f5', marginBottom: 12 }}>
-        <TouchableOpacity onPress={() => navigation.goBack?.()} style={{ paddingHorizontal: 8 }}>
-          <Ionicons name="arrow-back" size={24} color="#222" />
-        </TouchableOpacity>
-        <Text style={{ flex: 1, textAlign: 'center', fontSize: 20, fontWeight: '500', color: '#222' }}>Blood Pressure</Text>
-        <View style={{ width: 32 }} />
-      </View>
-
-      {/* Input Card */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Record Reading</Text>
-        <View style={styles.rowInputs}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Systolic</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="~120"
-              keyboardType="numeric"
-              value={systolic}
-              onChangeText={text => setSystolic(text.replace(/[^0-9]/g, ''))}
-              maxLength={3}
-            />
-            <Text style={styles.unitLabel}>mmHg</Text>
-
     <>
       <Header title="Blood Pressure" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Input Card */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Record Reading</Text>
 
@@ -229,13 +146,12 @@ export default function BloodPressureTracker() {
                 placeholder="~120"
                 keyboardType="numeric"
                 value={systolic}
-                onChangeText={(text) =>
-                  setSystolic(text.replace(/[^0-9]/g, ""))
-                }
+                onChangeText={(text) => setSystolic(text.replace(/[^0-9]/g, ""))}
                 maxLength={3}
               />
               <Text style={styles.unitLabel}>mmHg</Text>
             </View>
+
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Diastolic</Text>
               <TextInput
@@ -243,14 +159,11 @@ export default function BloodPressureTracker() {
                 placeholder="~80"
                 keyboardType="numeric"
                 value={diastolic}
-                onChangeText={(text) =>
-                  setDiastolic(text.replace(/[^0-9]/g, ""))
-                }
+                onChangeText={(text) => setDiastolic(text.replace(/[^0-9]/g, ""))}
                 maxLength={3}
               />
               <Text style={styles.unitLabel}>mmHg</Text>
             </View>
-
           </View>
 
           <Text style={styles.inputLabel}>Date & Time</Text>
@@ -287,21 +200,7 @@ export default function BloodPressureTracker() {
           </TouchableOpacity>
         </View>
 
-
-      {/* Current Status */}
-      <View style={styles.card}>
-        <View style={styles.statusRow}>
-          <View>
-            <Text style={styles.statusTitle}>Current Status</Text>
-            <Text style={styles.statusMain}>
-              {current ? getBPStatus(current.systolic, current.diastolic) : 'No Data'}
-            </Text>
-            <Text style={styles.statusSub}>
-              {current ? `Last reading: ${current.systolic}/${current.diastolic} mmHg` : 'No recent reading'}
-            </Text>
-          </View>
-          <Ionicons name="heart" size={24} color="#bbb" style={styles.heartIcon} />
-
+        {/* Current Status */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Current Status</Text>
           <Text style={styles.statusMain}>
@@ -316,37 +215,18 @@ export default function BloodPressureTracker() {
           </Text>
         </View>
 
-
-      {/* History */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>History</Text>
-        {history.length === 0 && (
-          <Text style={{ color: '#aaa', textAlign: 'center', marginVertical: 10 }}>No history yet.</Text>
-        )}
-        {history.map((item, idx) => (
-          <View style={styles.historyItem} key={idx}>
-            <View>
-              <Text style={styles.historyBP}>• {item.systolic}/{item.diastolic}</Text>
-              <Text style={styles.historyTime}>{item.datetime}</Text>
-            </View>
-            <View style={
-              item.status === 'Normal' ? styles.badgeNormal :
-              item.status === 'High' ? styles.badgeHigh :
-              [styles.badgeNormal, { backgroundColor: '#fffbe6', borderColor: '#ffe58f', borderWidth: 1 }]
-            }>
-              <Text style={styles.badgeText}>{item.status || 'Unknown'}</Text>
-
+        {/* History */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>History</Text>
           {history.length === 0 && (
-            <Text style={{ color: "#aaa" }}>No entries yet.</Text>
+            <Text style={{ color: "#aaa", textAlign: "center", marginVertical: 10 }}>
+              No history yet.
+            </Text>
           )}
           {history.map((item, idx) => (
             <View key={idx} style={styles.historyItem}>
               <View>
-                <Text style={styles.historyBP}>
-                  • {item.systolic}/{item.diastolic}
-                </Text>
+                <Text style={styles.historyBP}>• {item.systolic}/{item.diastolic}</Text>
                 <Text style={styles.historyTime}>{item.datetime}</Text>
               </View>
               <Text
@@ -372,7 +252,6 @@ export default function BloodPressureTracker() {
   );
 }
 
-
 const styles = StyleSheet.create({
   scrollContainer: {
     padding: 16,
@@ -384,10 +263,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
     borderWidth: 1,
     borderColor: "#eee",
   },

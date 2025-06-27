@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const API_BASE_URL = 'http://192.168.1.112:5001/api/userHealth'; // ✅ replace with your IP
-const USER_ID = '68363fabfa6e794d7eac980a'; // ✅ should come from login in real app
+const USER_ID = '68363fabfa6e794d7eac980a';
 
 const WEIGHT_HISTORY_KEY = 'weightHistory';
 

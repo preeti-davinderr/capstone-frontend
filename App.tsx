@@ -12,6 +12,7 @@ import BPInputScreen from './screens/Health/BloodPressureTracker';
 import WeightTracker from './screens/Health/Weighttracker';
 import KickCounterScreen from "./screens/KickCounterScreen";
 import JournalEntryScreen from "./components/JounaryEnteryScreen";
+import SyncNowScreen from './screens/Health/SyncNowFitbitData';
 
 
 export type RootStackParamList = {
@@ -25,6 +26,7 @@ export type RootStackParamList = {
   Weight: undefined;        
   KickCounter: undefined;
   journalEntery: undefined;
+  FitBitSummary: undefined;
 };
 
 
@@ -44,7 +46,7 @@ export default function App() {
         <Stack.Screen name="BloodPressure" component={BPInputScreen} />
         <Stack.Screen name="Weight" component={WeightTracker} />
         <Stack.Screen name="KickCounter" component={KickCounterScreen} />
-
+        <Stack.Screen name="FitBitSummary" component={SyncNowScreen} />
         <Stack.Screen name="journalEntery" component={JournalEntryScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
