@@ -31,10 +31,10 @@
 
 export const fetchFitbitData = async (accessToken) => {
   // const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const date = yesterday.toISOString().split('T')[0];
-  // const today = '2025-06-18';
+  // const yesterday = new Date();
+  //   yesterday.setDate(yesterday.getDate() - 1);
+  //   const date = yesterday.toISOString().split('T')[0];
+  const date = '2025-06-25';
 
   // Sleep
   const sleepRes = await fetch(`https://api.fitbit.com/1.2/user/-/sleep/date/${date}.json`, {
