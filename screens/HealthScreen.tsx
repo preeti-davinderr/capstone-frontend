@@ -1,109 +1,111 @@
-
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../App'; // adjust path as needed
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
-import { useFitbitAuth } from './Fitbit/FitbitAuthScreen'; // adjust path as needed
-import { fetchFitbitData } from './Fitbit/fetchFitbitData'; 
-import { formatDistanceToNow } from 'date-fns';
-
-
-
-
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  FontAwesome5,
+} from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../App"; // adjust path as needed
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
+import { useFitbitAuth } from "./Fitbit/FitbitAuthScreen"; // adjust path as needed
+import { fetchFitbitData } from "./Fitbit/fetchFitbitData";
+import { formatDistanceToNow } from "date-fns";
 
 export default function HealthScreen() {
-
   const [fitbitData, setFitbitData] = useState<FitbitData | null>(null);
 
   type FitbitData = {
-      activity: any;
-      sleep: any;
-      heart: any;
-    };
+    activity: any;
+    sleep: any;
+    heart: any;
+  };
 
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-      const [bpReading, setBpReading] = useState<{
-      systolic: string;
-      diastolic: string;
-      status: string;
-    } | null>(null);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [bpReading, setBpReading] = useState<{
+    systolic: string;
+    diastolic: string;
+    status: string;
+  } | null>(null);
 
-     const [weightReading, setWeightReading] = useState<{
-        value: string;
-        unit: 'kg' | 'lbs';
-        date: string;
-      } | null>(null);
+  const [weightReading, setWeightReading] = useState<{
+    value: string;
+    unit: "kg" | "lbs";
+    date: string;
+  } | null>(null);
 
-      useFocusEffect(
-  useCallback(() => {
-    const USER_ID = '68363fabfa6e794d7eac980a';
-    const API_BASE = 'http://192.168.1.112:5001/api/userHealth';
-
-    const fetchBpData = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/bp?id=${USER_ID}`);
-        const result = await res.json();
-
-        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-          const { systolic, diastolic, status } = result.data[0];
-          setBpReading({ systolic, diastolic, status });
-        } else {
-          setBpReading(null);
-        }
-      } catch (err) {
-        console.error('❌ Failed to load blood pressure from backend:', err);
-      }
-    };
-
-    const fetchWeightData = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/weight?id=${USER_ID}`);
-        const result = await res.json();
-
-        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-          const { value, unit, date } = result.data[0]; // latest entry
-          setWeightReading({ value, unit, date });
-        } else {
-          setWeightReading(null);
-        }
-      } catch (err) {
-        console.error('❌ Failed to load weight from backend:', err);
-      }
-    };
-
-    fetchBpData();
-    fetchWeightData();
-  }, [])
-);
-
-
-      const { promptAsync } = useFitbitAuth(async (token) => {
-          try {
-            if (!token?.accessToken) {
-              console.error('❌ No access token returned');
-              return;
-            }
-
-            const data = await fetchFitbitData(token.accessToken);
-            setFitbitData(data);
-          } catch (err) {
-            console.error('❌ Fitbit fetch error:', err);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const user = await AsyncStorage.getItem("user");
+          const parsed = user ? JSON.parse(user) : null;
+          const userId = parsed?.id;
+  
+          if (!userId) {
+            console.warn("User ID not found in storage");
+            return;
           }
-        });
+  
+          // Fetch Blood Pressure
+          const bpRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp?id=${userId}`);
+          const bpResult = await bpRes.json();
+          if (bpResult.success && Array.isArray(bpResult.data) && bpResult.data.length > 0) {
+            const { systolic, diastolic, status } = bpResult.data[0];
+            setBpReading({ systolic, diastolic, status });
+          } else {
+            setBpReading(null);
+          }
+  
+          // Fetch Weight
+          const weightRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/weight?id=${userId}`);
+          const weightResult = await weightRes.json();
+          if (weightResult.success && Array.isArray(weightResult.data) && weightResult.data.length > 0) {
+            const { value, unit, date } = weightResult.data[0];
+            setWeightReading({ value, unit, date });
+          } else {
+            setWeightReading(null);
+          }
+        } catch (err) {
+          console.error("❌ Error fetching health data:", err);
+        }
+      };
+  
+      fetchData();
+    }, [])
+  );
+  
 
-      const formatMinutes = (totalMinutes: number) => {
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `${hours}h ${minutes}m`;
+  const { promptAsync } = useFitbitAuth(async (token) => {
+    try {
+      if (!token?.accessToken) {
+        console.error("❌ No access token returned");
+        return;
+      }
 
-};
+      const data = await fetchFitbitData(token.accessToken);
+      setFitbitData(data);
+    } catch (err) {
+      console.error("❌ Fitbit fetch error:", err);
+    }
+  });
 
+  const formatMinutes = (totalMinutes: number) => {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours}h ${minutes}m`;
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -119,7 +121,7 @@ export default function HealthScreen() {
         <View style={styles.cardRow}>
           <TouchableOpacity
             style={styles.card_log}
-            onPress={() => navigation.navigate('BloodPressure')}
+            onPress={() => navigation.navigate("BloodPressure")}
           >
             <Ionicons name="heart" size={24} color="#333" />
             <Text>Blood Pressure</Text>
@@ -127,7 +129,7 @@ export default function HealthScreen() {
 
           <TouchableOpacity
             style={styles.card_log}
-            onPress={() => navigation.navigate('Weight')}
+            onPress={() => navigation.navigate("Weight")}
           >
             <Ionicons name="scale" size={24} color="#333" />
             <Text>Weight</Text>
@@ -145,11 +147,10 @@ export default function HealthScreen() {
             />
             <Text>Kick Count</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.card_log}>
             <FontAwesome5 name="link" size={20} color="#333" />
-            <Text
-            >Sync Now</Text>
+            <Text>Sync Now</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -163,38 +164,48 @@ export default function HealthScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.card}>
-
-            <MaterialCommunityIcons name="heart-pulse" size={24} color="#888" style={styles.icon} />
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>Blood Pressure</Text>
-              <Text style={styles.value}>
-                {bpReading ? `${bpReading.systolic}/${bpReading.diastolic} mmHg` : 'No Data'}
-              </Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>
-                {bpReading?.status || 'Unknown'}
-              </Text>
-            </View>
+          <MaterialCommunityIcons
+            name="heart-pulse"
+            size={24}
+            color="#888"
+            style={styles.icon}
+          />
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>Blood Pressure</Text>
+            <Text style={styles.value}>
+              {bpReading
+                ? `${bpReading.systolic}/${bpReading.diastolic} mmHg`
+                : "No Data"}
+            </Text>
           </View>
-        <View style={styles.card}>
-            <MaterialCommunityIcons name="weight" size={24} color="#888" style={styles.icon} />
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>Weight</Text>
-              <Text style={styles.value}>
-                {weightReading ? `${weightReading.value} ${weightReading.unit}` : 'No Data'}
-              </Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>
-                {weightReading ? 'Tracked' : 'Unknown'}
-              </Text>
-            </View>
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>
+              {bpReading?.status || "Unknown"}
+            </Text>
+          </View>
         </View>
-  
-
+        <View style={styles.card}>
+          <MaterialCommunityIcons
+            name="weight"
+            size={24}
+            color="#888"
+            style={styles.icon}
+          />
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>Weight</Text>
+            <Text style={styles.value}>
+              {weightReading
+                ? `${weightReading.value} ${weightReading.unit}`
+                : "No Data"}
+            </Text>
+          </View>
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>
+              {weightReading ? "Tracked" : "Unknown"}
+            </Text>
+          </View>
+        </View>
       </View>
-
 
       {/* Connected Devices */}
       <Text style={styles.sectionTitle}>Connected Devices</Text>
@@ -207,18 +218,23 @@ export default function HealthScreen() {
             <View style={{ marginLeft: 10 }}>
               <Text style={styles.deviceName}>Fitbit Versa 3</Text>
               <Text style={styles.deviceMeta}>
-                Last sync:{' '}
+                Last sync:{" "}
                 {fitbitData?.sleep?.[0]?.endTime
-                  ? formatDistanceToNow(new Date(fitbitData.sleep[0].endTime), { addSuffix: true })
-                  : 'Not available'}
+                  ? formatDistanceToNow(new Date(fitbitData.sleep[0].endTime), {
+                      addSuffix: true,
+                    })
+                  : "Not available"}
               </Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.syncButton} onPress={() => {
-              console.log('🌀 Syncing with Fitbit...');
+          <TouchableOpacity
+            style={styles.syncButton}
+            onPress={() => {
+              console.log("🌀 Syncing with Fitbit...");
               promptAsync();
-            }}>
-              <Text style={styles.syncButtonText}>Sync Now</Text>
+            }}
+          >
+            <Text style={styles.syncButtonText}>Sync Now</Text>
           </TouchableOpacity>
         </View>
 
@@ -226,16 +242,17 @@ export default function HealthScreen() {
           <View style={styles.metric}>
             <Text style={styles.metricLabel}>Steps</Text>
             <Text style={styles.metricValue}>
-              {fitbitData?.activity?.summary?.steps ?? 'N/A'}
+              {fitbitData?.activity?.summary?.steps ?? "N/A"}
             </Text>
           </View>
 
           <View style={styles.metric}>
             <Text style={styles.metricLabel}>Heart Rate</Text>
             <Text style={styles.metricValue}>
-              {fitbitData?.heart?.['activities-heart']?.[0]?.value?.restingHeartRate
-                ? `${fitbitData.heart['activities-heart'][0].value.restingHeartRate} bpm`
-                : 'N/A'}
+              {fitbitData?.heart?.["activities-heart"]?.[0]?.value
+                ?.restingHeartRate
+                ? `${fitbitData.heart["activities-heart"][0].value.restingHeartRate} bpm`
+                : "N/A"}
             </Text>
           </View>
 
@@ -244,13 +261,13 @@ export default function HealthScreen() {
             <Text style={styles.metricValue}>
               {fitbitData?.sleep?.summary?.totalMinutesAsleep
                 ? formatMinutes(fitbitData.sleep.summary.totalMinutesAsleep)
-                : 'N/A'}
+                : "N/A"}
             </Text>
           </View>
         </View>
       </View>
 
-            {/* AI Recommendations */}
+      {/* AI Recommendations */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>AI Recommendations</Text>
         <View style={styles.aiCard}>
@@ -270,9 +287,9 @@ export default function HealthScreen() {
       </View>
 
       {/* Doctor Report Button */}
-      <TouchableOpacity style={styles.generateBtn}>
+      {/* <TouchableOpacity style={styles.generateBtn}>
         <Text style={styles.generateBtnText}>Generate Doctor Report</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 }
