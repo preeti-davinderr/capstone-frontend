@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
-import { useFitbitAuth } from './Fitbit/FitbitAuthScreen';
-import { fetchFitbitData } from './Fitbit/fetchFitbitData';
-import * as WebBrowser from 'expo-web-browser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
 
 export default function ProfileScreen() {
+  const navigation = useNavigation();
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("user");
+      console.log("✅ User logged out.");
+      navigation.dispatch(
+        StackActions.replace("SignIn") 
+      );
+    } catch (error) {
+      console.error("❌ Logout failed:", error);
+    }
+  };
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -19,8 +33,7 @@ export default function ProfileScreen() {
         👤 Profile Screen
       </Text>
 
-      {/* Add any buttons or user info here */}
-      <Button mode="contained" onPress={() => console.log('Logout pressed')}>
+      <Button mode="contained" onPress={handleLogout}>
         Logout
       </Button>
     </ScrollView>

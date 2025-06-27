@@ -25,7 +25,6 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import HorizontalScroll from '../components/HorizontalScroll';
 import { weekData, WeekDetails } from '../components/weekData';
-import ImageUploader from '../components/ImageUploader';
 // import WeekScroll from '../components/WeekScroll';
 // import HorizontalScroll from '@/components/HorizontalScroll';
 // import { weekData, WeekDetails } from '@/components/weekData';
@@ -39,8 +38,9 @@ const HomeScreen = () => {
       <HorizontalScroll
         weekData={weekData}
         style={{ marginBottom: 16 }}
+        onWeekChange={(week) => setSelectedWeek(week)}
       />
-<ImageUploader/>
+
       <Text style={styles.description}>{currentWeekData.description}</Text>
 
       <View style={styles.card}>

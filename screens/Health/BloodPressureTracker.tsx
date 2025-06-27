@@ -77,7 +77,6 @@ useEffect(() => {
   console.log("📚 Updated BP history state:", history);
 }, [history]);
 
-
   const saveToBackend = async () => {
     if (!systolic || !diastolic) {
       Alert.alert("Missing Fields", "Please fill in all fields.");
@@ -115,6 +114,7 @@ useEffect(() => {
         setSystolic("");
         setDiastolic("");
         setDate(new Date());
+        await fetchHistory(); // Refresh history after saving
       } else {
         Alert.alert("Error", result.message || "Save failed");
       }
@@ -166,7 +166,7 @@ useEffect(() => {
             </View>
           </View>
 
-          <Text style={styles.inputLabel}>Date & Time</Text>
+          <Text style={styles.inputLabel}>Date</Text>
           <TouchableOpacity
             style={styles.timeRow}
             onPress={() => setShowPicker(true)}
@@ -200,7 +200,6 @@ useEffect(() => {
           </TouchableOpacity>
         </View>
 
-        {/* Current Status */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Current Status</Text>
           <Text style={styles.statusMain}>
@@ -215,7 +214,6 @@ useEffect(() => {
           </Text>
         </View>
 
-        {/* History */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>History</Text>
           {history.length === 0 && (
