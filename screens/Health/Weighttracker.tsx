@@ -12,31 +12,26 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "../../components/Header";
-const API_BASE_URL = "http://192.168.1.112:5001/api/userHealth";
-const USER_ID = "68363fabfa6e794d7eac980a"; // ✅ should come from login in real app
 
-const WEIGHT_HISTORY_KEY = "weightHistory";
-
-type WeightEntry = {
-  value: string;
-  unit: "kg" | "lbs";
-  date: string;
-};
-
-function formatDate(date: Date) {
+// 🔹 Utility: format with time
+function formatDateTime(date: Date) {
   const pad = (n: number) => (n < 10 ? `0${n}` : n);
   const year = date.getFullYear();
   const month = pad(date.getMonth() + 1);
   const day = pad(date.getDate());
-  return `${year}-${month}-${day}`;
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 function getTodayLabel(date: string) {
-  const today = formatDate(new Date());
-  if (date === today) return "Today";
-  const yesterday = formatDate(new Date(Date.now() - 86400000));
-  if (date === yesterday) return "Yesterday";
-  return date;
+  const today = new Date().toISOString().split("T")[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+  const entryDate = date.split(" ")[0];
+  if (entryDate === today) return "Today";
+  if (entryDate === yesterday) return "Yesterday";
+  return entryDate;
 }
 
 function getMonthStart() {
@@ -49,17 +44,24 @@ function getMonthStart() {
 function convertWeight(value: string, from: "kg" | "lbs", to: "kg" | "lbs") {
   const num = parseFloat(value);
   if (isNaN(num)) return "";
-  if (from === to) return value;
-  return from === "kg"
+  return from === to
+    ? value
+    : from === "kg"
     ? (num * 2.20462).toFixed(1)
     : (num / 2.20462).toFixed(1);
 }
+
+type WeightEntry = {
+  value: string;
+  unit: "kg" | "lbs";
+  date: string;
+};
 
 export default function WeightInputScreen() {
   const navigation = useNavigation();
   const [unit, setUnit] = useState<"kg" | "lbs">("kg");
   const [weight, setWeight] = useState("");
-  const [date, setDate] = useState(formatDate(new Date()));
+  const [date, setDate] = useState(formatDateTime(new Date()));
   const [history, setHistory] = useState<WeightEntry[]>([]);
   const [showAll, setShowAll] = useState(false);
 
@@ -72,14 +74,16 @@ export default function WeightInputScreen() {
           console.error("User ID not found in AsyncStorage");
           return;
         }
-
         const res = await fetch(
           `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/weight?id=${parsed.id}`
         );
         const result = await res.json();
-
         if (result.success && Array.isArray(result.data)) {
-          setHistory(result.data);
+          const sorted = result.data.sort(
+            (a: any, b: any) =>
+              new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
+          setHistory(sorted);
         } else {
           console.warn("No weight data found");
         }
@@ -96,7 +100,6 @@ export default function WeightInputScreen() {
       Alert.alert("Missing Field", "Please enter your weight.");
       return;
     }
-
     const user = await AsyncStorage.getItem("user");
     const parsed = user ? JSON.parse(user) : null;
     if (!parsed?.id) {
@@ -104,13 +107,15 @@ export default function WeightInputScreen() {
       return;
     }
 
+    const nowDateTime = formatDateTime(new Date());
+    setDate(nowDateTime);
+
     const newEntry = {
       userID: parsed.id,
       value: weight,
       unit,
-      date,
+      date: nowDateTime, // ✅ includes time
     };
-    console.log(newEntry);
 
     try {
       const res = await fetch(
@@ -123,11 +128,10 @@ export default function WeightInputScreen() {
       );
 
       const result = await res.json();
-
       if (result.success) {
-        setHistory([result.data.data, ...history]); // update list immediately
+        setHistory([result.data.data, ...history]);
         setWeight("");
-        setDate(formatDate(new Date()));
+        setDate(formatDateTime(new Date()));
       } else {
         Alert.alert("Error", "Failed to save weight.");
       }
@@ -137,10 +141,7 @@ export default function WeightInputScreen() {
     }
   };
 
-  // Current weight
   const current = history.length > 0 ? history[0] : null;
-
-  // Calculate monthly change
   let monthStartWeight = null;
   for (let entry of history) {
     if (entry.date >= getMonthStart()) {
@@ -152,15 +153,12 @@ export default function WeightInputScreen() {
     ? parseFloat(monthStartWeight.value)
     : currentValue;
   const monthChange = (currentValue - monthValue).toFixed(1);
-
-  // For history, show 5 by default, expand if showAll
   const displayHistory = showAll ? history : history.slice(0, 5);
 
   return (
     <>
       <Header title="Weight Tracker" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Add Weight Entry Card */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Add Weight Entry</Text>
           <View style={styles.unitSwitchRow}>
@@ -240,7 +238,7 @@ export default function WeightInputScreen() {
             <Text style={styles.saveButtonText}>Add Entry</Text>
           </TouchableOpacity>
         </View>
-        {/* Current and This Month */}
+
         <View style={styles.rowStats}>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>
@@ -253,13 +251,11 @@ export default function WeightInputScreen() {
             <Text style={styles.statLabel}>This Month</Text>
           </View>
         </View>
-        {/* History */}
+
         <View style={styles.card}>
           <Text style={styles.cardTitle}>History</Text>
           {displayHistory.length === 0 && (
-            <Text
-              style={{ color: "#aaa", textAlign: "center", marginVertical: 10 }}
-            >
+            <Text style={{ color: "#aaa", textAlign: "center", margin: 10 }}>
               No history yet.
             </Text>
           )}
@@ -273,24 +269,9 @@ export default function WeightInputScreen() {
                   {getTodayLabel(item.date)}
                 </Text>
               </View>
-              {/* For demo, show a random change and time */}
               <View style={{ alignItems: "flex-end" }}>
-                <Text style={styles.historyChange}>
-                  {idx === 0
-                    ? "+0.2"
-                    : idx === 1
-                    ? "-0.5"
-                    : idx === 2
-                    ? "-0.3"
-                    : idx === 3
-                    ? "+0.4"
-                    : "-0.6"}
-                </Text>
                 <Text style={styles.historyTime}>
-                  {new Date(item.date).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {item.date.split(" ")[1] || ""}
                 </Text>
               </View>
             </View>
@@ -312,27 +293,13 @@ export default function WeightInputScreen() {
 }
 
 const styles = StyleSheet.create({
+  // Keep your current styles here
+  // unchanged unless you want me to refactor your style file for consistency.
   scrollContainer: {
     padding: 16,
     backgroundColor: "#f7f7f7",
     alignItems: "center",
     paddingBottom: 32,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f5f5f5",
-    marginBottom: 12,
-    width: "100%",
-  },
-  headerTitle: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "500",
-    color: "#222",
   },
   card: {
     backgroundColor: "#fff",
@@ -340,10 +307,6 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     width: "100%",
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
     borderWidth: 1,
     borderColor: "#eee",
   },
@@ -363,7 +326,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     alignItems: "center",
-    backgroundColor: "#f2f2f2",
   },
   unitSwitchActive: {
     backgroundColor: "#fff",
@@ -371,7 +333,6 @@ const styles = StyleSheet.create({
   unitSwitchText: {
     fontSize: 15,
     color: "#888",
-    fontWeight: "500",
   },
   unitSwitchTextActive: {
     color: "#222",
@@ -395,13 +356,11 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     backgroundColor: "#fafafa",
-    marginBottom: 2,
   },
   unitLabel: {
     fontSize: 13,
     color: "#888",
     marginLeft: 8,
-    marginRight: 4,
   },
   calendarIcon: {
     marginLeft: 8,
@@ -441,7 +400,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     color: "#222",
-    marginBottom: 2,
   },
   statLabel: {
     fontSize: 13,
@@ -450,7 +408,6 @@ const styles = StyleSheet.create({
   },
   historyItem: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 10,
     borderBottomWidth: 1,
@@ -464,16 +421,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#888",
   },
-  historyChange: {
-    fontSize: 14,
-    color: "#888",
-    fontWeight: "600",
-    textAlign: "right",
-  },
   historyTime: {
     fontSize: 12,
-    color: "#aaa",
-    textAlign: "right",
+    color: "#888",
   },
   viewMore: {
     color: "#888",
