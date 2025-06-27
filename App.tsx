@@ -13,7 +13,7 @@ import WeightTracker from './screens/Health/Weighttracker';
 import KickCounterScreen from "./screens/KickCounterScreen";
 import JournalEntryScreen from "./components/JounaryEnteryScreen";
 import JournalPreviewScreen from "./components/JournalPreviewScreen";
-
+import ChatBot from "./screens/ChatBot";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -36,6 +36,7 @@ export type RootStackParamList = {
     images: { uri: string; description: string }[];
     title: string;
   };
+  ChatBot:undefined;
 };
 
 
@@ -55,7 +56,7 @@ export default function App() {
         <Stack.Screen name="BloodPressure" component={BPInputScreen} />
         <Stack.Screen name="Weight" component={WeightTracker} />
         <Stack.Screen name="KickCounter" component={KickCounterScreen} />
-
+        <Stack.Screen name="ChatBot" component={ChatBot} />
         <Stack.Screen name="journalEntery" component={JournalEntryScreen}/>
         <Stack.Screen name="JournalPreview" component={JournalPreviewScreen}/>
       </Stack.Navigator>
