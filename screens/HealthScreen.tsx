@@ -22,6 +22,7 @@ import { useFitbitAuth } from "./Fitbit/FitbitAuthScreen"; // adjust path as nee
 import { fetchFitbitData } from "./Fitbit/fetchFitbitData";
 import { formatDistanceToNow } from "date-fns";
 import { FitbitSummaryCard } from "./Health/SyncNowFitbitData";
+import HealthRecoAI from "../components/ChatReco";
 
 export default function HealthScreen() {
   const [fitbitData, setFitbitData] = useState<FitbitData | null>(null);
@@ -301,7 +302,11 @@ export default function HealthScreen() {
       {/* AI Recommendations */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>AI Recommendations</Text>
-        <View style={styles.aiCard}>
+        <HealthRecoAI
+bpReading={bpReading}
+weightReading={weightReading}
+        />
+        {/* <View style={styles.aiCard}>
           <Text style={{ fontWeight: "600" }}>This Week's Focus</Text>
           <Text>
             • Continue prenatal vitamins with iron{"\n"}• Aim for 8-10 glasses
@@ -314,7 +319,7 @@ export default function HealthScreen() {
             • High-mercury fish{"\n"}• Excessive caffeine (&gt;200mg/day){"\n"}•
             Hot baths or saunas
           </Text>
-        </View>
+        </View> */}
       </View>
 
       {/* Doctor Report Button */}

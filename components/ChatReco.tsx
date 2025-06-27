@@ -89,10 +89,10 @@
 // //     },
 // //   });
 
-// // import Constants from 'expo-constants';
-// // import React, { useState } from 'react';
+// import Constants from 'expo-constants';
+// import React, { useState } from 'react';
 // import { Button, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
-// const API_KEY = Constants.expoConfig?.extra?.HRECO;
+// // const API_KEY = Constants.expoConfig?.extra?.HRECO;
 // export default function HealthRecoAI() {
 //   const [bp, setBp] = useState('');
 //   const [weight, setWeight] = useState('');
@@ -101,7 +101,7 @@
 //   const [advice, setAdvice] = useState('');
 //   const [loading, setLoading] = useState(false);
 
-//   const API_KEY = Constants.expoConfig?.extra?.HRECO;
+//   const API_KEY = "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";
 // console.log('HealthRecoAI Component Rendered');
 // console.log(API_KEY)
 //   const getAdvice = async () => {
@@ -140,10 +140,10 @@
 
 //   return (
 //     <ScrollView style={styles.container}>
-//       <TextInput style={styles.input} placeholder="130/85" placeholderTextColor="#aaa" value={bp} onChangeText={setBp} />
+//       {/* <TextInput style={styles.input} placeholder="130/85" placeholderTextColor="#aaa" value={bp} onChangeText={setBp} />
 //       <TextInput style={styles.input} placeholder="70" keyboardType="numeric" placeholderTextColor="#aaa" value={weight} onChangeText={setWeight} />
 //       <TextInput style={styles.input} placeholder="4000" keyboardType="numeric" placeholderTextColor="#aaa" value={steps} onChangeText={setSteps} />
-//       <TextInput style={styles.input} placeholder="6" keyboardType="numeric" placeholderTextColor="#aaa" value={sleep} onChangeText={setSleep} />
+//       <TextInput style={styles.input} placeholder="6" keyboardType="numeric" placeholderTextColor="#aaa" value={sleep} onChangeText={setSleep} /> */}
 //       <Button title={loading ? 'Thinking...' : 'Get Advice'} onPress={getAdvice} disabled={loading} />
 //       <Text style={styles.advice}>{advice}</Text>
 //     </ScrollView>
@@ -155,4 +155,86 @@
 //   input: { backgroundColor: '#111', color: '#fff', borderColor: '#444', borderWidth: 1, marginTop: 15, padding: 10, borderRadius: 5 },
 //   advice: { color: '#fff', marginTop: 20, fontSize: 16 }
 // });
+
+
+import React, { useState } from 'react';
+import { Button, ScrollView, StyleSheet, Text } from 'react-native';
+
+type Props = {
+  bpReading: {
+    systolic: string;
+    diastolic: string;
+    status: string;
+  } | null;
+  weightReading: {
+    value: string;
+    unit: 'kg' | 'lbs';
+    date: string;
+  } | null;
+};
+
+export default function HealthRecoAI({ bpReading, weightReading }: Props) {
+  const [advice, setAdvice] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const API_KEY = ''; // <--- Update with your actual key if needed
+
+  const getAdvice = async () => {
+    setLoading(true);
+    setAdvice('');
+
+    const bp = bpReading
+      ? `${bpReading.systolic}/${bpReading.diastolic}`
+      : 'unknown';
+    const weight = weightReading ? `${weightReading.value}` : 'unknown';
+
+    const prompt = `I am pregnant. My blood pressure is ${bp}, weight is ${weight}kg. Can you give me pregnancy-specific diet and exercise recommendations?`;
+
+    try {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+        //   model: 'openai/gpt-3.5-turbo',
+          model: 'openrouter/auto',
+          messages: [
+            { role: 'system', content: 'You are a pregnancy health assistant.' },
+            { role: 'user', content: prompt },
+          ],
+          max_tokens: 512
+        }),
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        setAdvice(json.choices[0].message.content);
+      } else {
+        setAdvice(`Error ${res.status}: ${json.error?.message || 'Unknown error'}`);
+      }
+    } catch (e) {
+      setAdvice('Network error.');
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Button
+        title={loading ? 'Thinking...' : 'Get Advice'}
+        onPress={getAdvice}
+        disabled={loading}
+      />
+      <Text style={styles.advice}>{advice}</Text>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 20, backgroundColor: '#000', minHeight: '100%' },
+  advice: { color: '#fff', marginTop: 20, fontSize: 16 },
+});
 
