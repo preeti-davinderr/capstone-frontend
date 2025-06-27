@@ -21,6 +21,7 @@ import { useCallback } from "react";
 import { useFitbitAuth } from "./Fitbit/FitbitAuthScreen"; // adjust path as needed
 import { fetchFitbitData } from "./Fitbit/fetchFitbitData";
 import { formatDistanceToNow } from "date-fns";
+import { FitbitSummaryCard } from "./Health/SyncNowFitbitData";
 
 export default function HealthScreen() {
   const [fitbitData, setFitbitData] = useState<FitbitData | null>(null);
@@ -52,27 +53,55 @@ export default function HealthScreen() {
           const user = await AsyncStorage.getItem("user");
           const parsed = user ? JSON.parse(user) : null;
           const userId = parsed?.id;
-  
+
           if (!userId) {
             console.warn("User ID not found in storage");
             return;
           }
-  
-          // Fetch Blood Pressure
-          const bpRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp?id=${userId}`);
+
+          // Fetch latest Blood Pressure record
+          const bpRes = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp?id=${userId}`
+          );
           const bpResult = await bpRes.json();
-          if (bpResult.success && Array.isArray(bpResult.data) && bpResult.data.length > 0) {
-            const { systolic, diastolic, status } = bpResult.data[0];
+          if (
+            bpResult.success &&
+            Array.isArray(bpResult.data) &&
+            bpResult.data.length > 0
+          ) {
+            // Sort by createdAt or your timestamp field if needed:
+            const sortedBP = bpResult.data.sort(
+              (a: any, b: any) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+            );
+            const { systolic, diastolic, status } = sortedBP[0];
             setBpReading({ systolic, diastolic, status });
           } else {
             setBpReading(null);
           }
-  
-          // Fetch Weight
-          const weightRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/weight?id=${userId}`);
+
+          // Fetch latest Weight record
+          const weightRes = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/weight?id=${userId}`
+          );
           const weightResult = await weightRes.json();
-          if (weightResult.success && Array.isArray(weightResult.data) && weightResult.data.length > 0) {
-            const { value, unit, date } = weightResult.data[0];
+          if (
+            weightResult.success &&
+            Array.isArray(weightResult.data) &&
+            weightResult.data.length > 0
+          ) {
+            // Sort properly by createdAt
+            const sortedWeight = weightResult.data
+              .filter((w: any) => w.createdAt) // Filter out undefined createdAt
+              .sort(
+                (a: any, b: any) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              );
+
+            const latestWeight = sortedWeight[0] || weightResult.data[0]; // fallback if createdAt missing
+            const { value, unit, date } = latestWeight;
             setWeightReading({ value, unit, date });
           } else {
             setWeightReading(null);
@@ -81,11 +110,10 @@ export default function HealthScreen() {
           console.error("❌ Error fetching health data:", err);
         }
       };
-  
+
       fetchData();
     }, [])
   );
-  
 
   const { promptAsync } = useFitbitAuth(async (token) => {
     try {
@@ -148,7 +176,10 @@ export default function HealthScreen() {
             <Text>Kick Count</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.card_log}>
+          <TouchableOpacity
+            style={styles.card_log}
+            onPress={() => navigation.navigate("FitBitSummary")}
+          >
             <FontAwesome5 name="link" size={20} color="#333" />
             <Text>Sync Now</Text>
           </TouchableOpacity>

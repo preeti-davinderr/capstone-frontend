@@ -37,7 +37,7 @@ const HomeScreen = () => {
   )!;
 
   return (
-    <View>
+    <View style={{ paddingTop: 40 }}>
       <ScrollView style={styles.container}>
         <HorizontalScroll
           weekData={weekData}

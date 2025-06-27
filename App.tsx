@@ -14,6 +14,7 @@ import KickCounterScreen from "./screens/KickCounterScreen";
 import JournalEntryScreen from "./components/JounaryEnteryScreen";
 import JournalPreviewScreen from "./components/JournalPreviewScreen";
 import ChatBot from "./screens/ChatBot";
+import SyncNowScreen from "./screens/Health/SyncNowFitbitData";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -37,6 +38,7 @@ export type RootStackParamList = {
     title: string;
   };
   ChatBot:undefined;
+  FitBitSummary:undefined;
 };
 
 
@@ -59,6 +61,7 @@ export default function App() {
         <Stack.Screen name="ChatBot" component={ChatBot} />
         <Stack.Screen name="journalEntery" component={JournalEntryScreen}/>
         <Stack.Screen name="JournalPreview" component={JournalPreviewScreen}/>
+        <Stack.Screen name="FitBitSummary" component={SyncNowScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
 
