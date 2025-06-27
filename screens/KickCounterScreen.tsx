@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { BarChart } from "react-native-chart-kit";
-import Header from "../components/Header"; 
+import Header from "../components/Header";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -344,6 +344,17 @@ export default function KickCounterScreen() {
           yAxisSuffix=""
         />
 
+        <View style={styles.tipBox}>
+          <Text style={styles.tipTitle}>💡 Tip</Text>
+          <Text style={styles.tipText}>
+            - Count kicks when baby is most active, usually after meals or in the
+            evening.
+          </Text>
+          <Text style={styles.tipText}>
+            - Keep mobile surface steady.
+          </Text>
+        </View>
+
         <Modal visible={showModal} transparent>
           <View style={styles.modalOverlay}>
             <View style={styles.modalBox}>
@@ -445,4 +456,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   stopText: { color: "#fff", fontSize: 16 },
+  tipBox: {
+    backgroundColor: "#f9f9f9",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  tipTitle: {
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  tipText: {
+    fontSize: 14,
+    color: "#444",
+  },
 });

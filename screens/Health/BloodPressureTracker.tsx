@@ -22,13 +22,28 @@ type BPEntry = {
   status: string;
 };
 
+// function getBPStatus(systolic: string, diastolic: string): string {
+//   const sys = parseInt(systolic, 10);
+//   const dia = parseInt(diastolic, 10);
+//   if (isNaN(sys) || isNaN(dia)) return "Invalid";
+//   if (sys < 120 && dia < 80) return "Normal";
+//   if (sys >= 140 || dia >= 90) return "High";
+//   if ((sys >= 120 && sys < 140) || (dia >= 80 && dia < 90)) return "Elevated";
+//   return "Unknown";
+// }
 function getBPStatus(systolic: string, diastolic: string): string {
   const sys = parseInt(systolic, 10);
   const dia = parseInt(diastolic, 10);
+
   if (isNaN(sys) || isNaN(dia)) return "Invalid";
-  if (sys < 120 && dia < 80) return "Normal";
+
+  if (sys > 180 || dia > 120) return "Seek Medical Help";
+  if (sys < 90 || dia < 60) return "Low";
   if (sys >= 140 || dia >= 90) return "High";
-  if ((sys >= 120 && sys < 140) || (dia >= 80 && dia < 90)) return "Elevated";
+  if ((sys >= 130 && sys <= 139) || (dia >= 80 && dia <= 89)) return "High";
+  if (sys >= 120 && sys <= 129 && dia < 80) return "Elevated";
+  if (sys >= 90 && sys <= 119 && dia >= 60 && dia <= 79) return "Normal";
+
   return "Unknown";
 }
 
