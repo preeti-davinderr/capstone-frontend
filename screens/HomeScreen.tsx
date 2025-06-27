@@ -21,58 +21,70 @@
 
 // screens/WeeklyUpdateScreen.tsx
 
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import HorizontalScroll from '../components/HorizontalScroll';
-import { weekData, WeekDetails } from '../components/weekData';
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import HorizontalScroll from "../components/HorizontalScroll";
+import { weekData, WeekDetails } from "../components/weekData";
+import FloatingBotButton from "../components/FloatingBotButton";
 // import WeekScroll from '../components/WeekScroll';
 // import HorizontalScroll from '@/components/HorizontalScroll';
 // import { weekData, WeekDetails } from '@/components/weekData';
 
 const HomeScreen = () => {
   const [selectedWeek, setSelectedWeek] = useState<number>(5);
-  const currentWeekData: WeekDetails = weekData.find(w => w.week === selectedWeek)!;
+  const currentWeekData: WeekDetails = weekData.find(
+    (w) => w.week === selectedWeek
+  )!;
 
   return (
-    <ScrollView style={styles.container}>
-      <HorizontalScroll
-        weekData={weekData}
-        style={{ marginBottom: 16 }}
-        onWeekChange={(week) => setSelectedWeek(week)}
-      />
+    <View>
+      <ScrollView style={styles.container}>
+        <HorizontalScroll
+          weekData={weekData}
+          style={{ marginBottom: 16 }}
+          onWeekChange={(week) => setSelectedWeek(week)}
+        />
 
-      <Text style={styles.description}>{currentWeekData.description}</Text>
+        <Text style={styles.description}>{currentWeekData.description}</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>What's Developing This Week</Text>
-        {currentWeekData.developments.map((item, index) => (
-          <Text key={index} style={styles.bullet}>• {item}</Text>
-        ))}
-      </View>
-
-      <Text style={styles.sectionTitle}>This Week's Highlights</Text>
-      <View style={styles.highlightsGrid}>
-        {currentWeekData.highlights.map((item, index) => (
-          <View key={index} style={styles.highlightCard}>
-            <Text style={styles.icon}>{item.icon}</Text>
-            <Text style={styles.highlightTitle}>{item.title}</Text>
-            <Text style={styles.highlightSubtitle}>{item.subtitle}</Text>
-          </View>
-        ))}
-      </View>
-
-      <Text style={styles.sectionTitle}>Useful Articles</Text>
-      {currentWeekData.articles.map((article, index) => (
-        <View key={index} style={styles.articleCard}>
-          <View style={styles.articleLabel}><Text>Article</Text></View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.articleTitle}>{article.title}</Text>
-            <Text style={styles.articleSubtitle}>{article.subtitle}</Text>
-            <Text style={styles.articleMeta}>{article.readTime} • {article.date}</Text>
-          </View>
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>What's Developing This Week</Text>
+          {currentWeekData.developments.map((item, index) => (
+            <Text key={index} style={styles.bullet}>
+              • {item}
+            </Text>
+          ))}
         </View>
-      ))}
-    </ScrollView>
+
+        <Text style={styles.sectionTitle}>This Week's Highlights</Text>
+        <View style={styles.highlightsGrid}>
+          {currentWeekData.highlights.map((item, index) => (
+            <View key={index} style={styles.highlightCard}>
+              <Text style={styles.icon}>{item.icon}</Text>
+              <Text style={styles.highlightTitle}>{item.title}</Text>
+              <Text style={styles.highlightSubtitle}>{item.subtitle}</Text>
+            </View>
+          ))}
+        </View>
+
+        <Text style={styles.sectionTitle}>Useful Articles</Text>
+        {currentWeekData.articles.map((article, index) => (
+          <View key={index} style={styles.articleCard}>
+            <View style={styles.articleLabel}>
+              <Text>Article</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.articleTitle}>{article.title}</Text>
+              <Text style={styles.articleSubtitle}>{article.subtitle}</Text>
+              <Text style={styles.articleMeta}>
+                {article.readTime} • {article.date}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+      <FloatingBotButton />
+    </View>
   );
 };
 
@@ -84,15 +96,15 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 12,
     marginBottom: 24,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 3,
@@ -103,17 +115,17 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   highlightsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 16,
     marginBottom: 24,
   },
   highlightCard: {
-    width: '47%',
-    backgroundColor: '#f0f0f0',
+    width: "47%",
+    backgroundColor: "#f0f0f0",
     borderRadius: 12,
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 12,
   },
   icon: {
@@ -121,43 +133,42 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   highlightTitle: {
-    fontWeight: '600',
+    fontWeight: "600",
   },
   highlightSubtitle: {
-    color: '#555',
+    color: "#555",
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   articleCard: {
-    flexDirection: 'row',
-    backgroundColor: '#f9f9f9',
+    flexDirection: "row",
+    backgroundColor: "#f9f9f9",
     borderRadius: 10,
     padding: 12,
     marginBottom: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   articleLabel: {
     width: 50,
     height: 50,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   articleTitle: {
-    fontWeight: '600',
+    fontWeight: "600",
   },
   articleSubtitle: {
     fontSize: 13,
-    color: '#666',
+    color: "#666",
     marginVertical: 4,
   },
   articleMeta: {
     fontSize: 12,
-    color: '#888',
+    color: "#888",
   },
 });
 
 export default HomeScreen;
-
