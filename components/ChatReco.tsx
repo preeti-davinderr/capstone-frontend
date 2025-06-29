@@ -22,7 +22,7 @@
 // //         },
 // //         body: JSON.stringify({ inputs: prompt }),
 // //       });
-      
+
 // //       const data = await response.json();
 // //       console.log('HuggingFace Response:', data);
 // //     if (data && data[0]?.generated_text) {
@@ -156,9 +156,8 @@
 //   advice: { color: '#fff', marginTop: 20, fontSize: 16 }
 // });
 
-
-import React, { useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text } from 'react-native';
+import React, { useState } from "react";
+import { Button, ScrollView, StyleSheet, Text } from "react-native";
 
 type Props = {
   bpReading: {
@@ -168,43 +167,46 @@ type Props = {
   } | null;
   weightReading: {
     value: string;
-    unit: 'kg' | 'lbs';
+    unit: "kg" | "lbs";
     date: string;
   } | null;
 };
 
 export default function HealthRecoAI({ bpReading, weightReading }: Props) {
-  const [advice, setAdvice] = useState('');
+  const [advice, setAdvice] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const API_KEY = ''; // <--- Update with your actual key if needed
+  const AI_RECO_API_KEY = process.env.AI_RECO_API_KEY;
 
   const getAdvice = async () => {
     setLoading(true);
-    setAdvice('');
+    setAdvice("");
 
     const bp = bpReading
       ? `${bpReading.systolic}/${bpReading.diastolic}`
-      : 'unknown';
-    const weight = weightReading ? `${weightReading.value}` : 'unknown';
+      : "unknown";
+    const weight = weightReading ? `${weightReading.value}` : "unknown";
 
     const prompt = `I am pregnant. My blood pressure is ${bp}, weight is ${weight}kg. Can you give me pregnancy-specific diet and exercise recommendations?`;
 
     try {
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${AI_RECO_API_KEY}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-        //   model: 'openai/gpt-3.5-turbo',
-          model: 'openrouter/auto',
+          //   model: 'openai/gpt-3.5-turbo',
+          model: "openrouter/auto",
           messages: [
-            { role: 'system', content: 'You are a pregnancy health assistant.' },
-            { role: 'user', content: prompt },
+            {
+              role: "system",
+              content: "You are a pregnancy health assistant.",
+            },
+            { role: "user", content: prompt },
           ],
-          max_tokens: 512
+          max_tokens: 512,
         }),
       });
 
@@ -212,10 +214,12 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
       if (res.ok) {
         setAdvice(json.choices[0].message.content);
       } else {
-        setAdvice(`Error ${res.status}: ${json.error?.message || 'Unknown error'}`);
+        setAdvice(
+          `Error ${res.status}: ${json.error?.message || "Unknown error"}`
+        );
       }
     } catch (e) {
-      setAdvice('Network error.');
+      setAdvice("Network error.");
     }
 
     setLoading(false);
@@ -224,7 +228,7 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
   return (
     <ScrollView style={styles.container}>
       <Button
-        title={loading ? 'Thinking...' : 'Get Advice'}
+        title={loading ? "Thinking..." : "Get Advice"}
         onPress={getAdvice}
         disabled={loading}
       />
@@ -234,7 +238,6 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, backgroundColor: '#000', minHeight: '100%' },
-  advice: { color: '#fff', marginTop: 20, fontSize: 16 },
+  container: { padding: 20, backgroundColor: "#000", minHeight: "100%" },
+  advice: { color: "#fff", marginTop: 20, fontSize: 16 },
 });
-
