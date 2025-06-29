@@ -136,7 +136,6 @@ export function useFitbitAuth(onSuccess: (tokenResponse: TokenResponse) => void)
       redirect_uri: redirectUri,
     }).toString()}`;
 
-    console.log('🌐 Fitbit Auth URL:', authUrl);
   }, []);
 
   useEffect(() => {
@@ -169,9 +168,6 @@ export function useFitbitAuth(onSuccess: (tokenResponse: TokenResponse) => void)
       });
   }
 }, [response]);
-
-  console.log('🧭 Redirect URI used:', redirectUri);
-  console.log('🧪 codeVerifier:', request?.codeVerifier);
 
   return { request, promptAsync };
 }

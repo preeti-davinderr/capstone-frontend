@@ -8,10 +8,9 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { DatePickerModal } from "react-native-paper-dates";
-import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "../../components/Header";
+import CommonDateTimePicker from "../../components/CommonDateTimePicker";
 
 const BP_HISTORY_KEY = "bpHistory";
 
@@ -22,21 +21,11 @@ type BPEntry = {
   status: string;
 };
 
-// function getBPStatus(systolic: string, diastolic: string): string {
-//   const sys = parseInt(systolic, 10);
-//   const dia = parseInt(diastolic, 10);
-//   if (isNaN(sys) || isNaN(dia)) return "Invalid";
-//   if (sys < 120 && dia < 80) return "Normal";
-//   if (sys >= 140 || dia >= 90) return "High";
-//   if ((sys >= 120 && sys < 140) || (dia >= 80 && dia < 90)) return "Elevated";
-//   return "Unknown";
-// }
 function getBPStatus(systolic: string, diastolic: string): string {
   const sys = parseInt(systolic, 10);
   const dia = parseInt(diastolic, 10);
 
   if (isNaN(sys) || isNaN(dia)) return "Invalid";
-
   if (sys > 180 || dia > 120) return "Seek Medical Help";
   if (sys < 90 || dia < 60) return "Low";
   if (sys >= 140 || dia >= 90) return "High";
@@ -57,8 +46,7 @@ function formatDateTime(d: Date): string {
 export default function BloodPressureTracker() {
   const [systolic, setSystolic] = useState("");
   const [diastolic, setDiastolic] = useState("");
-  const [date, setDate] = useState<Date>(new Date());
-  const [showPicker, setShowPicker] = useState(false);
+  const [date, setDate] = useState<Date | null>(null); // ✅ Initially empty
   const [history, setHistory] = useState<BPEntry[]>([]);
 
   useEffect(() => {
@@ -69,6 +57,7 @@ export default function BloodPressureTracker() {
     try {
       const user = await AsyncStorage.getItem("user");
       const parsed = user ? JSON.parse(user) : null;
+      console.log(parsed?.id, "Userid");
       if (!parsed?.id) {
         console.error("User ID not found in AsyncStorage");
         return;
@@ -101,8 +90,15 @@ export default function BloodPressureTracker() {
   };
 
   const saveToBackend = async () => {
+    if (!date) {
+      Alert.alert("Error", "Please select date and time before saving.");
+      return;
+    }
+
     const user = await AsyncStorage.getItem("user");
     const parsed = user ? JSON.parse(user) : null;
+    console.log(parsed?.id, "userid for saving");
+
     if (!parsed?.id) {
       Alert.alert("Error", "User not found");
       return;
@@ -132,12 +128,14 @@ export default function BloodPressureTracker() {
       );
 
       const result = await res.json();
+      console.log(result, "result of save");
+
       if (res.ok) {
         Alert.alert("Saved", "Blood pressure data saved successfully.");
         setSystolic("");
         setDiastolic("");
-        setDate(new Date());
-        await fetchHistory(); // Refresh history after saving
+        setDate(null);
+        await fetchHistory();
       } else {
         Alert.alert("Error", result.message || "Save failed");
       }
@@ -187,33 +185,11 @@ export default function BloodPressureTracker() {
             </View>
           </View>
 
-          <Text style={styles.inputLabel}>Date</Text>
-          <TouchableOpacity
-            style={styles.timeRow}
-            onPress={() => setShowPicker(true)}
-          >
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              value={formatDateTime(date)}
-              editable={false}
-            />
-            <Ionicons
-              name="calendar-outline"
-              size={22}
-              style={styles.calendarIcon}
-            />
-          </TouchableOpacity>
-
-          <DatePickerModal
-            locale="en"
-            mode="single"
-            visible={showPicker}
+          {/* ✅ Reusable DateTime Picker */}
+          <CommonDateTimePicker
             date={date}
-            onDismiss={() => setShowPicker(false)}
-            onConfirm={({ date: selected }) => {
-              if (selected) setDate(selected);
-              setShowPicker(false);
-            }}
+            onChange={setDate}
+            label="Date & Time"
           />
 
           <TouchableOpacity style={styles.saveButton} onPress={saveToBackend}>
@@ -257,6 +233,8 @@ export default function BloodPressureTracker() {
                         ? "#f2f7f2"
                         : item.status === "High"
                         ? "#fbeaea"
+                        : item.status === "Seek Medical Help"
+                        ? "#ffe4e1"
                         : "#fffbe6",
                   },
                 ]}
@@ -321,15 +299,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#888",
     marginBottom: 8,
-  },
-  timeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  calendarIcon: {
-    marginLeft: 8,
-    color: "#888",
   },
   saveButton: {
     backgroundColor: "#111",

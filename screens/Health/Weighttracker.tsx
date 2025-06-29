@@ -8,27 +8,20 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "../../components/Header";
+import CommonDateTimePicker from "../../components/CommonDateTimePicker";
 
-// 🔹 Utility: format with time
-function formatDateTime(date: Date) {
-  const pad = (n: number) => (n < 10 ? `0${n}` : n);
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
+type WeightEntry = {
+  value: string;
+  unit: "kg" | "lbs";
+  date: string;
+};
 
 function getTodayLabel(date: string) {
   const today = new Date().toISOString().split("T")[0];
   const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-  const entryDate = date.split(" ")[0];
+  const entryDate = date.split("T")[0];
   if (entryDate === today) return "Today";
   if (entryDate === yesterday) return "Yesterday";
   return entryDate;
@@ -51,17 +44,10 @@ function convertWeight(value: string, from: "kg" | "lbs", to: "kg" | "lbs") {
     : (num / 2.20462).toFixed(1);
 }
 
-type WeightEntry = {
-  value: string;
-  unit: "kg" | "lbs";
-  date: string;
-};
-
 export default function WeightInputScreen() {
-  const navigation = useNavigation();
   const [unit, setUnit] = useState<"kg" | "lbs">("kg");
   const [weight, setWeight] = useState("");
-  const [date, setDate] = useState(formatDateTime(new Date()));
+  const [date, setDate] = useState<Date | null>(null);
   const [history, setHistory] = useState<WeightEntry[]>([]);
   const [showAll, setShowAll] = useState(false);
 
@@ -70,10 +56,8 @@ export default function WeightInputScreen() {
       try {
         const user = await AsyncStorage.getItem("user");
         const parsed = user ? JSON.parse(user) : null;
-        if (!parsed?.id) {
-          console.error("User ID not found in AsyncStorage");
-          return;
-        }
+        if (!parsed?.id) return;
+
         const res = await fetch(
           `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/weight?id=${parsed.id}`
         );
@@ -84,14 +68,11 @@ export default function WeightInputScreen() {
               new Date(b.date).getTime() - new Date(a.date).getTime()
           );
           setHistory(sorted);
-        } else {
-          console.warn("No weight data found");
         }
       } catch (err) {
         console.error("Error fetching weight data:", err);
       }
     };
-
     fetchHistory();
   }, []);
 
@@ -100,6 +81,11 @@ export default function WeightInputScreen() {
       Alert.alert("Missing Field", "Please enter your weight.");
       return;
     }
+    if (!date) {
+      Alert.alert("Missing Field", "Please select date and time.");
+      return;
+    }
+
     const user = await AsyncStorage.getItem("user");
     const parsed = user ? JSON.parse(user) : null;
     if (!parsed?.id) {
@@ -107,14 +93,11 @@ export default function WeightInputScreen() {
       return;
     }
 
-    const nowDateTime = formatDateTime(new Date());
-    setDate(nowDateTime);
-
     const newEntry = {
       userID: parsed.id,
       value: weight,
       unit,
-      date: nowDateTime, // ✅ includes time
+      date: date.toISOString(),
     };
 
     try {
@@ -131,12 +114,12 @@ export default function WeightInputScreen() {
       if (result.success) {
         setHistory([result.data.data, ...history]);
         setWeight("");
-        setDate(formatDateTime(new Date()));
+        setDate(null);
       } else {
         Alert.alert("Error", "Failed to save weight.");
       }
     } catch (err) {
-      console.error("❌ Save weight error:", err);
+      console.error("Save weight error:", err);
       Alert.alert("Error", "Something went wrong.");
     }
   };
@@ -146,6 +129,7 @@ export default function WeightInputScreen() {
   for (let entry of history) {
     if (entry.date >= getMonthStart()) {
       monthStartWeight = entry;
+      break;
     }
   }
   const currentValue = current ? parseFloat(current.value) : 0;
@@ -162,47 +146,31 @@ export default function WeightInputScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Add Weight Entry</Text>
           <View style={styles.unitSwitchRow}>
-            <TouchableOpacity
-              style={[
-                styles.unitSwitch,
-                unit === "kg" && styles.unitSwitchActive,
-              ]}
-              onPress={() => {
-                if (unit !== "kg" && weight)
-                  setWeight(convertWeight(weight, "lbs", "kg"));
-                setUnit("kg");
-              }}
-            >
-              <Text
+            {["kg", "lbs"].map((u) => (
+              <TouchableOpacity
+                key={u}
                 style={[
-                  styles.unitSwitchText,
-                  unit === "kg" && styles.unitSwitchTextActive,
+                  styles.unitSwitch,
+                  unit === u && styles.unitSwitchActive,
                 ]}
+                onPress={() => {
+                  if (unit !== u && weight)
+                    setWeight(convertWeight(weight, unit, u as "kg" | "lbs"));
+                  setUnit(u as "kg" | "lbs");
+                }}
               >
-                kg
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.unitSwitch,
-                unit === "lbs" && styles.unitSwitchActive,
-              ]}
-              onPress={() => {
-                if (unit !== "lbs" && weight)
-                  setWeight(convertWeight(weight, "kg", "lbs"));
-                setUnit("lbs");
-              }}
-            >
-              <Text
-                style={[
-                  styles.unitSwitchText,
-                  unit === "lbs" && styles.unitSwitchTextActive,
-                ]}
-              >
-                lbs
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.unitSwitchText,
+                    unit === u && styles.unitSwitchTextActive,
+                  ]}
+                >
+                  {u}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
+
           <Text style={styles.inputLabel}>Weight</Text>
           <View style={styles.inputRow}>
             <TextInput
@@ -215,26 +183,14 @@ export default function WeightInputScreen() {
             />
             <Text style={styles.unitLabel}>{unit}</Text>
           </View>
-          <Text style={styles.inputLabel}>Date</Text>
-          <View style={styles.inputRow}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              value={date}
-              editable={false}
-            />
-            <Ionicons
-              name="calendar-outline"
-              size={22}
-              style={styles.calendarIcon}
-            />
-          </View>
+
+          <CommonDateTimePicker
+            date={date}
+            onChange={setDate}
+            label="Date & Time"
+          />
+
           <TouchableOpacity style={styles.saveButton} onPress={handleAddEntry}>
-            <Ionicons
-              name="add"
-              size={18}
-              color="#fff"
-              style={{ marginRight: 6 }}
-            />
             <Text style={styles.saveButtonText}>Add Entry</Text>
           </TouchableOpacity>
         </View>
@@ -254,36 +210,34 @@ export default function WeightInputScreen() {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>History</Text>
-          {displayHistory.length === 0 && (
+          {displayHistory.length === 0 ? (
             <Text style={{ color: "#aaa", textAlign: "center", margin: 10 }}>
               No history yet.
             </Text>
-          )}
-          {displayHistory.map((item, idx) => (
-            <View style={styles.historyItem} key={idx}>
-              <View>
-                <Text style={styles.historyWeight}>
-                  {item.value} {item.unit}
-                </Text>
-                <Text style={styles.historyDate}>
-                  {getTodayLabel(item.date)}
-                </Text>
+          ) : (
+            displayHistory.map((item, idx) => (
+              <View style={styles.historyItem} key={idx}>
+                <View>
+                  <Text style={styles.historyWeight}>
+                    {item.value} {item.unit}
+                  </Text>
+                  <Text style={styles.historyDate}>
+                    {getTodayLabel(item.date)}
+                  </Text>
+                </View>
+                <View style={{ alignItems: "flex-end" }}>
+                  <Text style={styles.historyTime}>
+                    {item.date.split("T")[1]?.split(".")[0] || ""}
+                  </Text>
+                </View>
               </View>
-              <View style={{ alignItems: "flex-end" }}>
-                <Text style={styles.historyTime}>
-                  {item.date.split(" ")[1] || ""}
-                </Text>
-              </View>
-            </View>
-          ))}
-          {history.length > 5 && !showAll && (
-            <TouchableOpacity onPress={() => setShowAll(true)}>
-              <Text style={styles.viewMore}>View More ▼</Text>
-            </TouchableOpacity>
+            ))
           )}
-          {showAll && history.length > 5 && (
-            <TouchableOpacity onPress={() => setShowAll(false)}>
-              <Text style={styles.viewMore}>View Less ▲</Text>
+          {history.length > 5 && (
+            <TouchableOpacity onPress={() => setShowAll(!showAll)}>
+              <Text style={styles.viewMore}>
+                {showAll ? "View Less ▲" : "View More ▼"}
+              </Text>
             </TouchableOpacity>
           )}
         </View>
@@ -293,8 +247,6 @@ export default function WeightInputScreen() {
 }
 
 const styles = StyleSheet.create({
-  // Keep your current styles here
-  // unchanged unless you want me to refactor your style file for consistency.
   scrollContainer: {
     padding: 16,
     backgroundColor: "#f7f7f7",
@@ -362,18 +314,12 @@ const styles = StyleSheet.create({
     color: "#888",
     marginLeft: 8,
   },
-  calendarIcon: {
-    marginLeft: 8,
-    color: "#888",
-  },
   saveButton: {
     backgroundColor: "#111",
     borderRadius: 6,
     paddingVertical: 12,
     alignItems: "center",
     marginTop: 8,
-    flexDirection: "row",
-    justifyContent: "center",
   },
   saveButtonText: {
     color: "#fff",
