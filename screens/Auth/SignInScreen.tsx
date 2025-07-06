@@ -9,6 +9,7 @@ export default function SignInScreen({ navigation }: any) {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
+    console.log(process.env.EXPO_PUBLIC_API_URL)
     const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -16,7 +17,7 @@ export default function SignInScreen({ navigation }: any) {
     });
 
     const data = await response.json();
-
+console.log("Login response:", data);
     if (response.ok) {
       await AsyncStorage.setItem("token", data.token);
       await AsyncStorage.setItem("user", JSON.stringify({ id: data.user.id }));
