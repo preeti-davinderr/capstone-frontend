@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import {
   View,
   Text,
@@ -9,9 +10,14 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+
+import { ScrollView } from 'react-native';
+import { Button, Text } from 'react-native-paper';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TextInput, Modal } from 'react-native';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
+
 
 const BASE_URL = 'http://192.168.1.112:5001';
 
@@ -238,6 +244,5 @@ export default function MyProfileScreen() {
     </Modal>
   </>
 );
-
 }
 
