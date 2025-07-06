@@ -1,20 +1,21 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-  
+
 import SplashScreen from "./screens/OnBoardingScreens/SplashScreen";
 import OnboardingScreen from "./screens/OnBoardingScreens/OnBoardingScreen";
 import SignInScreen from "./screens/Auth/SignInScreen";
 import SignUpScreen from "./screens/Auth/SignUpScreen";
 import WhoForScreen from "./screens/Auth/WhoForScreen";
 import TabNavigator from "./navigation/TabNavigator";
-import BPInputScreen from './screens/Health/BloodPressureTracker';
-import WeightTracker from './screens/Health/Weighttracker';
+import BPInputScreen from "./screens/Health/BloodPressureTracker";
+import WeightTracker from "./screens/Health/Weighttracker";
 import KickCounterScreen from "./screens/KickCounterScreen";
 import JournalEntryScreen from "./components/JounaryEnteryScreen";
 import JournalPreviewScreen from "./components/JournalPreviewScreen";
 import ChatBot from "./screens/ChatBot";
 import SyncNowScreen from "./screens/Health/SyncNowFitbitData";
+import FamilyTabNavigator from "./navigation/FamilyTabNavigator";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -24,9 +25,9 @@ export type RootStackParamList = {
   WhoFor: undefined;
   MainApp: undefined;
   BloodPressure: undefined;
-  Weight: undefined;        
+  Weight: undefined;
   KickCounter: undefined;
-  journalEntery:  {
+  journalEntery: {
     journalId?: string;
     title?: string;
     description?: string;
@@ -37,11 +38,10 @@ export type RootStackParamList = {
     images: { uri: string; description: string }[];
     title: string;
   };
-  ChatBot:undefined;
-  FitBitSummary:undefined;
+  ChatBot: undefined;
+  FitBitSummary: undefined;
+  FamilyApp: undefined;
 };
-
-
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -59,11 +59,11 @@ export default function App() {
         <Stack.Screen name="Weight" component={WeightTracker} />
         <Stack.Screen name="KickCounter" component={KickCounterScreen} />
         <Stack.Screen name="ChatBot" component={ChatBot} />
-        <Stack.Screen name="journalEntery" component={JournalEntryScreen}/>
-        <Stack.Screen name="JournalPreview" component={JournalPreviewScreen}/>
-        <Stack.Screen name="FitBitSummary" component={SyncNowScreen}/>
+        <Stack.Screen name="journalEntery" component={JournalEntryScreen} />
+        <Stack.Screen name="JournalPreview" component={JournalPreviewScreen} />
+        <Stack.Screen name="FitBitSummary" component={SyncNowScreen} />
+        <Stack.Screen name="FamilyApp" component={FamilyTabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
-
   );
 }

@@ -18,6 +18,8 @@ const SignUpScreen = ({ navigation, route }: any) => {
   const [agreed, setAgreed] = useState(false);
 
   const handleSignup = async () => {
+    console.log("hi");
+    
     if (!name || !email || !password || !confirmPassword) {
       Alert.alert("Validation", "Please fill in all fields.");
       return;
@@ -34,6 +36,8 @@ const SignUpScreen = ({ navigation, route }: any) => {
     }
 
     try {
+      console.log(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/signup`);
+      
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/api/auth/signup`,
         {
