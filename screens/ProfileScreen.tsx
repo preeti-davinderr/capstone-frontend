@@ -14,6 +14,7 @@ import { TextInput, Modal } from 'react-native';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 
 const BASE_URL = 'http://192.168.1.112:5001';
+// const BASE_URL = 'https://moments-backend.onrender.com';
 
 const InfoRow = ({ icon, label, value }: any) => (
   <View style={styles.infoRow}>
