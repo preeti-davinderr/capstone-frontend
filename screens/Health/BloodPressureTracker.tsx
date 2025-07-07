@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
-  ScrollView,
-  StyleSheet,
   Text,
-  TextInput,
+  TextInput as RNTextInput,
   TouchableOpacity,
+  StyleSheet,
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "../../components/Header";
 import CommonDateTimePicker from "../../components/CommonDateTimePicker";
-
-const BP_HISTORY_KEY = "bpHistory";
+import HealthHistoryList from "../../components/HealthHistoryList";
 
 type BPEntry = {
   systolic: string;
@@ -24,7 +22,6 @@ type BPEntry = {
 function getBPStatus(systolic: string, diastolic: string): string {
   const sys = parseInt(systolic, 10);
   const dia = parseInt(diastolic, 10);
-
   if (isNaN(sys) || isNaN(dia)) return "Invalid";
   if (sys > 180 || dia > 120) return "Seek Medical Help";
   if (sys < 90 || dia < 60) return "Low";
@@ -32,22 +29,17 @@ function getBPStatus(systolic: string, diastolic: string): string {
   if ((sys >= 130 && sys <= 139) || (dia >= 80 && dia <= 89)) return "High";
   if (sys >= 120 && sys <= 129 && dia < 80) return "Elevated";
   if (sys >= 90 && sys <= 119 && dia >= 60 && dia <= 79) return "Normal";
-
   return "Unknown";
-}
-
-function formatDateTime(d: Date): string {
-  const pad = (n: number) => (n < 10 ? `0${n}` : n);
-  return `${pad(d.getMonth() + 1)}/${pad(
-    d.getDate()
-  )}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 export default function BloodPressureTracker() {
   const [systolic, setSystolic] = useState("");
   const [diastolic, setDiastolic] = useState("");
-  const [date, setDate] = useState<Date | null>(null); // ✅ Initially empty
+  const [date, setDate] = useState<Date | null>(null);
   const [history, setHistory] = useState<BPEntry[]>([]);
+
+  const systolicRef = useRef<RNTextInput>(null);
+  const diastolicRef = useRef<RNTextInput>(null);
 
   useEffect(() => {
     fetchHistory();
@@ -57,11 +49,7 @@ export default function BloodPressureTracker() {
     try {
       const user = await AsyncStorage.getItem("user");
       const parsed = user ? JSON.parse(user) : null;
-      console.log(parsed?.id, "Userid");
-      if (!parsed?.id) {
-        console.error("User ID not found in AsyncStorage");
-        return;
-      }
+      if (!parsed?.id) return;
 
       const res = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp?id=${parsed.id}`
@@ -74,31 +62,69 @@ export default function BloodPressureTracker() {
       const formatted = data.map((entry: any) => ({
         systolic: entry.systolic,
         diastolic: entry.diastolic,
-        datetime: formatDateTime(new Date(entry.datetime)),
+        datetime: entry.datetime,
         status: getBPStatus(entry.systolic, entry.diastolic),
       }));
 
       setHistory(formatted);
-      await AsyncStorage.setItem(BP_HISTORY_KEY, JSON.stringify(formatted));
+      await AsyncStorage.setItem("bpHistory", JSON.stringify(formatted));
     } catch (err) {
       console.error("Fetch history failed:", err);
-      const stored = await AsyncStorage.getItem(BP_HISTORY_KEY);
+      const stored = await AsyncStorage.getItem("bpHistory");
       if (stored) {
         setHistory(JSON.parse(stored));
       }
     }
   };
 
+  const handleDelete = async (item: BPEntry) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this entry?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const user = await AsyncStorage.getItem("user");
+              const parsed = user ? JSON.parse(user) : null;
+              if (!parsed?.id) return;
+
+              const res = await fetch(
+                `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp?id=${parsed.id}&datetime=${item.datetime}`,
+                { method: "DELETE" }
+              );
+
+              if (res.ok) {
+                setHistory((prev) =>
+                  prev.filter((entry) => entry.datetime !== item.datetime)
+                );
+              } else {
+                Alert.alert("Error", "Failed to delete entry.");
+              }
+            } catch (err) {
+              console.error("Delete failed:", err);
+              Alert.alert("Error", "Network or server error.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const saveToBackend = async () => {
-    if (!date) {
-      Alert.alert("Error", "Please select date and time before saving.");
+    if (!date || !systolic || !diastolic) {
+      Alert.alert(
+        "Missing Fields",
+        "Please fill all fields and select a date."
+      );
       return;
     }
 
     const user = await AsyncStorage.getItem("user");
     const parsed = user ? JSON.parse(user) : null;
-    console.log(parsed?.id, "userid for saving");
-
     if (!parsed?.id) {
       Alert.alert("Error", "User not found");
       return;
@@ -107,7 +133,7 @@ export default function BloodPressureTracker() {
     const newEntry: BPEntry = {
       systolic,
       diastolic,
-      datetime: formatDateTime(date),
+      datetime: date.toISOString(),
       status: getBPStatus(systolic, diastolic),
     };
 
@@ -127,21 +153,22 @@ export default function BloodPressureTracker() {
         }
       );
 
-      const result = await res.json();
-      console.log(result, "result of save");
-
       if (res.ok) {
-        Alert.alert("Saved", "Blood pressure data saved successfully.");
+        Alert.alert("Success", "Blood pressure data saved.");
         setSystolic("");
         setDiastolic("");
         setDate(null);
         await fetchHistory();
+
+        systolicRef.current?.blur();
+        diastolicRef.current?.blur();
       } else {
-        Alert.alert("Error", result.message || "Save failed");
+        const result = await res.json();
+        Alert.alert("Error", result.message || "Save failed.");
       }
     } catch (err) {
       console.error("Save failed", err);
-      Alert.alert("Error", "Network/server error");
+      Alert.alert("Error", "Network or server error.");
     }
   };
 
@@ -150,14 +177,14 @@ export default function BloodPressureTracker() {
   return (
     <>
       <Header title="Blood Pressure" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Record Reading</Text>
-
           <View style={styles.rowInputs}>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Systolic</Text>
-              <TextInput
+              <RNTextInput
+                ref={systolicRef}
                 style={styles.input}
                 placeholder="~120"
                 keyboardType="numeric"
@@ -171,7 +198,8 @@ export default function BloodPressureTracker() {
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Diastolic</Text>
-              <TextInput
+              <RNTextInput
+                ref={diastolicRef}
                 style={styles.input}
                 placeholder="~80"
                 keyboardType="numeric"
@@ -184,14 +212,11 @@ export default function BloodPressureTracker() {
               <Text style={styles.unitLabel}>mmHg</Text>
             </View>
           </View>
-
-          {/* ✅ Reusable DateTime Picker */}
           <CommonDateTimePicker
             date={date}
             onChange={setDate}
             label="Date & Time"
           />
-
           <TouchableOpacity style={styles.saveButton} onPress={saveToBackend}>
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
@@ -213,57 +238,42 @@ export default function BloodPressureTracker() {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>History</Text>
-          {history.length === 0 && (
-            <Text style={{ color: "#aaa" }}>No entries yet.</Text>
-          )}
-          {history.map((item, idx) => (
-            <View key={idx} style={styles.historyItem}>
-              <View>
-                <Text style={styles.historyBP}>
-                  • {item.systolic}/{item.diastolic}
-                </Text>
-                <Text style={styles.historyTime}>{item.datetime}</Text>
+          <HealthHistoryList
+            data={history}
+            getDate={(item) => new Date(item.datetime)}
+            onDelete={handleDelete}
+            showFilter={true}
+            renderItem={(item) => (
+              <View style={styles.historyItem}>
+                <View>
+                  <Text style={styles.historyBP}>
+                    {item.systolic}/{item.diastolic} mmHg
+                  </Text>
+                  <Text style={styles.historyTime}>
+                    {new Date(item.datetime).toLocaleString()}
+                  </Text>
+                </View>
+                <Text style={styles.badgeText}>{item.status}</Text>
               </View>
-              <Text
-                style={[
-                  styles.badgeText,
-                  {
-                    backgroundColor:
-                      item.status === "Normal"
-                        ? "#f2f7f2"
-                        : item.status === "High"
-                        ? "#fbeaea"
-                        : item.status === "Seek Medical Help"
-                        ? "#ffe4e1"
-                        : "#fffbe6",
-                  },
-                ]}
-              >
-                {item.status}
-              </Text>
-            </View>
-          ))}
+            )}
+          />
         </View>
-      </ScrollView>
+      </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: {
+  container: {
     padding: 16,
     backgroundColor: "#f7f7f7",
-    paddingBottom: 32,
+    flex: 1,
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
     borderWidth: 1,
     borderColor: "#eee",
   },
@@ -271,6 +281,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
+  },
+  rowInputs: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  inputGroup: {
+    flex: 1,
+    marginRight: 8,
   },
   inputLabel: {
     fontSize: 13,
@@ -285,15 +304,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#fafafa",
     marginBottom: 12,
-  },
-  rowInputs: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  inputGroup: {
-    flex: 1,
-    marginRight: 8,
   },
   unitLabel: {
     fontSize: 11,
@@ -323,9 +333,9 @@ const styles = StyleSheet.create({
   historyItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    borderBottomColor: "#eee",
-    borderBottomWidth: 1,
     paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
   },
   historyBP: {
     fontSize: 15,
@@ -342,5 +352,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 6,
     overflow: "hidden",
+    backgroundColor: "#eee",
   },
 });
