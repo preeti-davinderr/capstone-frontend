@@ -1,6 +1,8 @@
-import React from "react";
+// import React from "react";
+import { View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { COLORS } from "./styles/globalStyles"; // adjust path
 
 import SplashScreen from "./screens/OnBoardingScreens/SplashScreen";
 import OnboardingScreen from "./screens/OnBoardingScreens/OnBoardingScreen";
@@ -47,23 +49,32 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="WhoFor" component={WhoForScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="MainApp" component={TabNavigator} />
-        <Stack.Screen name="BloodPressure" component={BPInputScreen} />
-        <Stack.Screen name="Weight" component={WeightTracker} />
-        <Stack.Screen name="KickCounter" component={KickCounterScreen} />
-        <Stack.Screen name="ChatBot" component={ChatBot} />
-        <Stack.Screen name="journalEntery" component={JournalEntryScreen} />
-        <Stack.Screen name="JournalPreview" component={JournalPreviewScreen} />
-        <Stack.Screen name="FitBitSummary" component={SyncNowScreen} />
-        <Stack.Screen name="FamilyApp" component={FamilyTabNavigator} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Splash" component={SplashScreen} />
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+          <Stack.Screen name="SignIn" component={SignInScreen} />
+          <Stack.Screen name="WhoFor" component={WhoForScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="MainApp" component={TabNavigator} />
+          <Stack.Screen name="BloodPressure" component={BPInputScreen} />
+          <Stack.Screen name="Weight" component={WeightTracker} />
+          <Stack.Screen name="KickCounter" component={KickCounterScreen} />
+          <Stack.Screen name="ChatBot" component={ChatBot} />
+          <Stack.Screen name="journalEntery" component={JournalEntryScreen} />
+          <Stack.Screen name="JournalPreview" component={JournalPreviewScreen} />
+          <Stack.Screen name="FitBitSummary" component={SyncNowScreen} />
+          <Stack.Screen name="FamilyApp" component={FamilyTabNavigator} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+});
