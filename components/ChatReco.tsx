@@ -175,6 +175,7 @@ type Props = {
 export default function HealthRecoAI({ bpReading, weightReading }: Props) {
   const [advice, setAdvice] = useState("");
   const [loading, setLoading] = useState(false);
+  
 
   const AI_RECO_API_KEY = process.env.AI_RECO_API_KEY;
 
@@ -187,7 +188,8 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
       : "unknown";
     const weight = weightReading ? `${weightReading.value}` : "unknown";
 
-    const prompt = `I am pregnant. My blood pressure is ${bp}, weight is ${weight}kg. Can you give me pregnancy-specific diet and exercise recommendations?`;
+    const prompt = `I am pregnant. My blood pressure is ${bp}, weight is ${weight}kg. Can you give me pregnancy-specific diet and exercise recommendations in 3-4 short lines only?`;
+
 
     try {
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -202,11 +204,12 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
           messages: [
             {
               role: "system",
-              content: "You are a pregnancy health assistant.",
+              content: "You are a helpful pregnancy health assistant. Always respond with brief and clear answers, no more than 3-4 short lines.",
             },
             { role: "user", content: prompt },
           ],
-          max_tokens: 512,
+          max_tokens: 200,
+          temperature: 0.7,
         }),
       });
 

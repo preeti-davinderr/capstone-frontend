@@ -17,6 +17,7 @@ export default function ChatBot() {
     { from: "bot", text: "Hi! Ask me anything about pregnancy." },
   ]);
   const [input, setInput] = useState("");
+  
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -33,7 +34,7 @@ export default function ChatBot() {
           body: JSON.stringify({ message: input }),
         }
       );
-      console.log(input, "innnn");
+      console.log("input", input);
 
       const data = await res.json();
       const botMsg = { from: "bot", text: data.reply };
