@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TextInput, Modal } from 'react-native';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 
+
 const BASE_URL = 'http://192.168.1.112:5001';
 // const BASE_URL = 'https://moments-backend.onrender.com';
 
@@ -120,6 +121,7 @@ export default function MyProfileScreen() {
     );
   }
 
+
   return (
   <>
     <ScrollView style={styles.container}>
@@ -172,6 +174,7 @@ export default function MyProfileScreen() {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+
         backgroundColor: 'rgba(0,0,0,0.5)'
       }}>
         <View style={{
@@ -239,6 +242,5 @@ export default function MyProfileScreen() {
     </Modal>
   </>
 );
-
 }
 

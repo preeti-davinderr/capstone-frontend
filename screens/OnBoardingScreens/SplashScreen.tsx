@@ -10,23 +10,50 @@ export default function SplashScreen({ navigation }: Props) {
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        navigation.replace("MainApp");
         const onboarded = await AsyncStorage.getItem("hasOnboarded");
         const token = await AsyncStorage.getItem("token");
-        console.log("onboarded:", onboarded, "| token:", token);
-
+        const userString = await AsyncStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+    
+        console.log("onboarded:", onboarded, "| token:", token, "| user:", user);
+    
         if (onboarded !== "true") {
           navigation.replace("Onboarding");
         } else if (!token) {
           navigation.replace("SignIn");
         } else {
-          navigation.replace("MainApp");
+          // Check role and navigate
+          if (user?.role === "other") {
+            navigation.replace("FamilyApp");
+          } else {
+            navigation.replace("MainApp");
+          }
         }
       } catch (error) {
         console.error("SplashScreen error:", error);
         navigation.replace("SignIn"); // fallback
       }
     };
+    
+    // const checkStatus = async () => {
+    //   try {
+    //     navigation.replace("MainApp");
+    //     const onboarded = await AsyncStorage.getItem("hasOnboarded");
+    //     const token = await AsyncStorage.getItem("token");
+    //     console.log("onboarded:", onboarded, "| token:", token);
+
+    //     if (onboarded !== "true") {
+    //       navigation.replace("Onboarding");
+    //     } else if (!token) {
+    //       navigation.replace("SignIn");
+    //     } else {
+    //       navigation.replace("MainApp");
+    //     }
+    //   } catch (error) {
+    //     console.error("SplashScreen error:", error);
+    //     navigation.replace("SignIn"); // fallback
+    //   }
+    // };
 
     setTimeout(checkStatus, 1000);
   }, []);

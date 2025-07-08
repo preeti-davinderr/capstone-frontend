@@ -3,23 +3,18 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   TextInput,
-  FlatList,
   Modal,
   Dimensions,
   Alert,
+  ScrollView,
 } from "react-native";
 import { Accelerometer } from "expo-sensors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
-import { FontAwesome } from "@expo/vector-icons";
-import { BarChart } from "react-native-chart-kit";
 import Header from "../components/Header";
-
+import HealthHistoryList from "../components/HealthHistoryList";
 const screenWidth = Dimensions.get("window").width;
-
 interface KickEntry {
   _id?: string;
   id: string;
@@ -29,7 +24,6 @@ interface KickEntry {
 }
 
 export default function KickCounterScreen() {
-  const navigation = useNavigation();
   const [userId, setUserId] = useState("");
   const [kickDate, setKickDate] = useState(new Date());
   const [manualCount, setManualCount] = useState("");
@@ -37,12 +31,13 @@ export default function KickCounterScreen() {
   const [liveCount, setLiveCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
+
   const threshold = 1.3;
 
   useEffect(() => {
     loadUserAndFetchKicks();
     return () => stopDetection();
-  }, []);
+  }, [kickDate]);
 
   const loadUserAndFetchKicks = async () => {
     const user = await AsyncStorage.getItem("user");
@@ -55,16 +50,15 @@ export default function KickCounterScreen() {
 
   const fetchKicks = async (uid: string, date: Date) => {
     try {
-      const formattedDate = date.toISOString().split("T")[0]; // e.g. "2025-06-20"
+      const formattedDate = date.toISOString().split("T")[0];
       const res = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/api/kicks/date/${uid}?date=${formattedDate}`
       );
       const data = await res.json();
-      console.log("Kick response:", data);
       if (Array.isArray(data)) {
         const formatted: KickEntry[] = data.map((k: any) => ({
-          _id: k._id, // ✅ this is required
-          id: new Date(k.date).getTime().toString(), // UI id
+          _id: k._id,
+          id: new Date(k.date).getTime().toString(),
           time: k.time,
           date: k.date,
           count: k.count,
@@ -88,19 +82,14 @@ export default function KickCounterScreen() {
           body: JSON.stringify({ ...entry, userId }),
         }
       );
-
       const data = await response.json();
-
       if (response.ok && data._id) {
-        if (response.ok && data._id) {
-          const updatedEntry = { ...entry, _id: data._id };
-
-          setActivity((prev) =>
-            prev.map((e) => (e.id === entry.id ? updatedEntry : e))
-          );
-        }
+        const updatedEntry = { ...entry, _id: data._id };
+        setActivity((prev) =>
+          prev.map((e) => (e.id === entry.id ? updatedEntry : e))
+        );
       } else {
-        console.error("Backend response missing _id:", data);
+        console.error("Backend save error:", data);
       }
     } catch (err) {
       console.error("Save to DB failed:", err);
@@ -109,17 +98,12 @@ export default function KickCounterScreen() {
 
   const deleteFromBackend = async (_id?: string) => {
     if (!_id) return;
-
     try {
       const res = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/api/kicks/${_id}`,
-        {
-          method: "DELETE",
-        }
+        { method: "DELETE" }
       );
-
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message);
     } catch (err) {
       console.error("Delete failed:", err);
@@ -128,10 +112,9 @@ export default function KickCounterScreen() {
 
   const handleDelete = (entry: KickEntry) => {
     if (!entry._id) {
-      console.warn("Can't delete entry without _id");
+      Alert.alert("Error", "Cannot delete entry without _id.");
       return;
     }
-
     Alert.alert("Delete Entry", "Are you sure you want to delete this entry?", [
       { text: "Cancel", style: "cancel" },
       {
@@ -147,21 +130,17 @@ export default function KickCounterScreen() {
 
   const handleManualAdd = () => {
     const num = parseInt(manualCount.trim());
-
     if (isNaN(num) || num <= 0) {
       Alert.alert("Invalid Entry", "Please enter a number greater than 0.");
       return;
     }
-
     const now = new Date();
-
     const entry: KickEntry = {
       id: now.getTime().toString(),
-      time: now.toTimeString().split(" ")[0], // "14:14:17"
-      date: now.toISOString().split("T")[0], // "2025-06-20"
+      time: now.toTimeString().split(" ")[0],
+      date: now.toISOString().split("T")[0],
       count: num,
     };
-
     setActivity((prev) => [entry, ...prev]);
     setManualCount("");
     saveToBackend(entry);
@@ -171,14 +150,12 @@ export default function KickCounterScreen() {
     if (!isToday(kickDate)) return;
     setLiveCount(0);
     setShowModal(true);
-
     const sub = Accelerometer.addListener(({ x, y, z }) => {
       const magnitude = Math.sqrt(x * x + y * y + z * z);
       if (magnitude > threshold) {
         setLiveCount((prev) => prev + 1);
       }
     });
-
     Accelerometer.setUpdateInterval(200);
     setSubscription(sub);
   };
@@ -187,23 +164,27 @@ export default function KickCounterScreen() {
     subscription?.remove();
     setSubscription(null);
     setShowModal(false);
-
     if (liveCount > 0) {
       const now = new Date();
-
       const entry: KickEntry = {
         id: now.getTime().toString(),
-        time: now.toTimeString().split(" ")[0], // "14:14:17"
-        date: now.toISOString().split("T")[0], // "2025-06-20"
+        time: now.toTimeString().split(" ")[0],
+        date: now.toISOString().split("T")[0],
         count: liveCount,
       };
       setActivity((prev) => [entry, ...prev]);
       saveToBackend(entry);
-    } else {
-      console.log("No kicks detected, nothing to save.");
     }
-
     setLiveCount(0);
+  };
+
+  const isToday = (date: Date) => {
+    const now = new Date();
+    return (
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    );
   };
 
   const goToPreviousDay = () => {
@@ -218,31 +199,18 @@ export default function KickCounterScreen() {
     if (newDate <= new Date()) setKickDate(newDate);
   };
 
-  const isToday = (date: Date) => {
-    const now = new Date();
-    return (
-      date.getDate() === now.getDate() &&
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear()
-    );
-  };
-
-  const todayActivity = activity.filter(
-    (e) => e.date === kickDate.toISOString().split("T")[0]
-  );
-
   const formattedDate = kickDate.toLocaleDateString(undefined, {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
-  const kicksToday = todayActivity.reduce((sum, e) => sum + e.count, 0);
+  const kicksToday = activity.reduce((sum, e) => sum + e.count, 0);
 
   const getWeeklyKickData = () => {
     const result: { [key: string]: number } = {};
     activity.forEach((entry) => {
-      const day = new Date(parseInt(entry.id)).toLocaleDateString();
+      const day = new Date(entry.date).toLocaleDateString();
       result[day] = (result[day] || 0) + entry.count;
     });
     const sorted = Object.keys(result)
@@ -256,8 +224,7 @@ export default function KickCounterScreen() {
 
   return (
     <>
-      <Header title="Baby's movement detection" />
-
+      <Header title="Baby's Movement Detection" />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.dateRow}>
           <TouchableOpacity onPress={goToPreviousDay}>
@@ -304,56 +271,23 @@ export default function KickCounterScreen() {
         )}
 
         <Text style={styles.sectionTitle}>Activity</Text>
-        {todayActivity.length === 0 ? (
-          <Text style={styles.emptyText}>No kicks recorded.</Text>
+        {activity.length === 0 ? (
+          <Text style={styles.emptyText}>No kicks recorded for this date.</Text>
         ) : (
-          <FlatList
-            data={todayActivity}
-            keyExtractor={(item) => item._id ?? item.id}
-            renderItem={({ item }) => (
+          <HealthHistoryList<KickEntry>
+            data={activity}
+            getDate={(item) => new Date(item.date)}
+            onDelete={handleDelete}
+            showFilter={false}
+            renderItem={(item) => (
               <View style={styles.activityItem}>
                 <Text>
                   👣 {item.count} @ {item.time}
                 </Text>
-                <TouchableOpacity
-                  onPress={() => handleDelete(item)}
-                  style={styles.deleteBtn}
-                >
-                  <FontAwesome name="trash" size={18} color="#900" />
-                </TouchableOpacity>
               </View>
             )}
           />
         )}
-
-        <Text style={styles.sectionTitle}>Weekly Kick Report</Text>
-        <BarChart
-          data={getWeeklyKickData()}
-          width={screenWidth - 40}
-          height={220}
-          fromZero
-          yAxisLabel=""
-          chartConfig={{
-            backgroundGradientFrom: "#fff",
-            backgroundGradientTo: "#fff",
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
-          }}
-          style={{ marginBottom: 20 }}
-          yAxisSuffix=""
-        />
-
-        <View style={styles.tipBox}>
-          <Text style={styles.tipTitle}>💡 Tip</Text>
-          <Text style={styles.tipText}>
-            - Count kicks when baby is most active, usually after meals or in the
-            evening.
-          </Text>
-          <Text style={styles.tipText}>
-            - Keep mobile surface steady.
-          </Text>
-        </View>
 
         <Modal visible={showModal} transparent>
           <View style={styles.modalOverlay}>
@@ -366,14 +300,24 @@ export default function KickCounterScreen() {
             </View>
           </View>
         </Modal>
+
+        <View style={styles.tipBox}>
+          <Text style={styles.tipTitle}>💡 Tip</Text>
+          <Text style={styles.tipText}>
+            - Count kicks when the baby is most active, usually after meals or
+            in the evening.
+          </Text>
+          <Text style={styles.tipText}>
+            - Keep your phone steady during detection.
+          </Text>
+        </View>
       </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, paddingBottom: 40, backgroundColor: "#fff" },
-  backBtn: { marginBottom: 10 },
+  container: { padding: 20, backgroundColor: "#fff" },
   dateRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -428,12 +372,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     borderRadius: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
   emptyText: { color: "#777", fontStyle: "italic", marginBottom: 20 },
-  deleteBtn: { padding: 5 },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
