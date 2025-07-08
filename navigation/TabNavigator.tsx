@@ -1,4 +1,4 @@
-//Bottom Navigation don't change anything here
+// TabNavigator.tsx
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -6,6 +6,7 @@ import HomeScreen from "../screens/HomeScreen";
 import HealthScreen from "../screens/HealthScreen";
 import JournalScreen from "../screens/JournalScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import { COLORS, SPACING, RADIUS, EFFECTS } from "../styles/globalStyles"; // adjust path if needed
 
 const Tab = createBottomTabNavigator();
 
@@ -14,8 +15,25 @@ export default function TabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#6200ee",
-        tabBarInactiveTintColor: "gray",
+        tabBarActiveTintColor: COLORS.purple500,
+        tabBarInactiveTintColor: COLORS.gray700,
+        tabBarShowLabel: true,
+        tabBarStyle: {
+          position: "absolute",
+          bottom: SPACING.spacing24,
+          marginHorizontal: SPACING.spacing24, // ✅ fixes side spacing
+          backgroundColor: COLORS.white,
+          borderRadius: RADIUS.lg,
+          height: 70,
+          paddingBottom: SPACING.spacing8,
+          paddingTop: SPACING.spacing8,
+          ...EFFECTS.softShadow,
+          borderTopWidth: 0,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "500",
+        },
       }}
     >
       <Tab.Screen
@@ -32,11 +50,7 @@ export default function TabNavigator() {
         component={HealthScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="heart-pulse"
-              color={color}
-              size={24}
-            />
+            <MaterialCommunityIcons name="heart-pulse" color={color} size={24} />
           ),
         }}
       />
@@ -49,25 +63,12 @@ export default function TabNavigator() {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="Journal"
-        component={JournalScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="notebook" color={color} size={24} />
-          ),
-        }}
-      /> */}
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="account-circle"
-              color={color}
-              size={24}
-            />
+            <MaterialCommunityIcons name="account-circle" color={color} size={24} />
           ),
         }}
       />
