@@ -23,6 +23,7 @@ import { fetchFitbitData } from "./Fitbit/fetchFitbitData";
 import { formatDistanceToNow } from "date-fns";
 import { FitbitSummaryCard } from "./Health/SyncNowFitbitData";
 import HealthRecoAI from "../components/ChatReco";
+import MainHeader from "../components/MainHeader";
 
 export default function HealthScreen() {
   const [fitbitData, setFitbitData] = useState<FitbitData | null>(null);
@@ -137,176 +138,172 @@ export default function HealthScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.iconPlaceholder} />
-        <Text style={styles.headerTitle}>My Health</Text>
-        <Ionicons name="notifications-outline" size={24} color="#333" />
-      </View>
+    <>
+      <MainHeader title="Health" subtitle="Track your wellness journey." />
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Log Health Data */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Log Health Data</Text>
+          <View style={styles.cardRow}>
+            <TouchableOpacity
+              style={styles.card_log}
+              onPress={() => navigation.navigate("BloodPressure")}
+            >
+              <Ionicons name="heart" size={24} color="#333" />
+              <Text>Blood Pressure</Text>
+            </TouchableOpacity>
 
-      {/* Log Health Data */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Log Health Data</Text>
-        <View style={styles.cardRow}>
-          <TouchableOpacity
-            style={styles.card_log}
-            onPress={() => navigation.navigate("BloodPressure")}
-          >
-            <Ionicons name="heart" size={24} color="#333" />
-            <Text>Blood Pressure</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.card_log}
+              onPress={() => navigation.navigate("Weight")}
+            >
+              <Ionicons name="scale" size={24} color="#333" />
+              <Text>Weight</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.cardRow}>
+            <TouchableOpacity
+              style={styles.card_log}
+              onPress={() => navigation.navigate("KickCounter")}
+            >
+              <MaterialCommunityIcons
+                name="baby-face-outline"
+                size={24}
+                color="#333"
+              />
+              <Text>Kick Count</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.card_log}
-            onPress={() => navigation.navigate("Weight")}
-          >
-            <Ionicons name="scale" size={24} color="#333" />
-            <Text>Weight</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.card_log}
+              onPress={() => navigation.navigate("FitBitSummary")}
+            >
+              <FontAwesome5 name="link" size={20} color="#333" />
+              <Text>Sync Now</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.cardRow}>
-          <TouchableOpacity
-            style={styles.card_log}
-            onPress={() => navigation.navigate("KickCounter")}
-          >
+
+        {/* Today's Readings */}
+        <View style={styles.section}>
+          <View style={styles.rowBetween}>
+            <Text style={styles.sectionTitle}>Today's Readings</Text>
+            <TouchableOpacity>
+              <Text style={styles.link}>View All</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.card}>
             <MaterialCommunityIcons
-              name="baby-face-outline"
+              name="heart-pulse"
               size={24}
-              color="#333"
+              color="#888"
+              style={styles.icon}
             />
-            <Text>Kick Count</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.card_log}
-            onPress={() => navigation.navigate("FitBitSummary")}
-          >
-            <FontAwesome5 name="link" size={20} color="#333" />
-            <Text>Sync Now</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Today's Readings */}
-      <View style={styles.section}>
-        <View style={styles.rowBetween}>
-          <Text style={styles.sectionTitle}>Today's Readings</Text>
-          <TouchableOpacity>
-            <Text style={styles.link}>View All</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.card}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={24}
-            color="#888"
-            style={styles.icon}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>Blood Pressure</Text>
-            <Text style={styles.value}>
-              {bpReading
-                ? `${bpReading.systolic}/${bpReading.diastolic} mmHg`
-                : "No Data"}
-            </Text>
-          </View>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>
-              {bpReading?.status || "Unknown"}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.card}>
-          <MaterialCommunityIcons
-            name="weight"
-            size={24}
-            color="#888"
-            style={styles.icon}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>Weight</Text>
-            <Text style={styles.value}>
-              {weightReading
-                ? `${weightReading.value} ${weightReading.unit}`
-                : "No Data"}
-            </Text>
-          </View>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>
-              {weightReading ? "Tracked" : "Unknown"}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Connected Devices */}
-      <Text style={styles.sectionTitle}>Connected Devices</Text>
-      <View style={styles.card_connected}>
-        <View style={styles.topRow}>
-          <View style={styles.deviceHeader}>
-            <View style={styles.iconPlaceholder1}>
-              <Text style={styles.iconText}>⌚</Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>Blood Pressure</Text>
+              <Text style={styles.value}>
+                {bpReading
+                  ? `${bpReading.systolic}/${bpReading.diastolic} mmHg`
+                  : "No Data"}
+              </Text>
             </View>
-            <View style={{ marginLeft: 10 }}>
-              <Text style={styles.deviceName}>Fitbit Versa 3</Text>
-              <Text style={styles.deviceMeta}>
-                Last sync:{" "}
-                {fitbitData?.sleep?.[0]?.endTime
-                  ? formatDistanceToNow(new Date(fitbitData.sleep[0].endTime), {
-                      addSuffix: true,
-                    })
-                  : "Not available"}
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>
+                {bpReading?.status || "Unknown"}
               </Text>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.syncButton}
-            onPress={() => {
-              console.log("🌀 Syncing with Fitbit...");
-              promptAsync();
-            }}
-          >
-            <Text style={styles.syncButtonText}>Sync Now</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.metricsRow}>
-          <View style={styles.metric}>
-            <Text style={styles.metricLabel}>Steps</Text>
-            <Text style={styles.metricValue}>
-              {fitbitData?.activity?.summary?.steps ?? "N/A"}
-            </Text>
-          </View>
-
-          <View style={styles.metric}>
-            <Text style={styles.metricLabel}>Heart Rate</Text>
-            <Text style={styles.metricValue}>
-              {fitbitData?.heart?.["activities-heart"]?.[0]?.value
-                ?.restingHeartRate
-                ? `${fitbitData.heart["activities-heart"][0].value.restingHeartRate} bpm`
-                : "N/A"}
-            </Text>
-          </View>
-
-          <View style={styles.metric}>
-            <Text style={styles.metricLabel}>Sleep</Text>
-            <Text style={styles.metricValue}>
-              {fitbitData?.sleep?.summary?.totalMinutesAsleep
-                ? formatMinutes(fitbitData.sleep.summary.totalMinutesAsleep)
-                : "N/A"}
-            </Text>
+          <View style={styles.card}>
+            <MaterialCommunityIcons
+              name="weight"
+              size={24}
+              color="#888"
+              style={styles.icon}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>Weight</Text>
+              <Text style={styles.value}>
+                {weightReading
+                  ? `${weightReading.value} ${weightReading.unit}`
+                  : "No Data"}
+              </Text>
+            </View>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>
+                {weightReading ? "Tracked" : "Unknown"}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* AI Recommendations */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>AI Recommendations</Text>
-        <HealthRecoAI
-bpReading={bpReading}
-weightReading={weightReading}
-        />
-        {/* <View style={styles.aiCard}>
+        {/* Connected Devices */}
+        <Text style={styles.sectionTitle}>Connected Devices</Text>
+        <View style={styles.card_connected}>
+          <View style={styles.topRow}>
+            <View style={styles.deviceHeader}>
+              <View style={styles.iconPlaceholder1}>
+                <Text style={styles.iconText}>⌚</Text>
+              </View>
+              <View style={{ marginLeft: 10 }}>
+                <Text style={styles.deviceName}>Fitbit Versa 3</Text>
+                <Text style={styles.deviceMeta}>
+                  Last sync:{" "}
+                  {fitbitData?.sleep?.[0]?.endTime
+                    ? formatDistanceToNow(
+                        new Date(fitbitData.sleep[0].endTime),
+                        {
+                          addSuffix: true,
+                        }
+                      )
+                    : "Not available"}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              style={styles.syncButton}
+              onPress={() => {
+                console.log("🌀 Syncing with Fitbit...");
+                promptAsync();
+              }}
+            >
+              <Text style={styles.syncButtonText}>Sync Now</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.metricsRow}>
+            <View style={styles.metric}>
+              <Text style={styles.metricLabel}>Steps</Text>
+              <Text style={styles.metricValue}>
+                {fitbitData?.activity?.summary?.steps ?? "N/A"}
+              </Text>
+            </View>
+
+            <View style={styles.metric}>
+              <Text style={styles.metricLabel}>Heart Rate</Text>
+              <Text style={styles.metricValue}>
+                {fitbitData?.heart?.["activities-heart"]?.[0]?.value
+                  ?.restingHeartRate
+                  ? `${fitbitData.heart["activities-heart"][0].value.restingHeartRate} bpm`
+                  : "N/A"}
+              </Text>
+            </View>
+
+            <View style={styles.metric}>
+              <Text style={styles.metricLabel}>Sleep</Text>
+              <Text style={styles.metricValue}>
+                {fitbitData?.sleep?.summary?.totalMinutesAsleep
+                  ? formatMinutes(fitbitData.sleep.summary.totalMinutesAsleep)
+                  : "N/A"}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* AI Recommendations */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>AI Recommendations</Text>
+          <HealthRecoAI bpReading={bpReading} weightReading={weightReading} />
+          {/* <View style={styles.aiCard}>
           <Text style={{ fontWeight: "600" }}>This Week's Focus</Text>
           <Text>
             • Continue prenatal vitamins with iron{"\n"}• Aim for 8-10 glasses
@@ -320,13 +317,14 @@ weightReading={weightReading}
             Hot baths or saunas
           </Text>
         </View> */}
-      </View>
+        </View>
 
-      {/* Doctor Report Button */}
-      {/* <TouchableOpacity style={styles.generateBtn}>
+        {/* Doctor Report Button */}
+        {/* <TouchableOpacity style={styles.generateBtn}>
         <Text style={styles.generateBtnText}>Generate Doctor Report</Text>
       </TouchableOpacity> */}
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
 
@@ -336,20 +334,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     backgroundColor: "#fff",
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-    marginTop: 35,
-  },
-
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "500",
-    textAlign: "center",
-    flex: 1, // Ensures it takes up middle space
-  },
+  
 
   iconPlaceholder: {
     width: 24, // same as bell icon width
