@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING, TEXT_STYLES } from "../styles/globalStyles";
 
 type SubHeaderProps = {
-  title: string;
+  title: string; // keep as string
 };
 
 const SubHeader: React.FC<SubHeaderProps> = ({ title }) => {
@@ -19,10 +19,16 @@ const SubHeader: React.FC<SubHeaderProps> = ({ title }) => {
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
         >
-          <Ionicons name="arrow-back" size={24} color={COLORS.gray900} />
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={COLORS?.gray900 || "black"}
+          />
         </TouchableOpacity>
-        <Text style={styles.title}>{title}</Text>
-        <View style={{ width: 24 }} /> {/* For symmetry */}
+        <Text style={styles.title}>
+          {typeof title === "string" ? title : "Untitled"}
+        </Text>
+        <View style={{ width: 24 }} />
       </View>
     </SafeAreaView>
   );
@@ -41,12 +47,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: SPACING.spacing16,
     backgroundColor: COLORS.white,
-    // Optional: add subtle shadow if Figma shows it
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.05,
-    // shadowRadius: 4,
-    // elevation: 2,
   },
   backBtn: {
     padding: 4,
