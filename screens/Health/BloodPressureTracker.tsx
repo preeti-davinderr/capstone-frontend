@@ -8,9 +8,10 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Header from "../../components/Header";
 import CommonDateTimePicker from "../../components/CommonDateTimePicker";
 import HealthHistoryList from "../../components/HealthHistoryList";
+import CommonButton from "../../components/CommonButton";
+import SubHeader from "../../components/SubHeader";
 
 type BPEntry = {
   systolic: string;
@@ -176,7 +177,8 @@ export default function BloodPressureTracker() {
 
   return (
     <>
-      <Header title="Blood Pressure" />
+      <SubHeader title={String("Blood Pressure")} />
+
       <View style={styles.container}>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Record Reading</Text>
@@ -217,9 +219,7 @@ export default function BloodPressureTracker() {
             onChange={setDate}
             label="Date & Time"
           />
-          <TouchableOpacity style={styles.saveButton} onPress={saveToBackend}>
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
+          <CommonButton label="Save" onPress={saveToBackend} />
         </View>
 
         <View style={styles.card}>

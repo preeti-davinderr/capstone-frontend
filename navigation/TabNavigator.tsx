@@ -1,4 +1,3 @@
-// TabNavigator.tsx
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -6,7 +5,7 @@ import HomeScreen from "../screens/HomeScreen";
 import HealthScreen from "../screens/HealthScreen";
 import JournalScreen from "../screens/JournalScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import { COLORS, SPACING, RADIUS, EFFECTS } from "../styles/globalStyles"; // adjust path if needed
+import { COLORS, SPACING, RADIUS, EFFECTS } from "../styles/globalStyles";
 
 const Tab = createBottomTabNavigator();
 
@@ -21,7 +20,7 @@ export default function TabNavigator() {
         tabBarStyle: {
           position: "absolute",
           bottom: SPACING.spacing24,
-          marginHorizontal: SPACING.spacing24, // ✅ fixes side spacing
+          marginHorizontal: SPACING.spacing20, // ✅ fixes side spacing
           backgroundColor: COLORS.white,
           borderRadius: RADIUS.lg,
           height: 70,
@@ -50,7 +49,11 @@ export default function TabNavigator() {
         component={HealthScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="heart-pulse" color={color} size={24} />
+            <MaterialCommunityIcons
+              name="heart-pulse"
+              color={color}
+              size={24}
+            />
           ),
         }}
       />
@@ -68,7 +71,11 @@ export default function TabNavigator() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="account-circle" color={color} size={24} />
+            <MaterialCommunityIcons
+              name="account-circle"
+              color={color}
+              size={24}
+            />
           ),
         }}
       />

@@ -9,7 +9,7 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import Header from "../components/Header";
+import Header from "../components/SubHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ChatBot() {

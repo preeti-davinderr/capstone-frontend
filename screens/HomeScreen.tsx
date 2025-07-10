@@ -1,90 +1,92 @@
-// import HorizontalScroll from '@/components/HorizontalScroll'
-// import { weekData } from '@/components/weekData'
-// import React from 'react'
-// import { SafeAreaView, Text, View } from 'react-native'
-
-// function HomeScreen() {
-//   return (
-//     <View>
-//         <SafeAreaView>
-//             <HorizontalScroll  weekData={weekData} />
-//         </SafeAreaView>
-//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//             <Text>Welcome to the Home Screen!</Text>
-//         </View>
-//         {/* Add your components or navigation here */}
-//     </View>
-//   )
-// }
-
-// export default HomeScreen
-
-// screens/WeeklyUpdateScreen.tsx
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import HorizontalScroll from "../components/HorizontalScroll";
 import { weekData, WeekDetails } from "../components/weekData";
 import FloatingBotButton from "../components/FloatingBotButton";
-// import WeekScroll from '../components/WeekScroll';
-// import HorizontalScroll from '@/components/HorizontalScroll';
-// import { weekData, WeekDetails } from '@/components/weekData';
+import MainHeader from "../components/MainHeader";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = () => {
   const [selectedWeek, setSelectedWeek] = useState<number>(5);
+  const [name, setName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadUserName = async () => {
+      try {
+        const userString = await AsyncStorage.getItem("user");
+        if (userString) {
+          const user = JSON.parse(userString);
+          if (user?.name) {
+            setName(user.name);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading user from AsyncStorage:", error);
+      }
+    };
+    loadUserName();
+  }, []);
+
   const currentWeekData: WeekDetails = weekData.find(
     (w) => w.week === selectedWeek
   )!;
 
   return (
-    <View style={{ paddingTop: 40 }}>
-      <ScrollView style={styles.container}>
-        <HorizontalScroll
-          weekData={weekData}
-          style={{ marginBottom: 16 }}
-          onWeekChange={(week) => setSelectedWeek(week)}
-        />
+    <>
+      <MainHeader
+        title={name ? `Hello, ${name}!` : "Health"}
+        subtitle="How are you feeling today?"
+      />
 
-        <Text style={styles.description}>{currentWeekData.description}</Text>
+      <View style={{ paddingTop: 40 }}>
+        <ScrollView style={styles.container}>
+          <HorizontalScroll
+            weekData={weekData}
+            style={{ marginBottom: 16 }}
+            onWeekChange={(week) => setSelectedWeek(week)}
+          />
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>What's Developing This Week</Text>
-          {currentWeekData.developments.map((item, index) => (
-            <Text key={index} style={styles.bullet}>
-              • {item}
-            </Text>
-          ))}
-        </View>
+          <Text style={styles.description}>{currentWeekData.description}</Text>
 
-        <Text style={styles.sectionTitle}>This Week's Highlights</Text>
-        <View style={styles.highlightsGrid}>
-          {currentWeekData.highlights.map((item, index) => (
-            <View key={index} style={styles.highlightCard}>
-              <Text style={styles.icon}>{item.icon}</Text>
-              <Text style={styles.highlightTitle}>{item.title}</Text>
-              <Text style={styles.highlightSubtitle}>{item.subtitle}</Text>
-            </View>
-          ))}
-        </View>
-
-        <Text style={styles.sectionTitle}>Useful Articles</Text>
-        {currentWeekData.articles.map((article, index) => (
-          <View key={index} style={styles.articleCard}>
-            <View style={styles.articleLabel}>
-              <Text>Article</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.articleTitle}>{article.title}</Text>
-              <Text style={styles.articleSubtitle}>{article.subtitle}</Text>
-              <Text style={styles.articleMeta}>
-                {article.readTime} • {article.date}
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>What's Developing This Week</Text>
+            {currentWeekData.developments.map((item, index) => (
+              <Text key={index} style={styles.bullet}>
+                • {item}
               </Text>
-            </View>
+            ))}
           </View>
-        ))}
-      </ScrollView>
-      <FloatingBotButton />
-    </View>
+
+          <Text style={styles.sectionTitle}>This Week's Highlights</Text>
+          <View style={styles.highlightsGrid}>
+            {currentWeekData.highlights.map((item, index) => (
+              <View key={index} style={styles.highlightCard}>
+                <Text style={styles.icon}>{item.icon}</Text>
+                <Text style={styles.highlightTitle}>{item.title}</Text>
+                <Text style={styles.highlightSubtitle}>{item.subtitle}</Text>
+              </View>
+            ))}
+          </View>
+
+          <Text style={styles.sectionTitle}>Useful Articles</Text>
+          {currentWeekData.articles.map((article, index) => (
+            <View key={index} style={styles.articleCard}>
+              <View style={styles.articleLabel}>
+                <Text>Article</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.articleTitle}>{article.title}</Text>
+                <Text style={styles.articleSubtitle}>{article.subtitle}</Text>
+                <Text style={styles.articleMeta}>
+                  {article.readTime} • {article.date}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+        <FloatingBotButton />
+      </View>
+    </>
   );
 };
 

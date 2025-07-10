@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Accelerometer } from "expo-sensors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Header from "../components/Header";
+import Header from "../components/SubHeader";
 import HealthHistoryList from "../components/HealthHistoryList";
 const screenWidth = Dimensions.get("window").width;
 interface KickEntry {

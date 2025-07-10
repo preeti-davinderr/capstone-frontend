@@ -37,6 +37,7 @@ export const SPACING = {
     spacing8: 8,
     spacing12: 12,
     spacing16: 16,
+    spacing20: 20,
     spacing24: 24,
     spacing32: 32,
 };
@@ -48,13 +49,13 @@ export const RADIUS = {
 };
 
 export const TEXT_STYLES = {
-    displayH1: { fontSize: 32, lineHeight: 40, fontWeight: "bold", color: COLORS.gray900 },
-    headingH2: { fontSize: 24, lineHeight: 32, fontWeight: "bold", color: COLORS.gray900 },
-    subheading: { fontSize: 20, lineHeight: 28, fontWeight: "600", color: COLORS.gray900 },
-    lead: { fontSize: 18, lineHeight: 26, fontWeight: "500", color: COLORS.gray900 },
-    bodyBase: { fontSize: 16, lineHeight: 24, color: COLORS.gray900 },
-    bodySmall: { fontSize: 14, lineHeight: 20, color: COLORS.gray700 },
-    caption: { fontSize: 12, lineHeight: 16, color: COLORS.gray700 },
+    displayH1: { fontSize: 32, lineHeight: 40, fontWeight: 700 as const, color: COLORS.gray900 },
+    headingH2: { fontSize: 24, lineHeight: 32, fontWeight: 700 as const, color: COLORS.gray900 },
+    subheading: { fontSize: 20, lineHeight: 28, fontWeight: 600 as const, color: COLORS.gray900 },
+    lead: { fontSize: 18, lineHeight: 26, fontWeight: 500 as const, color: COLORS.gray900 },
+    bodyBase: { fontSize: 16, lineHeight: 24, fontWeight: 400 as const, color: COLORS.gray900 },
+    bodySmall: { fontSize: 14, lineHeight: 20, fontWeight: 400 as const, color: COLORS.gray700 },
+    caption: { fontSize: 12, lineHeight: 16, fontWeight: 400 as const, color: COLORS.gray700 },
 };
 
 export const EFFECTS = {
