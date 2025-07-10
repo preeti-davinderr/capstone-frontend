@@ -87,7 +87,7 @@ export default function JournalScreen({ navigation }: any) {
 </View>
 
       {/* Active Journals */}
-      {journals.length > 0 && (
+      {journals.length > 0 ? (
         <>
           <Text style={styles.sectionTitle}>My Active Journals</Text>
           {journals.map((journal) => (
@@ -114,7 +114,12 @@ export default function JournalScreen({ navigation }: any) {
             </View>
           ))}
         </>
-      )}
+      )
+    :
+    <View style={{ marginTop: 20, alignItems: 'center' }}>
+        <Text style={{ fontSize: 16, color: '#666' }}>No active journals found. Start a new one!</Text>
+      </View>
+    }
 
       {/* Pre-Designed */}
       <Text style={styles.sectionTitle}>Pre-Designed Journals</Text>

@@ -77,7 +77,7 @@ export default function JournalEntryScreen({ navigation }: any) {
           setIsPrivate(data.data?.isPrivate || false);
           const loadedImages =
             data.data?.images?.map((img: any) => ({
-              uri: img.url,
+              url: img.url,
               description: img.description || "",
             })) || [];
           setImages(loadedImages);
@@ -95,7 +95,7 @@ export default function JournalEntryScreen({ navigation }: any) {
 
     if (!result.canceled && result.assets) {
       const selected = result.assets.map((img) => ({
-        uri: img.uri,
+        url: img.uri,
         description: "",
       }));
       setImages((prev) => [...prev, ...selected]);
