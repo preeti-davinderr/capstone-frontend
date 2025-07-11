@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -75,8 +76,7 @@ export default function BloodPressureTracker() {
           status: getBPStatus(entry.systolic, entry.diastolic),
         }))
         .sort(
-          (a:any, b:any) =>
-            new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+          (a: any, b: any) => Date.parse(b.datetime) - Date.parse(a.datetime)
         );
 
       setHistory(formatted);
@@ -144,40 +144,31 @@ export default function BloodPressureTracker() {
   };
 
   const handleDelete = async (item: BPEntry) => {
-    Alert.alert(
-      "Confirm Delete",
-      "Are you sure you want to delete this entry?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const user = await AsyncStorage.getItem("user");
-              const parsed = user ? JSON.parse(user) : null;
-              if (!parsed?.id) return;
+    try {
+      const user = await AsyncStorage.getItem("user");
+      const parsed = user ? JSON.parse(user) : null;
+      if (!parsed?.id) {
+        Alert.alert("Error", "User not found");
+        return;
+      }
 
-              const res = await fetch(
-                `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp?id=${parsed.id}&datetime=${item.datetime}`,
-                { method: "DELETE" }
-              );
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp?id=${parsed.id}&datetime=${item.datetime}`,
+        { method: "DELETE" }
+      );
 
-              if (res.ok) {
-                setHistory((prev) =>
-                  prev.filter((entry) => entry.datetime !== item.datetime)
-                );
-              } else {
-                Alert.alert("Error", "Failed to delete entry.");
-              }
-            } catch (err) {
-              console.error("Delete failed:", err);
-              Alert.alert("Error", "Network or server error.");
-            }
-          },
-        },
-      ]
-    );
+      if (res.ok) {
+        setHistory((prev) =>
+          prev.filter((entry) => entry.datetime !== item.datetime)
+        );
+        Alert.alert("Deleted", "Deleted successfully.");
+      } else {
+        Alert.alert("Error", "Failed to delete entry.");
+      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+      Alert.alert("Error", "Network or server error.");
+    }
   };
 
   const current = history.length > 0 ? history[0] : null;
@@ -203,7 +194,10 @@ export default function BloodPressureTracker() {
   });
 
   return (
-    <>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: COLORS.background }}
+      edges={["left", "right", "bottom"]} // ⬅️ Exclude "top"
+    >
       <SubHeader title="Blood Pressure" />
       <ScrollView>
         <View style={styles.container}>
@@ -247,7 +241,7 @@ export default function BloodPressureTracker() {
               onChange={setDate}
               label="Date & Time"
             />
-            <CommonButton label="Save Reading" onPress={saveToBackend} />
+            <CommonButton label="Save" onPress={saveToBackend} />
           </View>
 
           {/* Current Status Card */}
@@ -310,7 +304,7 @@ export default function BloodPressureTracker() {
           </View>
         </View>
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 }
 

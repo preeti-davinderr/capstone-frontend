@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  ScrollView,
   Alert,
+  ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Header from "../../components/SubHeader";
+import SubHeader from "../../components/SubHeader";
 import CommonDateTimePicker from "../../components/CommonDateTimePicker";
 import HealthHistoryList from "../../components/HealthHistoryList";
+import {
+  COLORS,
+  EFFECTS,
+  RADIUS,
+  SPACING,
+  TEXT_STYLES,
+} from "../../styles/globalStyles";
+import CommonButton from "../../components/CommonButton";
 
 type WeightEntry = {
   value: string;
@@ -69,14 +78,15 @@ export default function WeightInputScreen() {
         Alert.alert("Error", "User not found");
         return;
       }
-
+  
       const res = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/weight?id=${parsed.id}&date=${item.date}`,
         { method: "DELETE" }
       );
-
+  
       if (res.ok) {
         setHistory((prev) => prev.filter((entry) => entry.date !== item.date));
+        Alert.alert("Deleted", "Deleted successfully.");
       } else {
         Alert.alert("Error", "Failed to delete entry.");
       }
@@ -85,6 +95,7 @@ export default function WeightInputScreen() {
       Alert.alert("Error", "Network or server error.");
     }
   };
+  
 
   const handleAddEntry = async () => {
     if (!weight || !date) {
@@ -118,7 +129,10 @@ export default function WeightInputScreen() {
 
       const result = await res.json();
       if (result.success) {
-        setHistory([result.data.data, ...history]);
+        const updatedHistory = [result.data.data, ...history].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        setHistory(updatedHistory);
         setWeight("");
         setDate(null);
       } else {
@@ -131,11 +145,16 @@ export default function WeightInputScreen() {
   };
 
   return (
-    <>
-      <Header title="Weight Tracker" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: COLORS.background }}
+      edges={["left", "right", "bottom"]} // ⬅️ Exclude "top"
+    >
+      <SubHeader title="Weight Tracker" />
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Add Weight Entry */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Add Weight Entry</Text>
+
           <View style={styles.unitSwitchRow}>
             {["kg", "lbs"].map((u) => (
               <TouchableOpacity
@@ -180,129 +199,126 @@ export default function WeightInputScreen() {
             onChange={setDate}
             label="Date & Time"
           />
-
-          <TouchableOpacity style={styles.saveButton} onPress={handleAddEntry}>
-            <Text style={styles.saveButtonText}>Add Entry</Text>
-          </TouchableOpacity>
+          <CommonButton label="Save" onPress={handleAddEntry} />
         </View>
 
+        {/* History */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>History</Text>
           <HealthHistoryList
             data={history}
             getDate={(item) => new Date(item.date)}
-            showFilter={true}
             onDelete={handleDelete}
+            showFilter={true}
             renderItem={(item) => (
               <View style={styles.historyItem}>
-                <Text style={styles.historyWeight}>
-                  {item.value} {item.unit}
-                </Text>
-                <Text style={styles.historyDate}>
-                  {new Date(item.date).toLocaleDateString()}
-                </Text>
+                <View>
+                  <Text style={styles.historyWeight}>
+                    {item.value} {item.unit}
+                  </Text>
+                  <Text style={styles.historyDate}>
+                    {new Date(item.date).toLocaleDateString()}
+                  </Text>
+                </View>
               </View>
             )}
           />
         </View>
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    padding: 16,
-    backgroundColor: "#f7f7f7",
-    alignItems: "center",
-    paddingBottom: 32,
+  container: {
+    backgroundColor: COLORS.background,
+    padding: SPACING.spacing16,
+    paddingBottom: SPACING.spacing32,
   },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    width: "100%",
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    marginBottom: SPACING.spacing12,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: COLORS.card,
+    ...EFFECTS.softShadow,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 12,
+    ...TEXT_STYLES.lead,
+    marginBottom: SPACING.spacing12,
   },
   unitSwitchRow: {
     flexDirection: "row",
-    marginBottom: 12,
-    backgroundColor: "#f2f2f2",
-    borderRadius: 8,
+    backgroundColor: COLORS.gray100,
+    borderRadius: RADIUS.md,
     overflow: "hidden",
+    marginBottom: SPACING.spacing12,
   },
   unitSwitch: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: SPACING.spacing8,
     alignItems: "center",
   },
   unitSwitchActive: {
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.white,
   },
   unitSwitchText: {
-    fontSize: 15,
-    color: "#888",
+    ...TEXT_STYLES.bodyBase,
+    color: COLORS.gray500,
   },
   unitSwitchTextActive: {
-    color: "#222",
+    color: COLORS.gray900,
     fontWeight: "700",
   },
   inputLabel: {
-    fontSize: 13,
-    fontWeight: "500",
-    marginBottom: 4,
-    marginTop: 8,
+    ...TEXT_STYLES.bodySmall,
+    marginBottom: SPACING.spacing4,
+    marginTop: SPACING.spacing8,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: SPACING.spacing8,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
+    borderColor: COLORS.gray300,
+    borderRadius: RADIUS.md,
+    padding: SPACING.spacing12,
     fontSize: 16,
-    backgroundColor: "#fafafa",
+    backgroundColor: COLORS.gray100,
   },
   unitLabel: {
     fontSize: 13,
-    color: "#888",
-    marginLeft: 8,
+    color: COLORS.gray500,
+    marginLeft: SPACING.spacing8,
   },
   saveButton: {
-    backgroundColor: "#111",
-    borderRadius: 6,
-    paddingVertical: 12,
+    backgroundColor: COLORS.gray900,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.spacing12,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: SPACING.spacing8,
   },
   saveButtonText: {
-    color: "#fff",
+    ...TEXT_STYLES.bodyBase,
+    color: COLORS.white,
     fontWeight: "600",
-    fontSize: 16,
   },
   historyItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    paddingVertical: SPACING.spacing8,
   },
   historyWeight: {
     fontSize: 15,
     fontWeight: "500",
+    color: COLORS.gray900,
   },
   historyDate: {
     fontSize: 12,
-    color: "#888",
+    color: COLORS.gray500,
+    marginTop: 2,
   },
 });
