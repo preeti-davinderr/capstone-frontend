@@ -90,6 +90,7 @@ export interface WeekDetails {
     subtitle: string;
     readTime: string;
     date: string;
+    url: string;
   }[];
 }
 
@@ -118,19 +119,22 @@ export const weekData: WeekDetails[] = [
           title: 'First Trimester Nutrition Guide',
           subtitle: 'Essential nutrients for early pregnancy',
           readTime: '5 min read',
-          date: '2 hours ago'
+          date: '2 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Managing Morning Sickness',
           subtitle: 'Tips to cope with early pregnancy symptoms',
           readTime: '3 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Safe Exercises During Pregnancy',
           subtitle: 'Stay active safely throughout your pregnancy',
           readTime: '7 min read',
-          date: '2 days ago'
+          date: '2 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         }
       ]
     },
@@ -159,19 +163,22 @@ export const weekData: WeekDetails[] = [
           title: 'Your First Trimester Checklist',
           subtitle: 'Things to do in early pregnancy',
           readTime: '6 min read',
-          date: '3 hours ago'
+          date: '3 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Early Pregnancy Symptoms Explained',
           subtitle: 'Understanding what to expect',
           readTime: '4 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Choosing Your Prenatal Vitamins',
           subtitle: 'Key ingredients for a healthy start',
           readTime: '5 min read',
-          date: '2 days ago'
+          date: '2 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         }
       ]
     },
@@ -199,13 +206,15 @@ export const weekData: WeekDetails[] = [
           title: 'Understanding Early Fetal Development',
           subtitle: 'What happens in the first few weeks',
           readTime: '7 min read',
-          date: '4 hours ago'
+          date: '4 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'The Importance of Folic Acid',
           subtitle: 'Crucial for neural tube development',
           readTime: '3 min read',
-          date: '2 days ago'
+          date: '2 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -226,7 +235,7 @@ export const weekData: WeekDetails[] = [
       highlights: [
         { title: 'Heart Forms', subtitle: 'Primitive heart begins', icon: '❤️' },
         { title: 'Brain Growth', subtitle: 'Neural development', icon: '🧠' },
-        { title: 'Eye Buds', subtitle: 'Vision development', icon: '�️' },
+        { title: 'Eye Buds', subtitle: 'Vision development', icon: '👁️' },
         { title: 'Limb Buds', subtitle: 'Arms and legs form', icon: '✋' }
       ],
       articles: [
@@ -234,13 +243,15 @@ export const weekData: WeekDetails[] = [
           title: 'Your First Prenatal Appointment',
           subtitle: 'What to expect at your initial visit',
           readTime: '5 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Early Pregnancy Scans: What They Show',
           subtitle: 'The first glimpses of your baby',
           readTime: '6 min read',
-          date: '3 days ago'
+          date: '3 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -268,13 +279,15 @@ export const weekData: WeekDetails[] = [
           title: 'Managing Fatigue in Early Pregnancy',
           subtitle: 'Tips to boost your energy',
           readTime: '4 min read',
-          date: '5 hours ago'
+          date: '5 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Emotional Changes During Pregnancy',
           subtitle: 'Coping with mood swings',
           readTime: '6 min read',
-          date: '2 days ago'
+          date: '2 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         }
       ]
     },
@@ -303,13 +316,15 @@ export const weekData: WeekDetails[] = [
           title: 'Common Pregnancy Discomforts and Remedies',
           subtitle: 'Dealing with nausea, heartburn, and more',
           readTime: '8 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Partner Support During Pregnancy',
           subtitle: 'How partners can help and prepare',
           readTime: '5 min read',
-          date: '4 days ago'
+          date: '4 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -333,13 +348,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Marvel of Embryonic Development',
           subtitle: 'A closer look at early stages',
           readTime: '7 min read',
-          date: '6 hours ago'
+          date: '6 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Choosing a Healthcare Provider for Pregnancy',
           subtitle: 'Factors to consider for your care',
           readTime: '5 min read',
-          date: '2 days ago'
+          date: '2 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         }
       ]
     },
@@ -363,13 +380,15 @@ export const weekData: WeekDetails[] = [
           title: 'Your Baby\'s Development: Week by Week',
           subtitle: 'A detailed guide to growth',
           readTime: '10 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Preparing for Your First Ultrasound',
           subtitle: 'What to expect and how to prepare',
           readTime: '4 min read',
-          date: '3 days ago'
+          date: '3 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -393,13 +412,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Fetal Period: What Changes?',
           subtitle: 'From embryo to a tiny human',
           readTime: '6 min read',
-          date: '8 hours ago'
+          date: '8 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Coping with Pregnancy Hormones',
           subtitle: 'Understanding the emotional rollercoaster',
           readTime: '5 min read',
-          date: '2 days ago'
+          date: '2 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -423,13 +444,15 @@ export const weekData: WeekDetails[] = [
           title: 'Baby\'s First Movements: When Will You Feel Them?',
           subtitle: 'Understanding quickening',
           readTime: '3 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Nutrition for a Healthy Second Trimester',
           subtitle: 'Key foods for continued growth',
           readTime: '7 min read',
-          date: '4 days ago'
+          date: '4 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -453,13 +476,15 @@ export const weekData: WeekDetails[] = [
           title: 'Understanding Your Baby\'s Gender',
           subtitle: 'When and how you might find out',
           readTime: '4 min read',
-          date: '9 hours ago'
+          date: '9 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Preparing Your Home for Baby',
           subtitle: 'Safety and nursery essentials',
           readTime: '8 min read',
-          date: '3 days ago'
+          date: '3 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -483,13 +508,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Second Trimester: A Guide',
           subtitle: 'The "golden" period of pregnancy',
           readTime: '7 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Prenatal Testing Options Explained',
           subtitle: 'Making informed decisions',
           readTime: '9 min read',
-          date: '5 days ago'
+          date: '5 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -513,13 +540,15 @@ export const weekData: WeekDetails[] = [
           title: 'Understanding Your Growing Bump',
           subtitle: 'Changes in your body during pregnancy',
           readTime: '4 min read',
-          date: '10 hours ago'
+          date: '10 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Exercise Safely in Your Second Trimester',
           subtitle: 'Maintaining fitness during pregnancy',
           readTime: '6 min read',
-          date: '2 days ago'
+          date: '2 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -543,13 +572,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Role of Lanugo Hair in Fetal Development',
           subtitle: 'Temporary hair for protection',
           readTime: '3 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Bonding with Your Baby Before Birth',
           subtitle: 'Ways to connect with your little one',
           readTime: '5 min read',
-          date: '4 days ago'
+          date: '4 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -573,13 +604,15 @@ export const weekData: WeekDetails[] = [
           title: 'Decoding Your Baby\'s Kicks and Movements',
           subtitle: 'What those flutters mean',
           readTime: '4 min read',
-          date: '11 hours ago'
+          date: '11 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Preparing for Your Mid-Pregnancy Scan',
           subtitle: 'The anatomy scan explained',
           readTime: '7 min read',
-          date: '2 days ago'
+          date: '2 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -603,13 +636,15 @@ export const weekData: WeekDetails[] = [
           title: 'Sleep Positions During Pregnancy',
           subtitle: 'Finding comfort as your bump grows',
           readTime: '3 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Building Your Baby Registry',
           subtitle: 'Essentials for new parents',
           readTime: '8 min read',
-          date: '5 days ago'
+          date: '5 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -633,13 +668,15 @@ export const weekData: WeekDetails[] = [
           title: 'Understanding Your Weight Gain in Pregnancy',
           subtitle: 'Healthy ranges and expectations',
           readTime: '5 min read',
-          date: '12 hours ago'
+          date: '12 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Dealing with Pregnancy Brain',
           subtitle: 'Tips for forgetfulness and focus',
           readTime: '4 min read',
-          date: '3 days ago'
+          date: '3 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -663,13 +700,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Wonder of Fetal Hearing Development',
           subtitle: 'What your baby can hear inside',
           readTime: '6 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Choosing a Name for Your Baby',
           subtitle: 'Tips and inspiration',
           readTime: '7 min read',
-          date: '6 days ago'
+          date: '6 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -693,13 +732,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Role of Amniotic Fluid in Development',
           subtitle: 'More than just a cushion',
           readTime: '4 min read',
-          date: '13 hours ago'
+          date: '13 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Maternity Clothes: Comfort and Style',
           subtitle: 'Embracing your changing body',
           readTime: '5 min read',
-          date: '3 days ago'
+          date: '3 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -723,13 +764,15 @@ export const weekData: WeekDetails[] = [
           title: 'Your Mid-Pregnancy Ultrasound: What to Know',
           subtitle: 'A detailed look at your baby\'s development',
           readTime: '7 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Feeling Your Baby Move: The Joy of Quickening',
           subtitle: 'When you can expect to feel those first flutters',
           readTime: '4 min read',
-          date: '7 days ago'
+          date: '7 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -753,13 +796,15 @@ export const weekData: WeekDetails[] = [
           title: 'Counting Kicks: What and Why',
           subtitle: 'Monitoring your baby\'s movements',
           readTime: '5 min read',
-          date: '14 hours ago'
+          date: '14 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Dealing with Leg Cramps During Pregnancy',
           subtitle: 'Tips for relief and prevention',
           readTime: '3 min read',
-          date: '4 days ago'
+          date: '4 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -783,13 +828,15 @@ export const weekData: WeekDetails[] = [
           title: 'Your Changing Body in the Second Trimester',
           subtitle: 'Understanding aches and pains',
           readTime: '6 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Preparing for Childbirth Classes',
           subtitle: 'What to learn and when to start',
           readTime: '7 min read',
-          date: '8 days ago'
+          date: '8 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -813,13 +860,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Importance of Rest in Pregnancy',
           subtitle: 'Why sleep matters for you and baby',
           readTime: '4 min read',
-          date: '15 hours ago'
+          date: '15 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Creating a Birth Plan: Your Choices',
           subtitle: 'Personalizing your labor and delivery experience',
           readTime: '8 min read',
-          date: '5 days ago'
+          date: '5 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -843,13 +892,15 @@ export const weekData: WeekDetails[] = [
           title: 'Gestational Diabetes: What You Need to Know',
           subtitle: 'Screening and management',
           readTime: '7 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Benefits of Prenatal Massage',
           subtitle: 'Relaxation and pain relief',
           readTime: '4 min read',
-          date: '9 days ago'
+          date: '9 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -873,13 +924,15 @@ export const weekData: WeekDetails[] = [
           title: 'Understanding Braxton Hicks Contractions',
           subtitle: 'Practice contractions explained',
           readTime: '3 min read',
-          date: '16 hours ago'
+          date: '16 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Choosing Your Baby\'s Pediatrician',
           subtitle: 'Important considerations for care',
           readTime: '6 min read',
-          date: '4 days ago'
+          date: '4 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -903,13 +956,15 @@ export const weekData: WeekDetails[] = [
           title: 'Third Trimester: What to Expect',
           subtitle: 'Entering the home stretch of pregnancy',
           readTime: '8 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Dealing with Swelling During Pregnancy',
           subtitle: 'Tips for reducing edema',
           readTime: '5 min read',
-          date: '10 days ago'
+          date: '10 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -933,13 +988,15 @@ export const weekData: WeekDetails[] = [
           title: 'Preparing for Labor and Delivery',
           subtitle: 'Packing your hospital bag and more',
           readTime: '7 min read',
-          date: '17 hours ago'
+          date: '17 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Common Third Trimester Discomforts',
           subtitle: 'Managing back pain, heartburn, and fatigue',
           readTime: '6 min read',
-          date: '5 days ago'
+          date: '5 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -963,13 +1020,15 @@ export const weekData: WeekDetails[] = [
           title: 'Understanding Your Baby\'s Position for Birth',
           subtitle: 'Breech, head-down, and more',
           readTime: '5 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Signs of Labor: What to Look For',
           subtitle: 'Distinguishing true labor from false labor',
           readTime: '4 min read',
-          date: '11 days ago'
+          date: '11 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -993,13 +1052,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Nesting Instinct: Embracing the Urge to Prepare',
           subtitle: 'Getting ready for baby\'s arrival',
           readTime: '3 min read',
-          date: '18 hours ago'
+          date: '18 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Pain Management Options During Labor',
           subtitle: 'Understanding epidurals and natural methods',
           readTime: '7 min read',
-          date: '6 days ago'
+          date: '6 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1023,13 +1084,15 @@ export const weekData: WeekDetails[] = [
           title: 'Postpartum Recovery: What to Expect',
           subtitle: 'Your body after birth',
           readTime: '8 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Breastfeeding Basics for New Moms',
           subtitle: 'Getting started and common challenges',
           readTime: '6 min read',
-          date: '12 days ago'
+          date: '12 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1053,13 +1116,15 @@ export const weekData: WeekDetails[] = [
           title: 'Essential Baby Gear for Newborns',
           subtitle: 'What you really need for baby\'s first months',
           readTime: '9 min read',
-          date: '19 hours ago'
+          date: '19 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Newborn Sleep Patterns: What to Expect',
           subtitle: 'Understanding infant sleep cycles',
           readTime: '5 min read',
-          date: '7 days ago'
+          date: '7 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1083,13 +1148,15 @@ export const weekData: WeekDetails[] = [
           title: 'Caring for Your Newborn: First Steps',
           subtitle: 'Feeding, changing, and comforting',
           readTime: '10 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Postpartum Mental Health: Recognizing and Seeking Help',
           subtitle: 'Understanding the baby blues and PPD',
           readTime: '6 min read',
-          date: '13 days ago'
+          date: '13 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1113,13 +1180,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Art of Swaddling Your Newborn',
           subtitle: 'Creating a cozy and secure sleep environment',
           readTime: '4 min read',
-          date: '20 hours ago'
+          date: '20 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'First Aid for New Parents',
           subtitle: 'Essential knowledge for common baby issues',
           readTime: '7 min read',
-          date: '8 days ago'
+          date: '8 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1143,13 +1212,15 @@ export const weekData: WeekDetails[] = [
           title: 'Safe Sleep Practices for Infants',
           subtitle: 'Reducing the risk of SIDS',
           readTime: '5 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'The Importance of Tummy Time',
           subtitle: 'A guide to early motor development',
           readTime: '3 min read',
-          date: '14 days ago'
+          date: '14 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1173,13 +1244,15 @@ export const weekData: WeekDetails[] = [
           title: 'Understanding Baby Cues: Crying, Fussing, and More',
           subtitle: 'Decoding your newborn\'s communication',
           readTime: '6 min read',
-          date: '21 hours ago'
+          date: '21 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Building a Strong Parent-Baby Bond',
           subtitle: 'Early interactions that make a difference',
           readTime: '7 min read',
-          date: '9 days ago'
+          date: '9 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1203,13 +1276,15 @@ export const weekData: WeekDetails[] = [
           title: 'Car Seat Safety: What Every Parent Needs to Know',
           subtitle: 'Installing and using your car seat correctly',
           readTime: '5 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Newborn Reflexes: What They Mean',
           subtitle: 'Understanding your baby\'s natural responses',
           readTime: '4 min read',
-          date: '15 days ago'
+          date: '15 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1233,13 +1308,15 @@ export const weekData: WeekDetails[] = [
           title: 'The Fourth Trimester: Caring for Yourself Postpartum',
           subtitle: 'Prioritizing your well-being after birth',
           readTime: '8 min read',
-          date: '22 hours ago'
+          date: '22 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'Preparing Siblings for a New Baby',
           subtitle: 'Helping older children adjust',
           readTime: '6 min read',
-          date: '10 days ago'
+          date: '10 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1263,13 +1340,15 @@ export const weekData: WeekDetails[] = [
           title: 'Induction of Labor: When and Why',
           subtitle: 'Understanding the process of labor induction',
           readTime: '7 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'The Golden Hour: First Moments After Birth',
           subtitle: 'Skin-to-skin contact and early bonding',
           readTime: '5 min read',
-          date: '16 days ago'
+          date: '16 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1293,13 +1372,15 @@ export const weekData: WeekDetails[] = [
           title: 'Your Due Date Has Passed: What Now?',
           subtitle: 'Understanding post-term pregnancy',
           readTime: '4 min read',
-          date: '23 hours ago'
+          date: '23 hours ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'The First Week with Your Newborn',
           subtitle: 'Adjusting to life with a baby at home',
           readTime: '8 min read',
-          date: '11 days ago'
+          date: '11 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     },
@@ -1323,13 +1404,15 @@ export const weekData: WeekDetails[] = [
           title: 'The First Feed: Latching and Nursing Tips',
           subtitle: 'Getting started with breastfeeding or bottle-feeding',
           readTime: '6 min read',
-          date: '1 day ago'
+          date: '1 day ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
         {
           title: 'New Parent Survival Guide',
           subtitle: 'Tips for navigating the first few weeks with baby',
           readTime: '9 min read',
-          date: '17 days ago'
+          date: '17 days ago',
+          url: 'https://en.wikipedia.org/wiki/Pregnancy'
         },
       ]
     }
