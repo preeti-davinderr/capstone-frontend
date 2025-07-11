@@ -15,9 +15,20 @@ import GradientCard from "../components/GradientCard";
 import WeekDevelopmentInfo from "../components/WeekDevelopmentInfo";
 import TrimesterCare from "../components/TrimesterCare";
 
+const getCurrentPregnancyWeek = (dueDateString: string) => {
+  const dueDate = new Date(dueDateString).getTime();
+  const today = new Date().getTime();
+  const msInWeek = 7 * 24 * 60 * 60 * 1000;
+  const diffInMs = dueDate - today;
+  const weeksLeft = Math.round(diffInMs / msInWeek);
+  const currentWeek = 40 - weeksLeft;
+  return Math.max(1, Math.min(40, currentWeek));
+};
+
 const HomeScreen = () => {
   const [selectedWeek, setSelectedWeek] = useState<number>(5);
   const [name, setName] = useState<string | null>(null);
+  const [dueDate, setDueDate] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUserName = async () => {
@@ -27,6 +38,10 @@ const HomeScreen = () => {
           const user = JSON.parse(userString);
           if (user?.name) {
             setName(user.name);
+          }
+          if (user?.dueDate) {
+            setDueDate(user.dueDate);
+            setSelectedWeek(getCurrentPregnancyWeek(user.dueDate));
           }
         }
       } catch (error) {
@@ -56,8 +71,8 @@ const HomeScreen = () => {
           />
           <PregnancyProgressCard
             week={selectedWeek}
-            dueDate="Aug 15"
-            daysLeft={112 - (selectedWeek - 23) * 7}
+            dueDate={dueDate ? new Date(dueDate).toLocaleDateString() : "N/A"}
+            daysLeft={dueDate ? Math.max(0, Math.round((new Date(dueDate).getTime() - new Date().getTime()) / (24 * 60 * 60 * 1000))) : 0}
             trimester={
               selectedWeek < 13
                 ? "First Trimester"

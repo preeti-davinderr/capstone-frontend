@@ -51,7 +51,7 @@ const WeekDevelopmentCard: React.FC<WeekDevelopmentCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: 'transparent',
     marginBottom: SPACING.spacing20,
     alignItems: 'center',
   },

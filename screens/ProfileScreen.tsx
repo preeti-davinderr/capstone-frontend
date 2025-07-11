@@ -125,6 +125,8 @@
 //     alignItems: "center",
 //    },
 // });
+
+
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, StyleSheet, Alert, Switch, TouchableOpacity } from 'react-native';
 import { Text, Button } from 'react-native-paper';
@@ -195,6 +197,17 @@ export default function ProfileScreen() {
     navigation.reset({ index: 0, routes: [{ name: 'SignIn' }] });
   };
 
+  const getCurrentPregnancyWeek = (dueDateString: string | undefined) => {
+    if (!dueDateString) return 1;
+    const dueDate = new Date(dueDateString).getTime();
+    const today = new Date().getTime();
+    const msInWeek = 7 * 24 * 60 * 60 * 1000;
+    const diffInMs = dueDate - today;
+    const weeksLeft = Math.round(diffInMs / msInWeek);
+    const currentWeek = 40 - weeksLeft;
+    return Math.max(1, Math.min(40, currentWeek));
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>My Profile</Text>
@@ -217,7 +230,7 @@ export default function ProfileScreen() {
                 source={require('../assets/profile_images/user.png')} // adjust path based on your folder
                 style={styles.iconImage}
               />
-              <Text style={styles.subText}>22 weeks pregnant</Text>
+              <Text style={styles.subText}>{getCurrentPregnancyWeek(profile?.dueDate)} weeks pregnant</Text>
             </View>
           </View>
           <TouchableOpacity style={styles.editIcon}>
