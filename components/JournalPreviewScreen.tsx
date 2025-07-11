@@ -1,5 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Animated,
+  Easing,
+  Image,
+} from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 
@@ -8,25 +16,34 @@ const { width } = Dimensions.get('window');
 export default function JournalPreviewScreen() {
   const route = useRoute();
   const { images, title } = route.params as {
-    images: { uri: string; description: string }[];
+    images: { url: string; description: string }[];
     title: string;
   };
 
   const [index, setIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const soundRef = useRef<Audio.Sound | null>(null);
 
-  // Animate fade in for each image
   const animateImage = () => {
     fadeAnim.setValue(0);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.setValue(1);
+
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1.05,
+        duration: 3000,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
-  // Start slideshow
   useEffect(() => {
     animateImage();
     const interval = setInterval(() => {
@@ -35,16 +52,14 @@ export default function JournalPreviewScreen() {
         animateImage();
         return next;
       });
-    }, 3000); // Change every 3 seconds
-
+    }, 3500);
     return () => clearInterval(interval);
   }, [images]);
 
-  // Load and play background music
   useEffect(() => {
     const loadSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/embrace-364091.mp3'), // 🎵 Put your music file in `assets/`
+        require('../assets/embrace-364091.mp3'),
         { isLooping: true }
       );
       soundRef.current = sound;
@@ -64,11 +79,23 @@ export default function JournalPreviewScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>{title}</Text>
-      <Animated.Image
-        source={{ uri: images[index].uri }}
-        style={[styles.image, { opacity: fadeAnim }]}
-      />
-      <Text style={styles.caption}>{images[index].description}</Text>
+
+      <View style={styles.imageWrapper}>
+        <Animated.Image
+          source={{ uri: images[index].url }}
+          style={[
+            styles.image,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }],
+            },
+          ]}
+        />
+      </View>
+
+      <Animated.Text style={[styles.caption, { opacity: fadeAnim }]}>
+        {images[index].description}
+      </Animated.Text>
     </View>
   );
 }
@@ -79,23 +106,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#0a0a0a',
     alignItems: 'center',
     paddingTop: 60,
+    paddingHorizontal: 16,
   },
   heading: {
-    fontSize: 24,
+    fontSize: 22,
+    fontWeight: '700',
     color: '#fff',
-    fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 16,
   },
-  image: {
+  imageWrapper: {
     width: width * 0.9,
     height: width * 0.9,
-    borderRadius: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: 16,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'cover',
   },
   caption: {
-    marginTop: 12,
-    color: '#f0f0f0',
     fontSize: 16,
     fontStyle: 'italic',
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 8,
   },
 });
