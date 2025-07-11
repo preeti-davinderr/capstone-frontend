@@ -28,6 +28,9 @@ type Journal = {
 const FamilyHomeScreen = ({ navigation }: any) => {
   const [journals, setJournals] = useState<Journal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const categories = ["All", "Baby Bump", "Baby Shower", "Ultrasound"];
 
   useFocusEffect(
     useCallback(() => {
@@ -44,10 +47,7 @@ const FamilyHomeScreen = ({ navigation }: any) => {
             return;
           }
 
-          // const res = await fetch(
-          //   `${process.env.EXPO_PUBLIC_API_URL}/api/journal?id=${userId}`
-          // );
-          const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal?id=68363fabfa6e794d7eac980a`);
+          const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal/familyCode?id=BTBUWW5`);
           const data = await res.json();
           setJournals(data.data as Journal[]);
         } catch (err) {
@@ -60,13 +60,15 @@ const FamilyHomeScreen = ({ navigation }: any) => {
       fetchJournals();
     }, [])
   );
-  journals.map((el, index)=>console.log(index+">>>>>>>>>>>>>>>>>",el.images))
+
+  const filteredJournals = selectedCategory === "All"
+    ? journals
+    : journals.filter((journal) =>
+        journal.title.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+        journal.designTemplate.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+
   return (
-    <>
-    {/* <MainHeader
-        title={name ? `Hello, ${name}!` : "Health"}
-        subtitle="How are you feeling today?"
-    /> */}
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={styles.header}>
@@ -79,13 +81,20 @@ const FamilyHomeScreen = ({ navigation }: any) => {
 
       {/* Filter Tabs */}
       <View style={styles.filterTabs}>
-        {["All", "Baby Bump", "Baby Shower", "Ultrasound"].map((tab, idx) => (
+        {categories.map((tab) => (
           <TouchableOpacity
-            key={idx}
-            style={[styles.tabButton, idx === 0 && styles.tabSelected]}
+            key={tab}
+            onPress={() => setSelectedCategory(tab)}
+            style={[
+              styles.tabButton,
+              selectedCategory === tab && styles.tabSelected,
+            ]}
           >
             <Text
-              style={[styles.tabText, idx === 0 && styles.tabSelectedText]}
+              style={[
+                styles.tabText,
+                selectedCategory === tab && styles.tabSelectedText,
+              ]}
             >
               {tab}
             </Text>
@@ -94,40 +103,39 @@ const FamilyHomeScreen = ({ navigation }: any) => {
       </View>
 
       {/* Journals */}
-      {journals.length > 0 ? (
-        journals.map((journal) => (
-          <TouchableOpacity 
-          key={journal._id}
-          onPress={() => {
-            navigation.navigate("JournalPreview", {
-             images: journal.images,
-             title: journal.title,
-            });
-          }}
+      {filteredJournals.length > 0 ? (
+        filteredJournals.map((journal) => (
+          <TouchableOpacity
+            key={journal._id}
+            onPress={() => {
+              navigation.navigate("JournalPreview", {
+                images: journal.images,
+                title: journal.title,
+              });
+            }}
           >
-          <View style={styles.card}>
-            <View style={styles.cardTop}>
-              <Text style={styles.cardTitle}>{journal.title}</Text>
-              <Text style={styles.cardDate}>2 days ago</Text>
+            <View style={styles.card}>
+              <View style={styles.cardTop}>
+                <Text style={styles.cardTitle}>{journal.title}</Text>
+                <Text style={styles.cardDate}>2 days ago</Text>
+              </View>
+              <Text style={styles.cardSubtitle}>{journal.designTemplate}</Text>
+              <TouchableOpacity style={styles.tagButton}>
+                <Text style={styles.tagText}>
+                  {journal.images.length} photos
+                </Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.cardSubtitle}>{journal.designTemplate}</Text>
-            <TouchableOpacity style={styles.tagButton}>
-              <Text style={styles.tagText}>
-                {journal.images.length} photos
-              </Text>
-            </TouchableOpacity>
-          </View>
           </TouchableOpacity>
         ))
       ) : (
         <View style={{ marginTop: 20, alignItems: "center" }}>
           <Text style={{ fontSize: 16, color: "#666" }}>
-            No active journals found. Start a new one!
+            No journals found in this category.
           </Text>
         </View>
       )}
     </ScrollView>
-    </>
   );
 };
 
