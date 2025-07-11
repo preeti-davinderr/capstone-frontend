@@ -411,6 +411,8 @@
 //   },
 // });
 
+
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -484,7 +486,16 @@ export default function JournalEntryScreen({ navigation }: any) {
               uri: img.url,
               description: img.description || "",
             })) || [];
-          setImagesByWeek({ [selectedWeek]: loadedImages });
+
+          if (title?.toLowerCase() === "baby bump") {
+            const weekMap: Record<string, ImageItem[]> = {};
+            loadedImages.forEach((img: ImageItem, i: number) => {
+              weekMap[`Week ${i + 1}`] = [img];
+            });
+            setImagesByWeek(weekMap);
+          } else {
+            setImagesByWeek({ [selectedWeek]: loadedImages });
+          }
         })
         .catch((err) => console.error("Error fetching journal:", err));
     }
@@ -551,6 +562,15 @@ export default function JournalEntryScreen({ navigation }: any) {
     try {
       const imagePayloads = await Promise.all(
         (imagesByWeek[selectedWeek] || []).map(async (img) => {
+          const isRemote = !img.uri.startsWith("file://");
+
+          if (isRemote) {
+            return {
+              url: img.uri,
+              description: img.description || "",
+            };
+          }
+
           const fileName = `journal/${Date.now()}-${Math.random().toString(36).substring(2)}.jpg`;
           const contentType = getMimeType(img.uri);
           const base64 = await FileSystem.readAsStringAsync(img.uri, {
@@ -572,21 +592,27 @@ export default function JournalEntryScreen({ navigation }: any) {
         title: editableTitle,
         designTemplate: meta || "Default",
         note,
+        journalId,
         isPrivate,
         week: title?.toLowerCase() === "baby bump" ? selectedWeek : undefined,
       };
 
-      const res = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/journal${isEdit ? `/${journalId}` : ""}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-      const text = await res.text();
-      const data = JSON.parse(text);
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        const text = await res.text();
+        console.error("Unexpected response from server:", text);
+        Alert.alert("Server Error", "Unexpected response from the server.");
+        setLoading(false);
+        return;
+      }
 
       if (!res.ok) {
         Alert.alert("Upload failed", data.error || "Unknown error");
@@ -607,23 +633,23 @@ export default function JournalEntryScreen({ navigation }: any) {
     <>
       <Header title={editableTitle} />
       <ScrollView style={{ flex: 1, padding: 20 }}>
-      {title?.toLowerCase() === "baby bump" && (
-  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
-    <View style={styles.weekTabRow}>
-      {weeks.map((week) => (
-        <TouchableOpacity
-          key={week}
-          style={[styles.weekTab, selectedWeek === week && styles.weekTabSelected]}
-          onPress={() => setSelectedWeek(week)}
-        >
-          <Text style={selectedWeek === week ? styles.weekTabTextSelected : styles.weekTabText}>
-            {week}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  </ScrollView>
-)}
+        {title?.toLowerCase() === "baby bump" && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
+            <View style={styles.weekTabRow}>
+              {weeks.map((week) => (
+                <TouchableOpacity
+                  key={week}
+                  style={[styles.weekTab, selectedWeek === week && styles.weekTabSelected]}
+                  onPress={() => setSelectedWeek(week)}
+                >
+                  <Text style={selectedWeek === week ? styles.weekTabTextSelected : styles.weekTabText}>
+                    {week}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        )}
 
         {allowCustomTitle && (
           <TextInput
@@ -644,18 +670,28 @@ export default function JournalEntryScreen({ navigation }: any) {
         <Text style={styles.subHeading}>{description}</Text>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 16 }}>
-  <View style={styles.previewRow}>
-    {(imagesByWeek[selectedWeek] || []).map((img, index) => (
-      <View key={index} style={styles.imagePreviewWrapper}>
-        <Image source={{ uri: img.uri }} style={styles.imagePreview} />
-      </View>
-    ))}
-    {/* Add Button */}
-    <TouchableOpacity onPress={pickImages} style={styles.imageAdd}>
-      <Ionicons name="add" size={32} color="#aaa" />
-    </TouchableOpacity>
-  </View>
-</ScrollView>
+          <View style={styles.previewRow}>
+            {(imagesByWeek[selectedWeek] || []).map((img, index) => (
+              <View key={index} style={styles.imageWithCaption}>
+                <View style={styles.imageContainer}>
+                  <Image source={{ uri: img.uri }} style={styles.imagePreview} />
+                  <TouchableOpacity style={styles.deleteIcon} onPress={() => deleteImage(index)}>
+                    <Ionicons name="close-circle" size={20} color="#fff" />
+                  </TouchableOpacity>
+                </View>
+                <TextInput
+                  value={img.description}
+                  placeholder="Description..."
+                  style={styles.imageDescription}
+                  onChangeText={(text) => updateDescription(index, text)}
+                />
+              </View>
+            ))}
+            <TouchableOpacity onPress={pickImages} style={styles.imageAdd}>
+              <Ionicons name="add" size={32} color="#aaa" />
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
 
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.cameraButton}>
@@ -683,21 +719,22 @@ export default function JournalEntryScreen({ navigation }: any) {
           <Switch value={isPrivate} onValueChange={setIsPrivate} style={{ marginLeft: 10 }} />
         </View>
 
-        {isEdit && imagesByWeek[selectedWeek]?.length > 0 && (
-          <View style={{ marginTop: 10 }}>
-            <TouchableOpacity
-              style={styles.galleryButton}
-              onPress={() => {
-                navigation.navigate("JournalPreview", {
-                  images: imagesByWeek[selectedWeek],
-                  title,
-                });
-              }}
-            >
-              <Text style={styles.buttonText}>🎞️ Preview Journal Video</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {isEdit && Object.values(imagesByWeek).flat().length > 0 && (
+  <View style={{ marginTop: 10 }}>
+    <TouchableOpacity
+      style={styles.galleryButton}
+      onPress={() => {
+        const allImages = Object.values(imagesByWeek).flat();
+        navigation.navigate("JournalPreview", {
+          images: allImages,
+          title,
+        });
+      }}
+    >
+      <Text style={styles.buttonText}>🎞️ Preview Journal Video</Text>
+    </TouchableOpacity>
+  </View>
+)}
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>
@@ -714,19 +751,16 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 10,
   },
-  weekTabContainer: {
+  weekTabRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    justifyContent: "flex-start",
-    marginBottom: 20,
+    alignItems: "center",
+    paddingHorizontal: 4,
   },
   weekTab: {
     paddingVertical: 6,
     paddingHorizontal: 16,
     backgroundColor: "#eee",
     borderRadius: 20,
-    marginBottom: 8,
     marginRight: 8,
   },
   weekTabSelected: {
@@ -739,23 +773,49 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  imageGrid: {
+  previewRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 16,
+    alignItems: "center",
+    gap: 12,
   },
-  imagePlaceholder: {
-    width: 70,
-    height: 70,
-    backgroundColor: "#f1f1f1",
+  imageContainer: {
+    width: 90,
+    height: 90,
+    borderRadius: 12,
+    overflow: "hidden",
+    backgroundColor: "#eee",
+    position: "relative",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  imagePreview: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    borderRadius: 12,
+  },
+  deleteIcon: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 10,
+    padding: 2,
+    zIndex: 2,
+  },
+  imageAdd: {
+    width: 90,
+    height: 90,
+    borderRadius: 12,
+    backgroundColor: "#f2f2f2",
     justifyContent: "center",
     alignItems: "center",
-  },
-  gridImage: {
-    width: 70,
-    height: 70,
-    borderRadius: 10,
+    borderStyle: "dashed",
+    borderWidth: 1.5,
+    borderColor: "#ccc",
   },
   buttonRow: {
     flexDirection: "row",
@@ -807,42 +867,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  weekTabRow: {
-    flexDirection: "row",
+  imageWithCaption: {
     alignItems: "center",
+    marginRight: 12,
+    width: 90,
+  },
+  imageDescription: {
+    fontSize: 12,
+    color: "#555",
+    marginTop: 4,
     paddingHorizontal: 4,
-  },
-  previewRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  imagePreviewWrapper: {
-    width: 90,
-    height: 90,
-    borderRadius: 12,
-    overflow: "hidden",
-    backgroundColor: "#eee",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  imagePreview: {
+    textAlign: "center",
     width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  imageAdd: {
-    width: 90,
-    height: 90,
-    borderRadius: 12,
-    backgroundColor: "#f2f2f2",
-    justifyContent: "center",
-    alignItems: "center",
-    borderStyle: "dashed",
-    borderWidth: 1.5,
-    borderColor: "#ccc",
   },
 });
