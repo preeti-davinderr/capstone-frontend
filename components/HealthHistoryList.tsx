@@ -42,7 +42,7 @@ export default function HealthHistoryList<T>({
   const handleDeletePress = (item: T) => {
     Alert.alert(
       "Confirm Delete",
-      "Are you sure you want to delete this entry?",
+      "Are you sure you want to delete?",
       [
         { text: "Cancel", style: "cancel" },
         {
