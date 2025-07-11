@@ -70,7 +70,6 @@ export default function SignInScreen({ navigation }: any) {
         label="Create New Account"
         onPress={() => navigation.navigate("WhoFor")}
         style={styles.createAccountBtn}
-        buttonLabel={styles.createAccountLabel}
       />
     </ScrollView>
   );

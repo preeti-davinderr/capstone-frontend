@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.spacing8,
   },
   inputLabel: {
-    ...TEXT_STYLES.bodySmall,
+    ...TEXT_STYLES.bodyBase,
     marginBottom: SPACING.spacing4,
   },
   input: {

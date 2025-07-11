@@ -159,7 +159,7 @@ export default function HealthScreen() {
                 <MaterialCommunityIcons
                   name="scale"
                   size={28}
-                  color={COLORS.purple500}
+                  color={COLORS.purple700}
                 />
               </View>
               <Text style={styles.cardText}>Weight</Text>
@@ -189,7 +189,7 @@ export default function HealthScreen() {
                 <MaterialCommunityIcons
                   name="sync"
                   size={28}
-                  color={COLORS.purple500}
+                  color={COLORS.purple700}
                 />
               </View>
               <Text style={styles.cardText}>Sync Device</Text>
@@ -227,7 +227,7 @@ export default function HealthScreen() {
               <MaterialCommunityIcons
                 name="scale"
                 size={24}
-                color={COLORS.purple500}
+                color={COLORS.purple700}
               />
             </View>
             <View style={styles.textContainer}>
@@ -256,7 +256,7 @@ export default function HealthScreen() {
                 <MaterialCommunityIcons
                   name="watch"
                   size={24}
-                  color={COLORS.purple500}
+                  color={COLORS.purple700}
                 />
               </View>
               <View style={{ marginLeft: SPACING.spacing12 }}>
@@ -305,7 +305,7 @@ export default function HealthScreen() {
               <MaterialCommunityIcons
                 name="sleep"
                 size={20}
-                color={COLORS.purple500}
+                color={COLORS.purple700}
               />
               <Text style={styles.metricLabel}>Sleep</Text>
               <Text style={styles.metricValue}>
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
   purpleBackground: { backgroundColor: COLORS.purple100 },
   peachBackground: { backgroundColor: COLORS.peach400 + "20" },
   cardText: {
-    ...TEXT_STYLES.bodySmall,
+    ...TEXT_STYLES.bodyBase,
     marginTop: SPACING.spacing8,
   },
   card: {
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   },
   syncNow: {
     ...TEXT_STYLES.caption,
-    color: COLORS.purple500,
+    color: COLORS.purple700,
     fontWeight:"bold"
   },
   fitbitMetricsRow: {
