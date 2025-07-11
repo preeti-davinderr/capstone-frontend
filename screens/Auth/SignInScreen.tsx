@@ -30,6 +30,7 @@ export default function SignInScreen({ navigation }: any) {
           id: data.user.id,
           role: data.user.role,
           name: data.user.name,
+          familyCode: data.user.familyCode,
         })
       );
 
