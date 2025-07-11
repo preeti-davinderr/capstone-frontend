@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import HorizontalScroll from "../components/HorizontalScroll";
+import PregnancyProgressCard from "../components/PregnancyProgressCard";
+import WeekDevelopmentCard from "../components/WeekDevelopmentCard";
+import HighlightsGrid from "../components/HighlightsGrid";
+import WeekHighlightsDetails from "../components/WeekHighlightsDetails";
+import WeekHighlightsList from "../components/WeekHighlightsList";
+import ArticleList from "../components/ArticleList";
 import { weekData, WeekDetails } from "../components/weekData";
 import FloatingBotButton from "../components/FloatingBotButton";
 import MainHeader from "../components/MainHeader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import GradientCard from "../components/GradientCard";
+import WeekDevelopmentInfo from "../components/WeekDevelopmentInfo";
+import TrimesterCare from "../components/TrimesterCare";
 
 const HomeScreen = () => {
   const [selectedWeek, setSelectedWeek] = useState<number>(5);
@@ -38,26 +47,41 @@ const HomeScreen = () => {
         subtitle="How are you feeling today?"
       />
 
-      <View style={{ paddingTop: 40 }}>
+      <View>
         <ScrollView style={styles.container}>
           <HorizontalScroll
             weekData={weekData}
-            style={{ marginBottom: 16 }}
+            style={{ marginBottom: 24 }}
             onWeekChange={(week) => setSelectedWeek(week)}
           />
+          <PregnancyProgressCard
+            week={selectedWeek}
+            dueDate="Aug 15"
+            daysLeft={112 - (selectedWeek - 23) * 7}
+            trimester={
+              selectedWeek < 13
+                ? "First Trimester"
+                : selectedWeek < 27
+                ? "Second Trimester"
+                : "Third Trimester"
+            }
+            style={{ marginBottom: 24 }}
+          />
 
-          <Text style={styles.description}>{currentWeekData.description}</Text>
+          <WeekDevelopmentCard
+            image={currentWeekData.image}
+            size={currentWeekData.size}
+            weight={currentWeekData.weight}
+            developments={currentWeekData.developments}
+          />
 
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>What's Developing This Week</Text>
-            {currentWeekData.developments.map((item, index) => (
-              <Text key={index} style={styles.bullet}>
-                • {item}
-              </Text>
-            ))}
-          </View>
+          <WeekDevelopmentInfo
+            footer={currentWeekData.footer}
+            description={currentWeekData.description}
+          />
 
           <Text style={styles.sectionTitle}>This Week's Highlights</Text>
+          {/*
           <View style={styles.highlightsGrid}>
             {currentWeekData.highlights.map((item, index) => (
               <View key={index} style={styles.highlightCard}>
@@ -67,8 +91,16 @@ const HomeScreen = () => {
               </View>
             ))}
           </View>
+          */}
+          {/* <WeekHighlightsDetails highlights={currentWeekData.highlights.map(h => ({
+  icon: h.icon,
+  title: h.title,
+  description: h.subtitle // subtitle -> description for timeline style
+}))} /> */}
+<WeekHighlightsList highlights={currentWeekData.highlights} />
 
           <Text style={styles.sectionTitle}>Useful Articles</Text>
+          {/*
           {currentWeekData.articles.map((article, index) => (
             <View key={index} style={styles.articleCard}>
               <View style={styles.articleLabel}>
@@ -83,6 +115,20 @@ const HomeScreen = () => {
               </View>
             </View>
           ))}
+          */}
+          <ArticleList articles={currentWeekData.articles} />
+
+          <TrimesterCare
+            title={
+              selectedWeek < 13
+                ? "First Trimester Care"
+                : selectedWeek < 27
+                ? "Second Trimester Care"
+                : "Third Trimester Care"
+            }
+          />
+
+          <View style={{ height: 240 }} />
         </ScrollView>
         <FloatingBotButton />
       </View>
