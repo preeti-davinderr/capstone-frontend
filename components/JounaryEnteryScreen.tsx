@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  Button,
   TextInput,
   Switch,
   Image,
@@ -10,11 +9,17 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { Ionicons } from "@expo/vector-icons";
+
+const { width } = Dimensions.get("window");
+
 import Header from "./SubHeader";
 
 interface ImageItem {
@@ -26,6 +31,7 @@ export default function JournalEntryScreen({ navigation }: any) {
   const route = useRoute();
   const {
     title,
+    allowCustomTitle = false,
     description,
     meta,
     journalId: passedJournalId,
@@ -35,11 +41,16 @@ export default function JournalEntryScreen({ navigation }: any) {
   const [note, setNote] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [images, setImages] = useState<ImageItem[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [journalId, setJournalId] = useState<string | null>(
     passedJournalId || null
   );
   const [userID, setUserID] = useState<string | null>(null);
+
+  const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+  const [selectedWeek, setSelectedWeek] = useState('Week 1');
+  const [editableTitle, setEditableTitle] = useState(title || "Untitled Journal");
 
   useEffect(() => {
     const fetchUserID = async () => {
@@ -66,7 +77,7 @@ export default function JournalEntryScreen({ navigation }: any) {
           setIsPrivate(data.data?.isPrivate || false);
           const loadedImages =
             data.data?.images?.map((img: any) => ({
-              uri: img.url,
+              url: img.url,
               description: img.description || "",
             })) || [];
           setImages(loadedImages);
@@ -84,7 +95,7 @@ export default function JournalEntryScreen({ navigation }: any) {
 
     if (!result.canceled && result.assets) {
       const selected = result.assets.map((img) => ({
-        uri: img.uri,
+        url: img.uri,
         description: "",
       }));
       setImages((prev) => [...prev, ...selected]);
@@ -194,121 +205,208 @@ export default function JournalEntryScreen({ navigation }: any) {
 
   return (
     <>
-    <Header title={title} />
-    <ScrollView style={{ flex: 1, padding: 20 }}>
-      {/* <Text style={styles.heading}>{title}</Text> */}
-      <Text style={styles.subHeading}>{description}</Text>
+      <Header title={editableTitle} />
+      <ScrollView style={{ flex: 1, padding: 20 }}>
+        <View style={styles.weekTabContainer}>
+          {weeks.map((week) => (
+            <TouchableOpacity
+              key={week}
+              style={[styles.weekTab, selectedWeek === week && styles.weekTabSelected]}
+              onPress={() => setSelectedWeek(week)}
+            >
+              <Text
+                style={
+                  selectedWeek === week ? styles.weekTabTextSelected : styles.weekTabText
+                }
+              >
+                {week}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        {allowCustomTitle && (
+        <TextInput
+          style={{
+            fontSize: 15,
+            fontWeight: '600',
+            marginBottom: 10,
+            borderBottomWidth: 1,
+            borderBottomColor: '#ccc',
+            paddingBottom: 4,
+          }}
+          placeholder="Enter your journal title"
+          value={editableTitle}
+          onChangeText={setEditableTitle}
+        />
+      )}
+        <Text style={styles.subHeading}>{description}</Text>
+  
+        <View style={styles.imageGrid}>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.imagePlaceholder}
+              onPress={pickImages}
+            >
+              {images[index] ? (
+                <Image source={{ uri: images[index].uri }} style={styles.gridImage} />
+              ) : (
+                <Ionicons name="add" size={30} color="#aaa" />
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      <Button title="📸 Upload Images" onPress={pickImages} />
-
-      {images.map((img, index) => (
-        <View key={index} style={styles.imageBlock}>
-          <Image source={{ uri: img.uri }} style={styles.image} />
-          <TextInput
-            style={styles.imageDesc}
-            placeholder="Image description..."
-            value={img.description}
-            onChangeText={(text) => updateDescription(index, text)}
-          />
-          <TouchableOpacity onPress={() => deleteImage(index)}>
-            <Text style={styles.deleteText}>❌ Remove</Text>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.cameraButton}>
+            <Ionicons name="camera" size={16} color="#fff" />
+            <Text style={styles.buttonText}>Take Photo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.galleryButton} onPress={pickImages}>
+            <Ionicons name="image" size={16} color="#fff" />
+            <Text style={styles.buttonText}>Gallery</Text>
           </TouchableOpacity>
         </View>
-      ))}
 
-      <TextInput
-        style={styles.noteBox}
-        multiline
-        maxLength={200}
-        placeholder="Share your thoughts here..."
-        value={note}
-        onChangeText={setNote}
-      />
-      <Text style={{ textAlign: "right", marginTop: 5 }}>
-        {note.length}/200
-      </Text>
-
-      <View
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 15 }}
-      >
-        <Text>Keep it Private</Text>
-        <Switch
-          value={isPrivate}
-          onValueChange={setIsPrivate}
-          style={{ marginLeft: 10 }}
+        <Text style={styles.label}>How are you feeling today?</Text>
+        <TextInput
+          style={styles.noteInput}
+          multiline
+          maxLength={200}
+          placeholder="Share your thoughts and emotions..."
+          value={note}
+          onChangeText={setNote}
         />
-      </View>
 
-      {isEdit && images.length > 0 && (
-        <View style={{ marginTop: 10 }}>
-          <Button
-            title="🎞️ Preview Journal Video"
-            onPress={() => {
-              navigation.navigate("JournalPreview", {
-                images,
-                title,
-              });
-            }}
-            color="#007AFF"
+        <View
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 15 }}
+        >
+          <Text>Keep it Private</Text>
+          <Switch
+            value={isPrivate}
+            onValueChange={setIsPrivate}
+            style={{ marginLeft: 10 }}
           />
         </View>
-      )}
 
-      <View style={{ marginTop: 20 }}>
-        <Button
-          title={
-            loading
-              ? "Saving..."
-              : isEdit
-              ? "💾 Update Journal"
-              : "💾 Save Journal"
-          }
-          onPress={handleSave}
-        />
-      </View>
-    </ScrollView>
+        {isEdit && images.length > 0 && (
+          <View style={{ marginTop: 10 }}>
+            <TouchableOpacity
+              style={styles.galleryButton}
+              onPress={() => {
+                navigation.navigate("JournalPreview", {
+                  images,
+                  title,
+                });
+              }}
+            >
+              <Text style={styles.buttonText}>🎞️ Preview Journal Video</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.saveButtonText}>
+            {loading ? "Saving..." : isEdit ? "Update Journal" : "Save Journal"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    fontSize: 22,
-    fontWeight: "bold",
-  },
   subHeading: {
     color: "#666",
     marginBottom: 10,
   },
-  imageBlock: {
-    alignItems: "center",
+  weekTabContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 20,
+  },
+  weekTab: {
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    backgroundColor: "#eee",
+    borderRadius: 20,
+  },
+  weekTabSelected: {
+    backgroundColor: "#B89CFC",
+  },
+  weekTabText: {
+    color: "#666",
+  },
+  weekTabTextSelected: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  imageGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginVertical: 16,
   },
-  image: {
-    width: 220,
-    height: 220,
+  imagePlaceholder: {
+    width: 70,
+    height: 70,
+    backgroundColor: "#f1f1f1",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  gridImage: {
+    width: 70,
+    height: 70,
     borderRadius: 10,
   },
-  imageDesc: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 8,
-    marginTop: 8,
-    width: 220,
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
-  deleteText: {
-    marginTop: 6,
-    color: "#d00",
-    fontSize: 12,
-  },
-  noteBox: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+  cameraButton: {
+    flexDirection: "row",
+    backgroundColor: "#A88BFA",
     padding: 10,
-    height: 120,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  galleryButton: {
+    flexDirection: "row",
+    backgroundColor: "#A88BFA",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    marginLeft: 6,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 8,
+  },
+  noteInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    padding: 10,
+    minHeight: 100,
     textAlignVertical: "top",
-    marginTop: 10,
+    backgroundColor: "#fff",
+  },
+  saveButton: {
+    backgroundColor: "#A88BFA",
+    padding: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
