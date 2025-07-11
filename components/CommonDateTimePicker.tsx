@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     color: "#888",
   },
   label: {
-    ...TEXT_STYLES.bodySmall,
+    ...TEXT_STYLES.bodyBase,
     marginBottom: 4,
   },
 });

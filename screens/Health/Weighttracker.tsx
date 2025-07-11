@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   inputLabel: {
-    ...TEXT_STYLES.bodySmall,
+    ...TEXT_STYLES.bodyBase,
     marginBottom: SPACING.spacing4,
     marginTop: SPACING.spacing8,
   },

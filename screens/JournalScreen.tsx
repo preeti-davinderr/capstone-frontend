@@ -295,83 +295,92 @@
 //     justifyContent: 'center',
 //   },
 // });
-import React, { useState, useCallback } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons, Entypo } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { Ionicons, Entypo } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 
-import MainHeader from '../components/MainHeader';
-import CommonButton from '../components/CommonButton';
+import MainHeader from "../components/MainHeader";
+import CommonButton from "../components/CommonButton";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../styles/globalStyles";
 
-    type ImageEntry = {
-      url: string;
-      description: string;
-      addedAt: string;
-    };
+type ImageEntry = {
+  url: string;
+  description: string;
+  addedAt: string;
+};
 
-    type Journal = {
-      _id: string;
-      title: string;
-      designTemplate: string;
-      createdAt: string;
-      images: ImageEntry[];
-    };
+type Journal = {
+  _id: string;
+  title: string;
+  designTemplate: string;
+  createdAt: string;
+  images: ImageEntry[];
+};
 
-    
-
-export default function JournalScreen({navigation}: any) {
+export default function JournalScreen({ navigation }: any) {
   const [journals, setJournals] = useState<Journal[]>([]);
 
-     const journalData = [
-        {
-          title: 'Baby Bump',
-          subtitle: 'Weekly photo diary',
-          description: "Document your growing bump with weekly photos and notes about how you're feeling.",
-          meta: '40 weeks',
-          icon: () => <Ionicons name="camera-outline" size={24} color="#fff" />,
-          bgColor: '#8C63C7',
-        },
-        {
-          title: 'Dear Baby',
-          subtitle: 'Letters to your little one',
-          description: 'Write heartfelt letters to your baby throughout your pregnancy journey.',
-          meta: 'Letters',
-          icon: () => <Ionicons name="heart" size={24} color="#fff" />,
-          bgColor: '#EC4899',
-        },
-        {
-          title: 'My Body My Feelings',
-          subtitle: 'Physical & emotional changes',
-          description: 'Track how your body and emotions change throughout pregnancy.',
-          meta: 'Feelings',
-          icon: () => <Entypo name="emoji-happy" size={24} color="#fff" />,
-          bgColor: '#F97316',
-        },
-        {
-          title: 'First Movements',
-          subtitle: 'Baby’s kicks & movements',
-          description: 'Record those magical first kicks and movements you feel from your baby.',
-          meta: 'Kicks',
-          icon: () => <Entypo name="hand" size={24} color="#fff" />,
-          bgColor: '#22C55E',
-        },
-      ];
-
-
-
+  const journalData = [
+    {
+      title: "Baby Bump",
+      subtitle: "Weekly photo diary",
+      description:
+        "Document your growing bump with weekly photos and notes about how you're feeling.",
+      meta: "40 weeks",
+      icon: () => <Ionicons name="camera-outline" size={24} color="#fff" />,
+      bgColor: "#8C63C7",
+    },
+    {
+      title: "Dear Baby",
+      subtitle: "Letters to your little one",
+      description:
+        "Write heartfelt letters to your baby throughout your pregnancy journey.",
+      meta: "Letters",
+      icon: () => <Ionicons name="heart" size={24} color="#fff" />,
+      bgColor: "#EC4899",
+    },
+    {
+      title: "My Body My Feelings",
+      subtitle: "Physical & emotional changes",
+      description:
+        "Track how your body and emotions change throughout pregnancy.",
+      meta: "Feelings",
+      icon: () => <Entypo name="emoji-happy" size={24} color="#fff" />,
+      bgColor: "#F97316",
+    },
+    {
+      title: "First Movements",
+      subtitle: "Baby’s kicks & movements",
+      description:
+        "Record those magical first kicks and movements you feel from your baby.",
+      meta: "Kicks",
+      icon: () => <Entypo name="hand" size={24} color="#fff" />,
+      bgColor: "#22C55E",
+    },
+  ];
 
   useFocusEffect(
     useCallback(() => {
       const fetchJournals = async () => {
-        const user = await AsyncStorage.getItem('user');
+        const user = await AsyncStorage.getItem("user");
         const parsed = user ? JSON.parse(user) : null;
         const userId = parsed?.id;
 
         if (!userId) return;
 
-        const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal?id=${userId}`);
+        const res = await fetch(
+          `${process.env.EXPO_PUBLIC_API_URL}/api/journal?id=${userId}`
+        );
         const data = await res.json();
         setJournals(data.data);
       };
@@ -379,172 +388,185 @@ export default function JournalScreen({navigation}: any) {
     }, [])
   );
 
-   const getJournalIcon = (type?: string) => {
-  const key = type?.toLowerCase() || '';
-  switch (key) {
-    case 'Baby Bump':
-      return <Ionicons name="happy" size={20} color="#fff" />;
-    case 'dear baby':
-      return <Ionicons name="heart-outline" size={20} color="#fff" />;
-    case 'my body my feelings':
-      return <Ionicons name="happy" size={20} color="#fff" />;
-    case 'first movements':
-      return <Ionicons name="hand-left" size={20} color="#fff" />;
-    default:
-      return <Ionicons name="book-outline" size={20} color="#fff" />;
-  }
-};
+  const getJournalIcon = (type?: string) => {
+    const key = type?.toLowerCase() || "";
+    switch (key) {
+      case "Baby Bump":
+        return <Ionicons name="happy" size={20} color="#fff" />;
+      case "dear baby":
+        return <Ionicons name="heart-outline" size={20} color="#fff" />;
+      case "my body my feelings":
+        return <Ionicons name="happy" size={20} color="#fff" />;
+      case "first movements":
+        return <Ionicons name="hand-left" size={20} color="#fff" />;
+      default:
+        return <Ionicons name="book-outline" size={20} color="#fff" />;
+    }
+  };
 
-const getJournalBgColor = (type?: string) => {
-  const key = type?.toLowerCase() || '';
-  switch (key) {
-    case 'baby bump':
-      return '#8C63C7';
-    case 'dear baby':
-      return '#EC4899';
-    case 'my body my feelings':
-      return '#F97316';
-    case 'first movements':
-      return '#22C55E';
-    default:
-      return '#F3E8FF';
-  }
-};
-
-
+  const getJournalBgColor = (type?: string) => {
+    const key = type?.toLowerCase() || "";
+    switch (key) {
+      case "baby bump":
+        return "#8C63C7";
+      case "dear baby":
+        return "#EC4899";
+      case "my body my feelings":
+        return "#F97316";
+      case "first movements":
+        return "#22C55E";
+      default:
+        return "#F3E8FF";
+    }
+  };
 
   return (
-
-    <>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: COLORS.background }}
+      edges={["left", "right", "bottom"]} // ⬅️ Exclude "top"
+    >
       <MainHeader title="My Journal" subtitle="Track your journals." />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-
-      {/* Get Started Card */}
-      <View style={styles.getStartedCard}>
-        <LinearGradient
-          colors={['#E6D6F2', '#FAD9E6']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.getStartedGradient}
-        />
-        <Ionicons name="book" size={32} color="#8C63C7" style={styles.getStartedIcon} />
-        <Text style={styles.getStartedTitle}>Start Your Pregnancy Journey</Text>
-        <Text style={styles.getStartedSubtitle}>
-            Capture precious moments and{'\n'} memories
-          </Text>
-        <TouchableOpacity
-          style={styles.getStartedButton}
-          onPress={() => navigation.navigate('journalEntery', { allowCustomTitle: true })}
-        >
-          <Text style={styles.getStartedButtonText}>Get Started</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Active Journals */}
-      {journals.map((journal) => (
-        <TouchableOpacity
-          key={journal._id}
-          style={styles.activeCard}
-          onPress={() => {
-            navigation.navigate('journalEntery', {
-              journalId: journal._id,
-              title: journal.title,
-              description: journal.designTemplate,
-              meta: journal.designTemplate,
-              isEdit: true,
-            });
-          }}
-        >
-          <View
-            style={[
-              styles.activeIconWrapper,
-              { backgroundColor: getJournalBgColor(journal.title) },
-            ]}
-          >
-            {getJournalIcon(journal.title)}
-          </View>
-          <View style={styles.activeTextGroup}>
-            <Text style={styles.activeTitle}>{journal.title}</Text>
-            <Text style={styles.activeMeta}>Week 24 • Last updated 2 days ago</Text>
-          </View>
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color="#6B7280"
-            style={styles.chevron}
+        {/* Get Started Card */}
+        <View style={styles.getStartedCard}>
+          <LinearGradient
+            colors={["#E6D6F2", "#FAD9E6"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.getStartedGradient}
           />
-        </TouchableOpacity>
-      ))}
+          <Ionicons
+            name="book"
+            size={32}
+            color="#8C63C7"
+            style={styles.getStartedIcon}
+          />
+          <Text style={styles.getStartedTitle}>
+            Start Your Pregnancy Journey
+          </Text>
+          <Text style={styles.getStartedSubtitle}>
+            Capture precious moments and{"\n"} memories
+          </Text>
+          <TouchableOpacity
+            style={styles.getStartedButton}
+            onPress={() =>
+              navigation.navigate("journalEntery", { allowCustomTitle: true })
+            }
+          >
+            <Text style={styles.getStartedButtonText}>Get Started</Text>
+          </TouchableOpacity>
+        </View>
 
-
-
-      {/* Pre-Designed Journals */}
-      <Text style={styles.sectionTitle}>Pre-Designed Journals</Text>
-      {journalData.map((item, index) => (
-        <View key={index} style={styles.journalCard}>
-          <View style={[styles.journalIconContainer, { backgroundColor: item.bgColor }]}>
-            {item.icon()}
-          </View>
-          <View style={styles.journalTextGroup}>
-            <Text style={styles.journalTitle}>{item.title}</Text>
-            <Text style={styles.journalMeta}>{item.subtitle}</Text>
-            <Text style={styles.journalDescription}>{item.description}</Text>
-          </View>
-          <CommonButton
-            label="Start"
-            size="small"
-            style={{ width: 70 }}
+        {/* Active Journals */}
+        {journals.map((journal) => (
+          <TouchableOpacity
+            key={journal._id}
+            style={styles.activeCard}
             onPress={() => {
-              navigation.navigate('journalEntery', {
-                title: item.title,
-                description: item.subtitle,
-                meta: item.meta,
+              navigation.navigate("journalEntery", {
+                journalId: journal._id,
+                title: journal.title,
+                description: journal.designTemplate,
+                meta: journal.designTemplate,
+                isEdit: true,
               });
             }}
-          />
-        </View>
-      ))}
-    </ScrollView>
-  </>
+          >
+            <View
+              style={[
+                styles.activeIconWrapper,
+                { backgroundColor: getJournalBgColor(journal.title) },
+              ]}
+            >
+              {getJournalIcon(journal.title)}
+            </View>
+            <View style={styles.activeTextGroup}>
+              <Text style={styles.activeTitle}>{journal.title}</Text>
+              <Text style={styles.activeMeta}>
+                Week 24 • Last updated 2 days ago
+              </Text>
+            </View>
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color="#6B7280"
+              style={styles.chevron}
+            />
+          </TouchableOpacity>
+        ))}
+
+        {/* Pre-Designed Journals */}
+        <Text style={styles.sectionTitle}>Pre-Designed Journals</Text>
+        {journalData.map((item, index) => (
+          <View key={index} style={styles.journalCard}>
+            <View
+              style={[
+                styles.journalIconContainer,
+                { backgroundColor: item.bgColor },
+              ]}
+            >
+              {item.icon()}
+            </View>
+            <View style={styles.journalTextGroup}>
+              <Text style={styles.journalTitle}>{item.title}</Text>
+              <Text style={styles.journalMeta}>{item.subtitle}</Text>
+              <Text style={styles.journalDescription}>{item.description}</Text>
+            </View>
+            <CommonButton
+              label="Start"
+              size="small"
+              style={{ width: 70 }}
+              onPress={() => {
+                navigation.navigate("journalEntery", {
+                  title: item.title,
+                  description: item.subtitle,
+                  meta: item.meta,
+                });
+              }}
+            />
+          </View>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: "#F8F8F8",
     padding: 16,
+    paddingBottom: 82,
   },
   notificationIcon: {
-    position: 'absolute',
+    position: "absolute",
     top: 16,
     right: 16,
     padding: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
     elevation: 2,
   },
   notificationDot: {
-    position: 'absolute',
+    position: "absolute",
     top: 6,
     right: 6,
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'red',
+    backgroundColor: "red",
   },
   getStartedCard: {
     borderRadius: 12,
     padding: 24,
     marginBottom: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-    overflow: 'hidden',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+    overflow: "hidden",
   },
   getStartedGradient: {
     ...StyleSheet.absoluteFillObject,
@@ -555,43 +577,43 @@ const styles = StyleSheet.create({
   },
   getStartedTitle: {
     fontSize: 22,
-    fontWeight: '600',
-    color: '#8C63C7',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "#8C63C7",
+    textAlign: "center",
     marginBottom: 8,
   },
   getStartedSubtitle: {
     fontSize: 15,
-    color: '#333',
-    textAlign: 'center',
+    color: "#333",
+    textAlign: "center",
     marginBottom: 16,
   },
   getStartedButton: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 999,
     paddingVertical: 10,
     paddingHorizontal: 28,
   },
   getStartedButtonText: {
-    color: '#8C63C7',
+    color: "#8C63C7",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 24,
     marginBottom: 12,
-    color: '#333',
+    color: "#333",
   },
   journalCard: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
@@ -602,8 +624,8 @@ const styles = StyleSheet.create({
     height: 52,
     top: 0,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 16,
   },
   journalTextGroup: {
@@ -611,34 +633,34 @@ const styles = StyleSheet.create({
   },
   journalTitle: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: "600",
+    color: "#1F2937",
   },
   journalMeta: {
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
     marginTop: 2,
   },
   journalDescription: {
     fontSize: 12,
-    color: '#4B5563',
+    color: "#4B5563",
     marginTop: 4,
   },
   activeCard: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 12,
   },
   activeIconWrapper: {
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#F3E8FF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#F3E8FF",
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 16,
   },
   activeTextGroup: {
@@ -646,12 +668,12 @@ const styles = StyleSheet.create({
   },
   activeTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: "600",
+    color: "#1F2937",
   },
   activeMeta: {
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
     marginTop: 2,
   },
   chevron: {

@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import GradientCard from "../components/GradientCard";
 import WeekDevelopmentInfo from "../components/WeekDevelopmentInfo";
 import TrimesterCare from "../components/TrimesterCare";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const getCurrentPregnancyWeek = (dueDateString: string) => {
   const dueDate = new Date(dueDateString).getTime();
@@ -56,14 +57,20 @@ const HomeScreen = () => {
   )!;
 
   return (
-    <>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "#fff" }}
+      edges={["left", "right", "bottom"]}
+    >
       <MainHeader
         title={name ? `Hello, ${name}!` : "Health"}
         subtitle="How are you feeling today?"
       />
 
-      <View>
-        <ScrollView style={styles.container}>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 40 }} // ensures content does not hide under the button
+        >
           <HorizontalScroll
             weekData={weekData}
             style={{ marginBottom: 24 }}
@@ -96,41 +103,9 @@ const HomeScreen = () => {
           />
 
           <Text style={styles.sectionTitle}>This Week's Highlights</Text>
-          {/*
-          <View style={styles.highlightsGrid}>
-            {currentWeekData.highlights.map((item, index) => (
-              <View key={index} style={styles.highlightCard}>
-                <Text style={styles.icon}>{item.icon}</Text>
-                <Text style={styles.highlightTitle}>{item.title}</Text>
-                <Text style={styles.highlightSubtitle}>{item.subtitle}</Text>
-              </View>
-            ))}
-          </View>
-          */}
-          {/* <WeekHighlightsDetails highlights={currentWeekData.highlights.map(h => ({
-  icon: h.icon,
-  title: h.title,
-  description: h.subtitle // subtitle -> description for timeline style
-}))} /> */}
-<WeekHighlightsList highlights={currentWeekData.highlights} />
+          <WeekHighlightsList highlights={currentWeekData.highlights} />
 
           <Text style={styles.sectionTitle}>Useful Articles</Text>
-          {/*
-          {currentWeekData.articles.map((article, index) => (
-            <View key={index} style={styles.articleCard}>
-              <View style={styles.articleLabel}>
-                <Text>Article</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.articleTitle}>{article.title}</Text>
-                <Text style={styles.articleSubtitle}>{article.subtitle}</Text>
-                <Text style={styles.articleMeta}>
-                  {article.readTime} • {article.date}
-                </Text>
-              </View>
-            </View>
-          ))}
-          */}
           <ArticleList articles={currentWeekData.articles} />
 
           <TrimesterCare
@@ -143,11 +118,11 @@ const HomeScreen = () => {
             }
           />
 
-          <View style={{ height: 240 }} />
+         
         </ScrollView>
         <FloatingBotButton />
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 

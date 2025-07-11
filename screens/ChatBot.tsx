@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -9,15 +9,16 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import Header from "../components/SubHeader";
+import SubHeader from "../components/SubHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../styles/globalStyles";
 
 export default function ChatBot() {
   const [messages, setMessages] = useState([
     { from: "bot", text: "Hi! Ask me anything about pregnancy." },
   ]);
   const [input, setInput] = useState("");
-  
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -31,7 +32,9 @@ export default function ChatBot() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: input }),
+          body: JSON.stringify({
+            message: `Please answer only in the context of pregnancy and reply in a maximum of 5 lines:\n${input}`,
+          }),
         }
       );
       console.log("input", input);
@@ -47,57 +50,102 @@ export default function ChatBot() {
     }
 
     setInput("");
+
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
   };
 
   return (
     <>
-      <Header title="AI assistant" />
+      <SubHeader title="AI Assistant" />
 
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <ScrollView
-          style={styles.chatBox}
-          contentContainerStyle={{ paddingBottom: 20 }}
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // adjust 80 to your SubHeader height if needed
         >
-          {messages.map((msg, index) => (
-            <Text
-              key={index}
-              style={msg.from === "bot" ? styles.bot : styles.user}
-            >
-              {msg.from === "bot" ? "🤖" : "👩"} {msg.text}
-            </Text>
-          ))}
-        </ScrollView>
+          <ScrollView
+            ref={scrollViewRef}
+            style={styles.chatBox}
+            contentContainerStyle={{}}
+          >
+            {messages.map((msg, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.messageBubble,
+                  msg.from === "user" ? styles.userBubble : styles.botBubble,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.messageText,
+                    msg.from === "user" ? styles.userText : styles.botText,
+                  ]}
+                >
+                  {msg.text}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
 
-        <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
-            value={input}
-            onChangeText={setInput}
-            placeholder="Type your question..."
-          />
-          <Button title="Send" onPress={sendMessage} />
-        </View>
-      </KeyboardAvoidingView>
+          <View style={styles.inputRow}>
+            <TextInput
+              style={styles.input}
+              value={input}
+              onChangeText={setInput}
+              placeholder="Type your question..."
+            />
+            <Button title="Send" onPress={sendMessage} />
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
-  chatBox: { flex: 1, marginBottom: 10 },
-  bot: { color: "blue", marginVertical: 4 },
-  user: { color: "black", textAlign: "right", marginVertical: 4 },
+  container: {
+    flex: 1,
+    paddingTop: 0,
+    paddingHorizontal: 16,
+    backgroundColor: COLORS.background,
+  },
+  chatBox: { flex: 1 },
   inputRow: { flexDirection: "row", alignItems: "center", marginBottom: 40 },
   input: {
     flex: 1,
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
-
     marginRight: 8,
     borderRadius: 8,
+  },
+  messageBubble: {
+    maxWidth: "75%",
+    padding: 12,
+    borderRadius: 16,
+    marginVertical: 4,
+  },
+  userBubble: {
+    alignSelf: "flex-end",
+    backgroundColor: "#6200ee",
+    borderTopRightRadius: 0,
+  },
+  botBubble: {
+    alignSelf: "flex-start",
+    backgroundColor: "#e0e0e0",
+    borderTopLeftRadius: 0,
+  },
+  messageText: {
+    fontSize: 16,
+  },
+  userText: {
+    color: "#fff",
+  },
+  botText: {
+    color: "#000",
   },
 });
