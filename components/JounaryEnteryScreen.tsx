@@ -552,8 +552,9 @@ export default function JournalEntryScreen({ navigation }: any) {
       return;
     }
 
-    if (!imagesByWeek[selectedWeek] || imagesByWeek[selectedWeek].length === 0) {
-      Alert.alert("Please upload at least one image for the selected week");
+    const allImages: ImageItem[] = Object.values(imagesByWeek).flat();
+    if (!allImages.length) {
+      Alert.alert("Please upload at least one image");
       return;
     }
 
@@ -561,7 +562,7 @@ export default function JournalEntryScreen({ navigation }: any) {
 
     try {
       const imagePayloads = await Promise.all(
-        (imagesByWeek[selectedWeek] || []).map(async (img) => {
+        allImages.map(async (img) => {
           const isRemote = !img.uri.startsWith("file://");
 
           if (isRemote) {
@@ -594,7 +595,6 @@ export default function JournalEntryScreen({ navigation }: any) {
         note,
         journalId,
         isPrivate,
-        week: title?.toLowerCase() === "baby bump" ? selectedWeek : undefined,
       };
 
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal`, {
@@ -628,7 +628,7 @@ export default function JournalEntryScreen({ navigation }: any) {
       setLoading(false);
     }
   };
-
+console.log("imagesByWeek[selectedWeek] =>", imagesByWeek[selectedWeek])
   return (
     <>
       <Header title={editableTitle} />
