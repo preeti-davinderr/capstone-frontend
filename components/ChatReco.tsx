@@ -1,163 +1,6 @@
-// // import React, { useState } from 'react';
-// // import { Button, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
-
-// // export default function HealthRecoAI() {
-// //   const [bp, setBp] = useState('');
-// //   const [weight, setWeight] = useState('');
-// //   const [steps, setSteps] = useState('');
-// //   const [sleep, setSleep] = useState('');
-// //   const [advice, setAdvice] = useState('');
-// //   const [loading, setLoading] = useState(false);
-// // console.log('HealthRecoAI Component Rendered');
-// // // console.log('bp:', bp, 'weight:', weight, 'steps:', steps, 'sleep:', sleep);
-// //   const getAdvice = async () => {
-// //     setLoading(true);
-// //     const prompt = `Give simple health, diet, and exercise advice for a pregnant woman with blood pressure ${bp}, weight ${weight}kg, steps ${steps}, and sleep ${sleep} hours.`;
-// //     console.log('Prompt:', prompt);
-// //     const response = await fetch('', {
-// //         method: 'POST',
-// //         headers: {
-// //           'Authorization': 'Bearer ',
-// //           'Content-Type': 'application/json',
-// //         },
-// //         body: JSON.stringify({ inputs: prompt }),
-// //       });
-
-// //       const data = await response.json();
-// //       console.log('HuggingFace Response:', data);
-// //     if (data && data[0]?.generated_text) {
-// //       setAdvice(data[0].generated_text);
-// //     } else {
-// //       setAdvice('Sorry, no advice available.');
-// //     }
-// //     setLoading(false);
-// //   };
-
-// //   return (
-// //     <ScrollView contentContainerStyle={styles.container}>
-// //       <Text style={styles.label}>Blood Pressure</Text>
-// //       <TextInput style={styles.input} value={bp} onChangeText={setBp} placeholder="e.g., 130/85" />
-
-// //       <Text style={styles.label}>Weight (kg)</Text>
-// //       <TextInput style={styles.input} value={weight} onChangeText={setWeight} keyboardType="numeric" />
-
-// //       <Text style={styles.label}>Steps</Text>
-// //       <TextInput style={styles.input} value={steps} onChangeText={setSteps} keyboardType="numeric" />
-
-// //       <Text style={styles.label}>Sleep (hours)</Text>
-// //       <TextInput style={styles.input} value={sleep} onChangeText={setSleep} keyboardType="numeric" />
-
-// //       <Button title="Get Free AI Advice" onPress={getAdvice} disabled={loading} />
-
-// //       <Text style={styles.advice}>{loading ? 'Thinking...' : advice}</Text>
-// //     </ScrollView>
-// //   );
-// // }
-
-// // const styles = StyleSheet.create({
-// //     container: {
-// //       padding: 20,
-// //       backgroundColor: '#000',
-// //       minHeight: '100%',
-// //     },
-// //     label: {
-// //       marginTop: 15,
-// //       fontWeight: 'bold',
-// //       color: '#fff',
-// //       fontSize: 16,
-// //     },
-// //     input: {
-// //       borderWidth: 1,
-// //       borderColor: '#444',
-// //       padding: 10,
-// //       marginTop: 5,
-// //       borderRadius: 5,
-// //       color: '#fff',
-// //       backgroundColor: '#111',
-// //     },
-// //     button: {
-// //       marginTop: 20,
-// //       backgroundColor: '#444',
-// //       borderRadius: 5,
-// //       overflow: 'hidden',
-// //     },
-// //     advice: {
-// //       marginTop: 20,
-// //       fontSize: 16,
-// //       color: '#fff',
-// //       lineHeight: 22,
-// //     },
-// //   });
-
-// import Constants from 'expo-constants';
-// import React, { useState } from 'react';
-// import { Button, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
-// // const API_KEY = Constants.expoConfig?.extra?.HRECO;
-// export default function HealthRecoAI() {
-//   const [bp, setBp] = useState('');
-//   const [weight, setWeight] = useState('');
-//   const [steps, setSteps] = useState('');
-//   const [sleep, setSleep] = useState('');
-//   const [advice, setAdvice] = useState('');
-//   const [loading, setLoading] = useState(false);
-
-//   const API_KEY = "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";
-// console.log('HealthRecoAI Component Rendered');
-// console.log(API_KEY)
-//   const getAdvice = async () => {
-//     setLoading(true);
-//     setAdvice('');
-//     // const prompt = `Blood pressure ${bp}, weight ${weight}kg, steps ${steps}, sleep ${sleep}h. Provide pregnancy health advice.`;
-//     const prompt = `I am pregnant. My blood pressure is ${bp}, weight is ${weight}kg, I walk ${steps} steps daily, and I sleep ${sleep} hours a night. Can you give me pregnancy-specific diet and exercise recommendations?`;
-
-//     try {
-//       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-//         method: 'POST',
-//         headers: {
-//           'Authorization': `Bearer `,
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           model: 'openai/gpt-3.5-turbo',
-//           messages: [
-//             { role: 'system', content: 'You are a pregnancy health assistant.' },
-//             { role: 'user', content: prompt },
-//           ],
-//         }),
-//       });
-//       const json = await res.json();
-//       if (res.ok) {
-//         setAdvice(json.choices[0].message.content);
-//       } else {
-//         setAdvice(`Error ${res.status}: ${json.error?.message || 'Unknown error'}`);
-//       }
-//     } catch (e) {
-//       setAdvice('Network error.');
-//     }
-
-//     setLoading(false);
-//   };
-
-//   return (
-//     <ScrollView style={styles.container}>
-//       {/* <TextInput style={styles.input} placeholder="130/85" placeholderTextColor="#aaa" value={bp} onChangeText={setBp} />
-//       <TextInput style={styles.input} placeholder="70" keyboardType="numeric" placeholderTextColor="#aaa" value={weight} onChangeText={setWeight} />
-//       <TextInput style={styles.input} placeholder="4000" keyboardType="numeric" placeholderTextColor="#aaa" value={steps} onChangeText={setSteps} />
-//       <TextInput style={styles.input} placeholder="6" keyboardType="numeric" placeholderTextColor="#aaa" value={sleep} onChangeText={setSleep} /> */}
-//       <Button title={loading ? 'Thinking...' : 'Get Advice'} onPress={getAdvice} disabled={loading} />
-//       <Text style={styles.advice}>{advice}</Text>
-//     </ScrollView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { padding: 20, backgroundColor: '#000', minHeight: '100%' },
-//   input: { backgroundColor: '#111', color: '#fff', borderColor: '#444', borderWidth: 1, marginTop: 15, padding: 10, borderRadius: 5 },
-//   advice: { color: '#fff', marginTop: 20, fontSize: 16 }
-// });
-
-import React, { useState } from "react";
-import { Button, ScrollView, StyleSheet, Text } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { COLORS, EFFECTS, RADIUS, SPACING, TEXT_STYLES } from "../styles/globalStyles";
 
 type Props = {
   bpReading: {
@@ -175,21 +18,21 @@ type Props = {
 export default function HealthRecoAI({ bpReading, weightReading }: Props) {
   const [advice, setAdvice] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // const AI_RECO_API_KEY = "";
+  const AI_RECO_API_KEY = process.env.AI_RECO_API_KEY; // Replace with env variable securely
+
   
 
-  const AI_RECO_API_KEY = process.env.AI_RECO_API_KEY;
-
   const getAdvice = async () => {
+    if (!bpReading && !weightReading) return;
     setLoading(true);
     setAdvice("");
 
-    const bp = bpReading
-      ? `${bpReading.systolic}/${bpReading.diastolic}`
-      : "unknown";
+    const bp = bpReading ? `${bpReading.systolic}/${bpReading.diastolic}` : "unknown";
     const weight = weightReading ? `${weightReading.value}` : "unknown";
 
     const prompt = `I am pregnant. My blood pressure is ${bp}, weight is ${weight}kg. Can you give me pregnancy-specific diet and exercise recommendations in 3-4 short lines only?`;
-
 
     try {
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -199,12 +42,11 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          //   model: 'openai/gpt-3.5-turbo',
           model: "openrouter/auto",
           messages: [
             {
               role: "system",
-              content: "You are a helpful pregnancy health assistant. Always respond with brief and clear answers, no more than 3-4 short lines.",
+              content: "You are a helpful pregnancy health assistant. Respond briefly in 3-4 short lines.",
             },
             { role: "user", content: prompt },
           ],
@@ -217,9 +59,7 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
       if (res.ok) {
         setAdvice(json.choices[0].message.content);
       } else {
-        setAdvice(
-          `Error ${res.status}: ${json.error?.message || "Unknown error"}`
-        );
+        setAdvice(`Error ${res.status}: ${json.error?.message || "Unknown error"}`);
       }
     } catch (e) {
       setAdvice("Network error.");
@@ -228,19 +68,65 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
     setLoading(false);
   };
 
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (bpReading || weightReading) {
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+      debounceTimeout.current = setTimeout(() => {
+        getAdvice();
+      }, 500);
+    }
+  }, [bpReading, weightReading]);
+
+  // Split advice into lines for bullet display
+  const adviceLines = advice ? advice.split("\n").filter(line => line.trim() !== "") : [];
+
   return (
-    <ScrollView style={styles.container}>
-      <Button
-        title={loading ? "Thinking..." : "Get Advice"}
-        onPress={getAdvice}
-        disabled={loading}
-      />
-      <Text style={styles.advice}>{advice}</Text>
-    </ScrollView>
+    <View style={styles.card}>
+      {loading ? (
+        <ActivityIndicator size="small" color={COLORS.gray700} />
+      ) : adviceLines.length > 0 ? (
+        adviceLines.map((line, index) => (
+          <View key={index} style={styles.bulletContainer}>
+            <Text style={styles.bullet}>•</Text>
+            <Text style={styles.adviceText}>{line.trim()}</Text>
+          </View>
+        ))
+      ) : (
+        <Text style={styles.adviceText}>
+          AI recommendations will appear here when data is available.
+        </Text>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, backgroundColor: "#000", minHeight: "100%" },
-  advice: { color: "#fff", marginTop: 20, fontSize: 16 },
+  card: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    marginBottom: SPACING.spacing12,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    ...EFFECTS.softShadow,
+  },
+  bulletContainer: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 6,
+  },
+  bullet: {
+    fontSize: 16,
+    lineHeight: 20,
+    marginRight: 8,
+    // color: COLORS.gray800,
+  },
+  adviceText: {
+    ...TEXT_STYLES.bodyBase,
+    // color: COLORS.gray800,
+    flex: 1,
+    lineHeight: 20,
+  },
 });

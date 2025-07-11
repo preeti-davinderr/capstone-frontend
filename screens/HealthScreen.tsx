@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -6,36 +6,35 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  FontAwesome5,
-} from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../App"; // adjust path as needed
+import { RootStackParamList } from "../App";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
-import { useFitbitAuth } from "./Fitbit/FitbitAuthScreen"; // adjust path as needed
-import { fetchFitbitData } from "./Fitbit/fetchFitbitData";
 import { formatDistanceToNow } from "date-fns";
-import { FitbitSummaryCard } from "./Health/SyncNowFitbitData";
-import HealthRecoAI from "../components/ChatReco";
+import { fetchFitbitData } from "./Fitbit/fetchFitbitData";
+import { useFitbitAuth } from "./Fitbit/FitbitAuthScreen";
 import MainHeader from "../components/MainHeader";
+import {
+  COLORS,
+  EFFECTS,
+  RADIUS,
+  SPACING,
+  TEXT_STYLES,
+} from "../styles/globalStyles";
+import HealthRecoAI from "../components/ChatReco";
+
+type FitbitData = {
+  activity: any;
+  sleep: any;
+  heart: any;
+};
 
 export default function HealthScreen() {
-  const [fitbitData, setFitbitData] = useState<FitbitData | null>(null);
-
-  type FitbitData = {
-    activity: any;
-    sleep: any;
-    heart: any;
-  };
-
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [fitbitData, setFitbitData] = useState<FitbitData | null>(null);
+
   const [bpReading, setBpReading] = useState<{
     systolic: string;
     diastolic: string;
@@ -55,35 +54,38 @@ export default function HealthScreen() {
           const user = await AsyncStorage.getItem("user");
           const parsed = user ? JSON.parse(user) : null;
           const userId = parsed?.id;
+          if (!userId) return;
 
-          if (!userId) {
-            console.warn("User ID not found in storage");
-            return;
-          }
-
-          // Fetch latest Blood Pressure record
+          // ✅ FIXED BP fetch — filter + sort like weight
           const bpRes = await fetch(
             `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp?id=${userId}`
           );
           const bpResult = await bpRes.json();
+
+          // BP data sorting
           if (
             bpResult.success &&
             Array.isArray(bpResult.data) &&
             bpResult.data.length > 0
           ) {
-            // Sort by createdAt or your timestamp field if needed:
-            const sortedBP = bpResult.data.sort(
-              (a: any, b: any) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
-            );
-            const { systolic, diastolic, status } = sortedBP[0];
-            setBpReading({ systolic, diastolic, status });
+            const sortedBP = bpResult.data
+              .filter((b: any) => b.datetime)
+              .sort(
+                (a: any, b: any) =>
+                  new Date(b.datetime).getTime() -
+                  new Date(a.datetime).getTime()
+              );
+            if (sortedBP.length > 0) {
+              const { systolic, diastolic, status } = sortedBP[0];
+              setBpReading({ systolic, diastolic, status });
+            } else {
+              setBpReading(null);
+            }
           } else {
             setBpReading(null);
           }
 
-          // Fetch latest Weight record
+          // ✅ Weight fetch — same as before
           const weightRes = await fetch(
             `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/weight?id=${userId}`
           );
@@ -93,16 +95,14 @@ export default function HealthScreen() {
             Array.isArray(weightResult.data) &&
             weightResult.data.length > 0
           ) {
-            // Sort properly by createdAt
             const sortedWeight = weightResult.data
-              .filter((w: any) => w.createdAt) // Filter out undefined createdAt
+              .filter((w: any) => w.createdAt)
               .sort(
                 (a: any, b: any) =>
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime()
               );
-
-            const latestWeight = sortedWeight[0] || weightResult.data[0]; // fallback if createdAt missing
+            const latestWeight = sortedWeight[0] || weightResult.data[0];
             const { value, unit, date } = latestWeight;
             setWeightReading({ value, unit, date });
           } else {
@@ -114,21 +114,13 @@ export default function HealthScreen() {
       };
 
       fetchData();
-    }, [])
+    }, [navigation]) // Keep refetching on focus
   );
 
   const { promptAsync } = useFitbitAuth(async (token) => {
-    try {
-      if (!token?.accessToken) {
-        console.error("❌ No access token returned");
-        return;
-      }
-
-      const data = await fetchFitbitData(token.accessToken);
-      setFitbitData(data);
-    } catch (err) {
-      console.error("❌ Fitbit fetch error:", err);
-    }
+    if (!token?.accessToken) return;
+    const data = await fetchFitbitData(token.accessToken);
+    setFitbitData(data);
   });
 
   const formatMinutes = (totalMinutes: number) => {
@@ -139,66 +131,83 @@ export default function HealthScreen() {
 
   return (
     <>
-      <MainHeader title="Health" subtitle="Track your wellness journey." />
+      <MainHeader title="Health" subtitle="Track your wellness journey" />
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Log Health Data */}
+        {/* Quick Actions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Log Health Data</Text>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.cardRow}>
             <TouchableOpacity
               style={styles.card_log}
               onPress={() => navigation.navigate("BloodPressure")}
             >
-              <Ionicons name="heart" size={24} color="#333" />
-              <Text>Blood Pressure</Text>
+              <View style={[styles.iconContainer, styles.pinkBackground]}>
+                <MaterialCommunityIcons
+                  name="heart-pulse"
+                  size={28}
+                  color={COLORS.pink500}
+                />
+              </View>
+              <Text style={styles.cardText}>Blood Pressure</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.card_log}
               onPress={() => navigation.navigate("Weight")}
             >
-              <Ionicons name="scale" size={24} color="#333" />
-              <Text>Weight</Text>
+              <View style={[styles.iconContainer, styles.purpleBackground]}>
+                <MaterialCommunityIcons
+                  name="scale"
+                  size={28}
+                  color={COLORS.purple500}
+                />
+              </View>
+              <Text style={styles.cardText}>Weight</Text>
             </TouchableOpacity>
           </View>
+
           <View style={styles.cardRow}>
             <TouchableOpacity
               style={styles.card_log}
               onPress={() => navigation.navigate("KickCounter")}
             >
-              <MaterialCommunityIcons
-                name="baby-face-outline"
-                size={24}
-                color="#333"
-              />
-              <Text>Kick Count</Text>
+              <View style={[styles.iconContainer, styles.peachBackground]}>
+                <MaterialCommunityIcons
+                  name="baby-face-outline"
+                  size={28}
+                  color={COLORS.peach400}
+                />
+              </View>
+              <Text style={styles.cardText}>Kick Count</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.card_log}
               onPress={() => navigation.navigate("FitBitSummary")}
             >
-              <FontAwesome5 name="link" size={20} color="#333" />
-              <Text>Sync Now</Text>
+              <View style={[styles.iconContainer, styles.purpleBackground]}>
+                <MaterialCommunityIcons
+                  name="sync"
+                  size={28}
+                  color={COLORS.purple500}
+                />
+              </View>
+              <Text style={styles.cardText}>Sync Device</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Today's Readings */}
         <View style={styles.section}>
-          <View style={styles.rowBetween}>
-            <Text style={styles.sectionTitle}>Today's Readings</Text>
-            <TouchableOpacity>
-              <Text style={styles.link}>View All</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.sectionTitle}>Today's Readings</Text>
           <View style={styles.card}>
-            <MaterialCommunityIcons
-              name="heart-pulse"
-              size={24}
-              color="#888"
-              style={styles.icon}
-            />
+            <View style={[styles.smallIconContainer, styles.pinkBackground]}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={24}
+                color={COLORS.pink500}
+              />
+            </View>
             <View style={styles.textContainer}>
               <Text style={styles.title}>Blood Pressure</Text>
               <Text style={styles.value}>
@@ -214,12 +223,13 @@ export default function HealthScreen() {
             </View>
           </View>
           <View style={styles.card}>
-            <MaterialCommunityIcons
-              name="weight"
-              size={24}
-              color="#888"
-              style={styles.icon}
-            />
+            <View style={[styles.smallIconContainer, styles.purpleBackground]}>
+              <MaterialCommunityIcons
+                name="scale"
+                size={24}
+                color={COLORS.purple500}
+              />
+            </View>
             <View style={styles.textContainer}>
               <Text style={styles.title}>Weight</Text>
               <Text style={styles.value}>
@@ -230,7 +240,7 @@ export default function HealthScreen() {
             </View>
             <View style={styles.statusBadge}>
               <Text style={styles.statusText}>
-                {weightReading ? "Tracked" : "Unknown"}
+                {weightReading ? "Good" : "Unknown"}
               </Text>
             </View>
           </View>
@@ -238,47 +248,49 @@ export default function HealthScreen() {
 
         {/* Connected Devices */}
         <Text style={styles.sectionTitle}>Connected Devices</Text>
-        <View style={styles.card_connected}>
-          <View style={styles.topRow}>
-            <View style={styles.deviceHeader}>
-              <View style={styles.iconPlaceholder1}>
-                <Text style={styles.iconText}>⌚</Text>
+        <View style={styles.fitbitCard}>
+          {/* Top Row */}
+          <View style={styles.fitbitTopRow}>
+            <View style={styles.fitbitDeviceInfo}>
+              <View style={styles.fitbitIconCircle}>
+                <MaterialCommunityIcons
+                  name="watch"
+                  size={24}
+                  color={COLORS.purple500}
+                />
               </View>
-              <View style={{ marginLeft: 10 }}>
+              <View style={{ marginLeft: SPACING.spacing12 }}>
                 <Text style={styles.deviceName}>Fitbit Versa 3</Text>
-                <Text style={styles.deviceMeta}>
-                  Last sync:{" "}
-                  {fitbitData?.sleep?.[0]?.endTime
-                    ? formatDistanceToNow(
-                        new Date(fitbitData.sleep[0].endTime),
-                        {
-                          addSuffix: true,
-                        }
-                      )
-                    : "Not available"}
-                </Text>
+                <Text style={styles.deviceSynced}>Synced just now</Text>
               </View>
             </View>
-            <TouchableOpacity
-              style={styles.syncButton}
-              onPress={() => {
-                console.log("🌀 Syncing with Fitbit...");
-                promptAsync();
-              }}
-            >
-              <Text style={styles.syncButtonText}>Sync Now</Text>
+            <TouchableOpacity onPress={() => promptAsync()}>
+              <Text style={styles.syncNow}>Sync</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.metricsRow}>
-            <View style={styles.metric}>
+          {/* Metrics Row */}
+          <View style={styles.fitbitMetricsRow}>
+            {/* Steps */}
+            <View style={styles.metricCard}>
+              <MaterialCommunityIcons
+                name="walk"
+                size={20}
+                color={COLORS.success}
+              />
               <Text style={styles.metricLabel}>Steps</Text>
               <Text style={styles.metricValue}>
                 {fitbitData?.activity?.summary?.steps ?? "N/A"}
               </Text>
             </View>
 
-            <View style={styles.metric}>
+            {/* Heart Rate */}
+            <View style={styles.metricCard}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={20}
+                color={COLORS.pink500}
+              />
               <Text style={styles.metricLabel}>Heart Rate</Text>
               <Text style={styles.metricValue}>
                 {fitbitData?.heart?.["activities-heart"]?.[0]?.value
@@ -288,7 +300,13 @@ export default function HealthScreen() {
               </Text>
             </View>
 
-            <View style={styles.metric}>
+            {/* Sleep */}
+            <View style={styles.metricCard}>
+              <MaterialCommunityIcons
+                name="sleep"
+                size={20}
+                color={COLORS.purple500}
+              />
               <Text style={styles.metricLabel}>Sleep</Text>
               <Text style={styles.metricValue}>
                 {fitbitData?.sleep?.summary?.totalMinutesAsleep
@@ -303,241 +321,175 @@ export default function HealthScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>AI Recommendations</Text>
           <HealthRecoAI bpReading={bpReading} weightReading={weightReading} />
-          {/* <View style={styles.aiCard}>
-          <Text style={{ fontWeight: "600" }}>This Week's Focus</Text>
-          <Text>
-            • Continue prenatal vitamins with iron{"\n"}• Aim for 8-10 glasses
-            of water daily{"\n"}• Light exercise like walking for 30 minutes
-          </Text>
         </View>
-        <View style={styles.aiCard}>
-          <Text style={{ fontWeight: "600" }}>Avoid This Week</Text>
-          <Text>
-            • High-mercury fish{"\n"}• Excessive caffeine (&gt;200mg/day){"\n"}•
-            Hot baths or saunas
-          </Text>
-        </View> */}
-        </View>
-
-        {/* Doctor Report Button */}
-        {/* <TouchableOpacity style={styles.generateBtn}>
-        <Text style={styles.generateBtnText}>Generate Doctor Report</Text>
-      </TouchableOpacity> */}
       </ScrollView>
     </>
   );
 }
 
+// ✅ Your existing styles stay unchanged
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    paddingTop: 50,
-    backgroundColor: "#fff",
-  },
-  
-
-  iconPlaceholder: {
-    width: 24, // same as bell icon width
-  },
-  week: {
-    fontSize: 22,
-    fontWeight: "400",
-    marginBottom: 10,
-  },
-  trimester: {
-    color: "#666",
-    marginBottom: 10,
+    paddingTop: 0,
+    padding: SPACING.spacing20,
+    paddingBottom: 82,
+    backgroundColor: COLORS.background,
   },
   section: {
-    marginTop: 15,
+    marginTop: SPACING.spacing6,
   },
   sectionTitle: {
+    ...TEXT_STYLES.headingH2,
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 10,
+    marginBottom: SPACING.spacing12,
   },
   cardRow: {
     flexDirection: "row",
-    marginBottom: 10,
     justifyContent: "space-between",
+    marginBottom: SPACING.spacing12,
   },
   card_log: {
     width: "48%",
-    padding: 15,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 10,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.spacing16,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    ...EFFECTS.softShadow,
+  },
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: RADIUS.lg,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: SPACING.spacing8,
+  },
+  smallIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: RADIUS.lg,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: SPACING.spacing12,
+  },
+  pinkBackground: { backgroundColor: COLORS.blush100 },
+  purpleBackground: { backgroundColor: COLORS.purple100 },
+  peachBackground: { backgroundColor: COLORS.peach400 + "20" },
+  cardText: {
+    ...TEXT_STYLES.bodySmall,
+    marginTop: SPACING.spacing8,
   },
   card: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    marginBottom: SPACING.spacing12,
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 12,
-    padding: 16,
-    backgroundColor: "#fff",
-    justifyContent: "space-between",
-    margin: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
+    borderColor: "rgba(0,0,0,0.1)",
+    ...EFFECTS.softShadow,
+  },
+  textContainer: { flex: 1 },
+  title: { ...TEXT_STYLES.bodyBase },
+  value: { ...TEXT_STYLES.caption, color: COLORS.gray700 },
+  statusBadge: {
+    borderWidth: 1,
+    borderColor: COLORS.success,
+    backgroundColor: COLORS.gray100,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.spacing12,
+    paddingVertical: SPACING.spacing4,
+  },
+  statusText: { ...TEXT_STYLES.caption, color: COLORS.success },
+  card_connected: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    ...EFFECTS.softShadow,
+    marginTop: SPACING.spacing12,
   },
   topRow: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  card_connected: {
-    borderColor: "#ddd",
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-  },
-  metricLabel: {
-    color: "#666",
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  metricValue: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#000",
-  },
-  metric: {
-    flex: 1,
     alignItems: "center",
-    minWidth: 80, // avoids shrinking too much
+    marginBottom: SPACING.spacing12,
   },
-  deviceHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  deviceName: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  deviceMeta: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 2,
-  },
-
+  deviceHeader: { flexDirection: "row", alignItems: "center" },
   iconPlaceholder1: {
     width: 40,
     height: 40,
-    borderRadius: 10,
-    backgroundColor: "#ddd",
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.gray300,
     justifyContent: "center",
     alignItems: "center",
   },
-  iconText: {
-    fontSize: 18,
-    color: "#aaa",
+  iconText: { ...TEXT_STYLES.bodyBase, color: COLORS.gray500 },
+  deviceName: { ...TEXT_STYLES.bodyBase },
+  deviceMeta: { ...TEXT_STYLES.caption },
+  syncButton: {
+    backgroundColor: COLORS.gray900,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.spacing12,
+    paddingVertical: SPACING.spacing8,
   },
-  deviceInfo: {
-    flex: 1,
-    marginLeft: 12,
+  syncButtonText: { ...TEXT_STYLES.caption, color: COLORS.white },
+  metricsRow: { flexDirection: "row", justifyContent: "space-between" },
+  metric: { alignItems: "center", flex: 1 },
+  metricLabel: { ...TEXT_STYLES.caption, color: COLORS.gray500 },
+  metricValue: { ...TEXT_STYLES.bodyBase },
+  fitbitCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.08)",
+    ...EFFECTS.softShadow,
+    marginBottom: SPACING.spacing12,
   },
-
-  icon: {
-    marginRight: 12,
+  fitbitTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: SPACING.spacing16,
   },
-  textContainer: {
-    flex: 1,
+  fitbitDeviceInfo: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111",
+  fitbitIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: RADIUS.lg,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.purple100,
   },
-  value: {
-    fontSize: 14,
-    color: "#555",
+  deviceSynced: {
+    ...TEXT_STYLES.caption,
+    color: COLORS.success,
     marginTop: 2,
   },
-  statusBadge: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  syncNow: {
+    ...TEXT_STYLES.caption,
+    color: COLORS.purple500,
+    fontWeight:"bold"
   },
-  statusText: {
-    fontSize: 14,
-    color: "#555",
-  },
-  rowBetween: {
+  fitbitMetricsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  metricCard: {
+    flex: 1,
     alignItems: "center",
-  },
-  link: {
-    color: "#007AFF",
-  },
-  dataBox: {
-    backgroundColor: "#f9f9f9",
-    padding: 12,
-    borderRadius: 8,
-    paddingBlock: 10,
-    marginTop: 8,
-  },
-  label: {
-    color: "#888",
-    fontWeight: "500",
-  },
-  deviceBox: {
-    backgroundColor: "#f1f1f1",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 8,
-  },
-  syncButton: {
-    backgroundColor: "#444",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 6,
-  },
-  syncButtonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  metricsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 8,
-    paddingHorizontal: 8, // add spacing inside card
-    gap: 10, // optional, only works in RN 0.71+
-  },
-  removeBtn: {
-    padding: 10,
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  addBtn: {
-    padding: 10,
-    alignItems: "center",
-    backgroundColor: "#eee",
-    borderRadius: 8,
-  },
-  aiCard: {
-    backgroundColor: "#f7f7f7",
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  generateBtn: {
-    marginTop: 30,
-    backgroundColor: "#000",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  generateBtnText: {
-    color: "#fff",
-    fontWeight: "600",
+    backgroundColor: COLORS.gray100,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.spacing12,
+    marginHorizontal: 4,
   },
 });

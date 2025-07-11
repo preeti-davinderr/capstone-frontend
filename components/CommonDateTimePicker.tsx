@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
 import { Ionicons } from "@expo/vector-icons";
+import { TEXT_STYLES } from "../styles/globalStyles";
 
 type CommonDateTimePickerProps = {
   date: Date | null; // allow null for empty initial state
@@ -109,9 +110,7 @@ const styles = StyleSheet.create({
     color: "#888",
   },
   label: {
-    fontSize: 13,
-    fontWeight: "500",
+    ...TEXT_STYLES.bodySmall,
     marginBottom: 4,
-    color: "#333",
   },
 });
