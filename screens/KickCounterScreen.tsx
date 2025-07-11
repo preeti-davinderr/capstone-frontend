@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  Dimensions,
   Alert,
   ScrollView,
 } from "react-native";
@@ -14,7 +13,16 @@ import { Accelerometer } from "expo-sensors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "../components/SubHeader";
 import HealthHistoryList from "../components/HealthHistoryList";
-const screenWidth = Dimensions.get("window").width;
+import {
+  COLORS,
+  SPACING,
+  RADIUS,
+  TEXT_STYLES,
+  EFFECTS,
+} from "../styles/globalStyles";
+import CommonButton from "../components/CommonButton";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 interface KickEntry {
   _id?: string;
   id: string;
@@ -64,8 +72,6 @@ export default function KickCounterScreen() {
           count: k.count,
         }));
         setActivity(formatted);
-      } else {
-        console.error("Unexpected response format:", data);
       }
     } catch (err) {
       console.error("Fetching kicks failed:", err);
@@ -88,8 +94,6 @@ export default function KickCounterScreen() {
         setActivity((prev) =>
           prev.map((e) => (e.id === entry.id ? updatedEntry : e))
         );
-      } else {
-        console.error("Backend save error:", data);
       }
     } catch (err) {
       console.error("Save to DB failed:", err);
@@ -103,19 +107,17 @@ export default function KickCounterScreen() {
         `${process.env.EXPO_PUBLIC_API_URL}/api/kicks/${_id}`,
         { method: "DELETE" }
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      if (!res.ok) {
+        Alert.alert("Error", "Failed to delete entry.");
+      }
     } catch (err) {
       console.error("Delete failed:", err);
+      Alert.alert("Error", "Network or server error.");
     }
   };
 
   const handleDelete = (entry: KickEntry) => {
-    if (!entry._id) {
-      Alert.alert("Error", "Cannot delete entry without _id.");
-      return;
-    }
-    Alert.alert("Delete Entry", "Are you sure you want to delete this entry?", [
+    Alert.alert("Confirm Delete", "Are you sure you want to delete?", [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
@@ -205,27 +207,18 @@ export default function KickCounterScreen() {
     day: "numeric",
   });
 
-  const kicksToday = activity.reduce((sum, e) => sum + e.count, 0);
-
-  const getWeeklyKickData = () => {
-    const result: { [key: string]: number } = {};
-    activity.forEach((entry) => {
-      const day = new Date(entry.date).toLocaleDateString();
-      result[day] = (result[day] || 0) + entry.count;
-    });
-    const sorted = Object.keys(result)
-      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-      .slice(-7);
-    return {
-      labels: sorted.map((d) => d.split("/").slice(0, 2).join("/")),
-      datasets: [{ data: sorted.map((d) => result[d]) }],
-    };
-  };
+  const kicksToday = activity
+    .filter((e) => e.date === kickDate.toISOString().split("T")[0])
+    .reduce((sum, e) => sum + e.count, 0);
 
   return (
-    <>
-      <Header title="Baby's Movement Detection" />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: COLORS.background }}
+      edges={["left", "right", "bottom"]}
+    >
+      <Header title="Kick Counter" />
       <ScrollView contentContainerStyle={styles.container}>
+        {/* Date Navigation */}
         <View style={styles.dateRow}>
           <TouchableOpacity onPress={goToPreviousDay}>
             <Text style={styles.arrow}>←</Text>
@@ -238,71 +231,62 @@ export default function KickCounterScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.kickCard}>
-          <Text style={styles.kickLabel}>Total Kicks</Text>
-          <Text style={styles.kickCount}>{kicksToday}</Text>
+        {/* Total Kicks Card */}
+        <View style={styles.totalCard}>
+          <Text style={styles.totalLabel}>Total Kicks Today</Text>
+          <Text style={styles.totalCount}>
+            {kicksToday.toString().padStart(2, "0")}
+          </Text>
         </View>
 
+        {/* Show add buttons only for today */}
         {isToday(kickDate) && (
           <>
-            <TouchableOpacity style={styles.detectBtn} onPress={startDetection}>
-              <Text style={styles.detectBtnText}>Start Detection</Text>
-            </TouchableOpacity>
+            <View style={styles.outerCard}>
+              <Text style={styles.cardLabel}>Automatic Detection</Text>
+              <CommonButton label="Start Detection" onPress={startDetection} />
+            </View>
 
-            <View style={styles.manualBox}>
-              <Text>Manual Entry</Text>
-              <View style={styles.manualRow}>
-                <TextInput
-                  value={manualCount}
-                  onChangeText={setManualCount}
-                  placeholder="Enter kicks"
-                  keyboardType="numeric"
-                  style={styles.manualInput}
-                />
-                <TouchableOpacity
-                  onPress={handleManualAdd}
-                  style={styles.manualAddBtn}
-                >
-                  <Text style={{ color: "#fff" }}>Add</Text>
-                </TouchableOpacity>
-              </View>
+            <View style={styles.outerCard}>
+              <Text style={styles.cardLabel}>Manual Entry</Text>
+              <TextInput
+                value={manualCount}
+                onChangeText={setManualCount}
+                placeholder="Enter kicks"
+                keyboardType="numeric"
+                style={styles.manualInput}
+              />
+              <CommonButton label="Add" onPress={handleManualAdd} />
             </View>
           </>
         )}
 
-        <Text style={styles.sectionTitle}>Activity</Text>
-        {activity.length === 0 ? (
-          <Text style={styles.emptyText}>No kicks recorded for this date.</Text>
-        ) : (
-          <HealthHistoryList<KickEntry>
-            data={activity}
-            getDate={(item) => new Date(item.date)}
-            onDelete={handleDelete}
-            showFilter={false}
-            renderItem={(item) => (
-              <View style={styles.activityItem}>
-                <Text>
-                  👣 {item.count} @ {item.time}
-                </Text>
-              </View>
-            )}
-          />
-        )}
+        {/* History */}
+        <View style={styles.card}>
+          <Text style={styles.cardLabel}>History</Text>
+          {activity.length === 0 ? (
+            <Text style={styles.emptyText}>
+              No kicks recorded for this date.
+            </Text>
+          ) : (
+            <HealthHistoryList<KickEntry>
+              data={activity}
+              getDate={(item) => new Date(item.date)}
+              onDelete={handleDelete}
+              showFilter={false}
+              renderItem={(item) => (
+                <View style={styles.historyItem}>
+                  <Text style={styles.historyText}>{item.count} kicks</Text>
+                  <Text style={styles.historyDate}>{item.time}</Text>
+                </View>
+              )}
+            />
+          )}
+        </View>
 
-        <Modal visible={showModal} transparent>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalBox}>
-              <Text style={styles.modalTitle}>Detecting Kicks...</Text>
-              <Text style={styles.modalCount}>{liveCount}</Text>
-              <TouchableOpacity onPress={stopDetection} style={styles.stopBtn}>
-                <Text style={styles.stopText}>Stop Detection</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
+        {/* TIPs */}
         <View style={styles.tipBox}>
-          <Text style={styles.tipTitle}>💡 Tip</Text>
+          <Text style={styles.tipTitle}>💡 Tips</Text>
           <Text style={styles.tipText}>
             - Count kicks when the baby is most active, usually after meals or
             in the evening.
@@ -311,69 +295,98 @@ export default function KickCounterScreen() {
             - Keep your phone steady during detection.
           </Text>
         </View>
+
+        {/* Detection Modal */}
+        <Modal visible={showModal} transparent>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalBox}>
+              <Text style={styles.modalTitle}>Detecting Kicks...</Text>
+              <Text style={styles.modalCount}>{liveCount}</Text>
+              <CommonButton label="Stop Detection" onPress={stopDetection} />
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, backgroundColor: "#fff" },
+  container: {
+    backgroundColor: COLORS.background,
+    padding: SPACING.spacing16,
+    paddingBottom: SPACING.spacing32,
+  },
   dateRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: SPACING.spacing12,
   },
   arrow: { fontSize: 26, paddingHorizontal: 10 },
-  dateHeader: { fontSize: 18, fontWeight: "600" },
-  kickCard: {
-    borderWidth: 1,
-    borderColor: "black",
-    backgroundColor: "#fff",
+  dateHeader: { ...TEXT_STYLES.lead },
+  totalCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.spacing16,
     alignItems: "center",
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  kickLabel: { fontSize: 16, color: "#666" },
-  kickCount: { fontSize: 36, fontWeight: "bold", marginTop: 10 },
-  detectBtn: {
-    backgroundColor: "#000",
-    padding: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  detectBtnText: { color: "#fff", fontSize: 16 },
-  manualBox: {
-    backgroundColor: "#f1f1f1",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  manualRow: { flexDirection: "row", marginTop: 10 },
-  manualInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    marginRight: 10,
-  },
-  manualAddBtn: {
-    backgroundColor: "#007AFF",
-    paddingHorizontal: 20,
     justifyContent: "center",
-    borderRadius: 8,
+    marginBottom: SPACING.spacing12,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    ...EFFECTS.softShadow,
   },
-  sectionTitle: { fontSize: 16, fontWeight: "bold", marginVertical: 15 },
-  activityItem: {
-    backgroundColor: "#f9f9f9",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 8,
+  totalLabel: {
+    ...TEXT_STYLES.bodyBase,
+    color: COLORS.gray900,
+    marginBottom: SPACING.spacing8,
   },
-  emptyText: { color: "#777", fontStyle: "italic", marginBottom: 20 },
+  totalCount: {
+    fontSize: 48,
+    fontWeight: "700",
+    color: COLORS.gray900,
+  },
+  outerCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    marginBottom: SPACING.spacing12,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    ...EFFECTS.softShadow,
+  },
+  cardLabel: {
+    ...TEXT_STYLES.lead,
+    color: COLORS.gray900,
+    marginBottom: SPACING.spacing8,
+  },
+  manualInput: {
+    borderWidth: 1,
+    borderColor: COLORS.gray300,
+    borderRadius: RADIUS.md,
+    padding: SPACING.spacing12,
+    fontSize: 16,
+    backgroundColor: COLORS.gray100,
+    width: "100%",
+    marginBottom: SPACING.spacing8,
+  },
+  card: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    marginBottom: SPACING.spacing12,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    ...EFFECTS.softShadow,
+  },
+  historyItem: {},
+  historyText: { ...TEXT_STYLES.bodyBase },
+  historyDate: {
+    fontSize: 12,
+    color: COLORS.gray500,
+    marginTop: 2,
+  },
+  emptyText: { ...TEXT_STYLES.caption, color: COLORS.gray500 },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
@@ -381,33 +394,40 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalBox: {
-    backgroundColor: "#fff",
-    padding: 30,
-    borderRadius: 15,
+    backgroundColor: COLORS.white,
+    padding: SPACING.spacing20,
+    borderRadius: RADIUS.lg,
     alignItems: "center",
-    width: 300,
+    width: "80%",
   },
-  modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 20 },
-  modalCount: { fontSize: 48, fontWeight: "bold", marginBottom: 10 },
-  stopBtn: {
-    backgroundColor: "#ff3b30",
-    paddingHorizontal: 30,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  stopText: { color: "#fff", fontSize: 16 },
-  tipBox: {
-    backgroundColor: "#f9f9f9",
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  tipTitle: {
+  modalTitle: { ...TEXT_STYLES.lead, marginBottom: SPACING.spacing12 },
+  modalCount: {
+    fontSize: 48,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: SPACING.spacing12,
   },
+  cardTitle: {
+    ...TEXT_STYLES.lead,
+    marginBottom: SPACING.spacing12,
+  },
+  tipBox: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    marginBottom: SPACING.spacing12,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    ...EFFECTS.softShadow,
+  },
+
+  tipTitle: {
+    ...TEXT_STYLES.lead,
+    marginBottom: SPACING.spacing12,
+  },
+
   tipText: {
-    fontSize: 14,
-    color: "#444",
+    ...TEXT_STYLES.bodyBase,
+    color: COLORS.gray700,
+    marginBottom: SPACING.spacing4,
   },
 });

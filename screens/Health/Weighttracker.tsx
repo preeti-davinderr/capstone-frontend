@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   historyItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: SPACING.spacing8,
+    // paddingVertical: SPACING.spacing8,
   },
   historyWeight: {
     fontSize: 15,
