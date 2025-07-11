@@ -3,15 +3,22 @@ import {
   View,
   Text,
   TextInput as RNTextInput,
-  TouchableOpacity,
-  StyleSheet,
   Alert,
+  StyleSheet,
+  ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CommonDateTimePicker from "../../components/CommonDateTimePicker";
-import HealthHistoryList from "../../components/HealthHistoryList";
-import CommonButton from "../../components/CommonButton";
 import SubHeader from "../../components/SubHeader";
+import CommonDateTimePicker from "../../components/CommonDateTimePicker";
+import CommonButton from "../../components/CommonButton";
+import HealthHistoryList from "../../components/HealthHistoryList";
+import {
+  COLORS,
+  EFFECTS,
+  RADIUS,
+  SPACING,
+  TEXT_STYLES,
+} from "../../styles/globalStyles";
 
 type BPEntry = {
   systolic: string;
@@ -60,21 +67,79 @@ export default function BloodPressureTracker() {
       const result = await res.json();
       const data = result.data || [];
 
-      const formatted = data.map((entry: any) => ({
-        systolic: entry.systolic,
-        diastolic: entry.diastolic,
-        datetime: entry.datetime,
-        status: getBPStatus(entry.systolic, entry.diastolic),
-      }));
+      const formatted = data
+        .map((entry: any) => ({
+          systolic: entry.systolic,
+          diastolic: entry.diastolic,
+          datetime: entry.datetime,
+          status: getBPStatus(entry.systolic, entry.diastolic),
+        }))
+        .sort(
+          (a:any, b:any) =>
+            new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+        );
 
       setHistory(formatted);
       await AsyncStorage.setItem("bpHistory", JSON.stringify(formatted));
     } catch (err) {
       console.error("Fetch history failed:", err);
       const stored = await AsyncStorage.getItem("bpHistory");
-      if (stored) {
-        setHistory(JSON.parse(stored));
+      if (stored) setHistory(JSON.parse(stored));
+    }
+  };
+
+  const saveToBackend = async () => {
+    if (!date || !systolic || !diastolic) {
+      Alert.alert(
+        "Missing Fields",
+        "Please fill all fields and select a date."
+      );
+      return;
+    }
+    const user = await AsyncStorage.getItem("user");
+    const parsed = user ? JSON.parse(user) : null;
+    if (!parsed?.id) {
+      Alert.alert("Error", "User not found");
+      return;
+    }
+    const newEntry: BPEntry = {
+      systolic,
+      diastolic,
+      datetime: date.toISOString(),
+      status: getBPStatus(systolic, diastolic),
+    };
+
+    try {
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userID: parsed.id,
+            systolic,
+            diastolic,
+            datetime: date,
+            status: newEntry.status,
+          }),
+        }
+      );
+
+      if (res.ok) {
+        Alert.alert("Success", "Blood pressure data saved.");
+        setSystolic("");
+        setDiastolic("");
+        setDate(null);
+        await fetchHistory();
+        systolicRef.current?.blur();
+        diastolicRef.current?.blur();
+      } else {
+        const result = await res.json();
+        Alert.alert("Error", result.message || "Save failed.");
       }
+    } catch (err) {
+      console.error("Save failed", err);
+      Alert.alert("Error", "Network or server error.");
     }
   };
 
@@ -115,243 +180,227 @@ export default function BloodPressureTracker() {
     );
   };
 
-  const saveToBackend = async () => {
-    if (!date || !systolic || !diastolic) {
-      Alert.alert(
-        "Missing Fields",
-        "Please fill all fields and select a date."
-      );
-      return;
-    }
+  const current = history.length > 0 ? history[0] : null;
 
-    const user = await AsyncStorage.getItem("user");
-    const parsed = user ? JSON.parse(user) : null;
-    if (!parsed?.id) {
-      Alert.alert("Error", "User not found");
-      return;
-    }
+  const getBadgeStyle = (status: string) => {
+    switch (status) {
+      case "Normal":
+        return { backgroundColor: "e6f4ea", color: COLORS.success };
 
-    const newEntry: BPEntry = {
-      systolic,
-      diastolic,
-      datetime: date.toISOString(),
-      status: getBPStatus(systolic, diastolic),
-    };
-
-    try {
-      const res = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/userHealth/bp`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userID: parsed.id,
-            systolic,
-            diastolic,
-            datetime: date,
-            status: newEntry.status,
-          }),
-        }
-      );
-
-      if (res.ok) {
-        Alert.alert("Success", "Blood pressure data saved.");
-        setSystolic("");
-        setDiastolic("");
-        setDate(null);
-        await fetchHistory();
-
-        systolicRef.current?.blur();
-        diastolicRef.current?.blur();
-      } else {
-        const result = await res.json();
-        Alert.alert("Error", result.message || "Save failed.");
-      }
-    } catch (err) {
-      console.error("Save failed", err);
-      Alert.alert("Error", "Network or server error.");
+      case "High":
+      case "Seek Medical Help":
+        return { backgroundColor: "#fdecea", color: COLORS.error };
+      case "Low":
+        return { backgroundColor: "#fff8e1", color: COLORS.warning };
+      case "Elevated":
+        return { backgroundColor: "#fffde7", color: COLORS.info };
+      default:
+        return { backgroundColor: "#eee", color: COLORS.gray700 };
     }
   };
-
-  const current = history.length > 0 ? history[0] : null;
+  const getDotStyle = (status: string) => ({
+    backgroundColor: getBadgeStyle(status).color,
+  });
 
   return (
     <>
-      <SubHeader title={String("Blood Pressure")} />
-
-      <View style={styles.container}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Record Reading</Text>
-          <View style={styles.rowInputs}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Systolic</Text>
-              <RNTextInput
-                ref={systolicRef}
-                style={styles.input}
-                placeholder="~120"
-                keyboardType="numeric"
-                value={systolic}
-                onChangeText={(text) =>
-                  setSystolic(text.replace(/[^0-9]/g, ""))
-                }
-                maxLength={3}
-              />
-              <Text style={styles.unitLabel}>mmHg</Text>
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Diastolic</Text>
-              <RNTextInput
-                ref={diastolicRef}
-                style={styles.input}
-                placeholder="~80"
-                keyboardType="numeric"
-                value={diastolic}
-                onChangeText={(text) =>
-                  setDiastolic(text.replace(/[^0-9]/g, ""))
-                }
-                maxLength={3}
-              />
-              <Text style={styles.unitLabel}>mmHg</Text>
-            </View>
-          </View>
-          <CommonDateTimePicker
-            date={date}
-            onChange={setDate}
-            label="Date & Time"
-          />
-          <CommonButton label="Save" onPress={saveToBackend} />
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Current Status</Text>
-          <Text style={styles.statusMain}>
-            {current
-              ? getBPStatus(current.systolic, current.diastolic)
-              : "No Data"}
-          </Text>
-          <Text style={styles.statusSub}>
-            {current
-              ? `Last reading: ${current.systolic}/${current.diastolic} mmHg`
-              : "—"}
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>History</Text>
-          <HealthHistoryList
-            data={history}
-            getDate={(item) => new Date(item.datetime)}
-            onDelete={handleDelete}
-            showFilter={true}
-            renderItem={(item) => (
-              <View style={styles.historyItem}>
-                <View>
-                  <Text style={styles.historyBP}>
-                    {item.systolic}/{item.diastolic} mmHg
-                  </Text>
-                  <Text style={styles.historyTime}>
-                    {new Date(item.datetime).toLocaleString()}
-                  </Text>
-                </View>
-                <Text style={styles.badgeText}>{item.status}</Text>
+      <SubHeader title="Blood Pressure" />
+      <ScrollView>
+        <View style={styles.container}>
+          {/* Record Reading Card */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Record Reading</Text>
+            <View style={styles.rowInputs}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Systolic</Text>
+                <RNTextInput
+                  ref={systolicRef}
+                  style={styles.input}
+                  placeholder="120"
+                  keyboardType="numeric"
+                  value={systolic}
+                  onChangeText={(text) =>
+                    setSystolic(text.replace(/[^0-9]/g, ""))
+                  }
+                  maxLength={3}
+                />
+                <Text style={styles.unitLabel}>mmHg</Text>
               </View>
-            )}
-          />
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Diastolic</Text>
+                <RNTextInput
+                  ref={diastolicRef}
+                  style={styles.input}
+                  placeholder="80"
+                  keyboardType="numeric"
+                  value={diastolic}
+                  onChangeText={(text) =>
+                    setDiastolic(text.replace(/[^0-9]/g, ""))
+                  }
+                  maxLength={3}
+                />
+                <Text style={styles.unitLabel}>mmHg</Text>
+              </View>
+            </View>
+            <CommonDateTimePicker
+              date={date}
+              onChange={setDate}
+              label="Date & Time"
+            />
+            <CommonButton label="Save Reading" onPress={saveToBackend} />
+          </View>
+
+          {/* Current Status Card */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Current Status</Text>
+            <Text style={styles.statusMain}>
+              {current
+                ? getBPStatus(current.systolic, current.diastolic)
+                : "No Data"}
+            </Text>
+            <Text style={styles.statusSub}>
+              {current
+                ? `Last reading: ${current.systolic}/${current.diastolic} mmHg`
+                : "—"}
+            </Text>
+          </View>
+
+          {/* History Card */}
+          <View style={[styles.card, { paddingBottom: SPACING.spacing20 }]}>
+            <Text style={styles.cardTitle}>History</Text>
+            <HealthHistoryList
+              data={history}
+              getDate={(item) => new Date(item.datetime)}
+              onDelete={handleDelete}
+              showFilter={true}
+              renderItem={(item) => (
+                <View style={styles.historyItem}>
+                  <View style={styles.historyLeft}>
+                    <View style={[styles.dot, getDotStyle(item.status)]} />
+                    <View>
+                      <Text style={styles.historyBP}>
+                        {item.systolic}/{item.diastolic} mmHg
+                      </Text>
+                      <Text style={styles.historyTime}>
+                        {new Date(item.datetime).toLocaleString()}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={[
+                      styles.badge,
+                      {
+                        backgroundColor: getBadgeStyle(item.status)
+                          .backgroundColor,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.badgeText,
+                        { color: getBadgeStyle(item.status).color },
+                      ]}
+                    >
+                      {item.status}
+                    </Text>
+                  </View>
+                </View>
+              )}
+            />
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#f7f7f7",
     flex: 1,
+    backgroundColor: COLORS.background,
+    padding: SPACING.spacing16,
+    paddingBottom: SPACING.spacing32,
   },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    marginBottom: SPACING.spacing12,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: COLORS.card,
+    ...EFFECTS.softShadow,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 12,
+    ...TEXT_STYLES.lead,
+    marginBottom: SPACING.spacing12,
   },
   rowInputs: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: SPACING.spacing12,
   },
   inputGroup: {
     flex: 1,
-    marginRight: 8,
+    marginRight: SPACING.spacing8,
   },
   inputLabel: {
-    fontSize: 13,
-    fontWeight: "500",
-    marginBottom: 4,
+    ...TEXT_STYLES.bodySmall,
+    marginBottom: SPACING.spacing4,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
+    borderRadius: RADIUS.md,
+    padding: SPACING.spacing12,
     fontSize: 16,
+    marginBottom: SPACING.spacing8,
+    borderColor: "#ccc",
     backgroundColor: "#fafafa",
-    marginBottom: 12,
   },
   unitLabel: {
-    fontSize: 11,
-    color: "#888",
-    marginBottom: 8,
-  },
-  saveButton: {
-    backgroundColor: "#111",
-    borderRadius: 6,
-    paddingVertical: 12,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
+    fontSize: 12,
+    color: COLORS.gray500,
   },
   statusMain: {
-    fontSize: 16,
-    fontWeight: "600",
+    ...TEXT_STYLES.bodyBase,
   },
   statusSub: {
     fontSize: 13,
-    color: "#888",
+    color: COLORS.gray500,
   },
   historyItem: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    paddingVertical: SPACING.spacing8,
+  },
+  historyLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: SPACING.spacing12,
   },
   historyBP: {
     fontSize: 15,
     fontWeight: "500",
+    color: COLORS.gray900,
   },
   historyTime: {
     fontSize: 12,
-    color: "#888",
+    color: COLORS.gray500,
+    marginTop: 2,
+  },
+  badge: {
+    paddingHorizontal: SPACING.spacing12,
+    paddingVertical: SPACING.spacing4,
+    borderRadius: RADIUS.md,
+    marginRight: SPACING.spacing4,
   },
   badgeText: {
     fontSize: 12,
     fontWeight: "600",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-    overflow: "hidden",
-    backgroundColor: "#eee",
   },
 });

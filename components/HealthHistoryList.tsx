@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import CommonDatePicker from "./CommonDatePicker";
+import { RADIUS, TEXT_STYLES } from "../styles/globalStyles";
 
 type Props<T> = {
   data: T[];
@@ -80,13 +81,21 @@ export default function HealthHistoryList<T>({
               <View style={{ flex: 1 }}>{renderItem(item)}</View>
 
               {onDelete && (
-                <TouchableOpacity onPress={() => handleDeletePress(item)}>
-                  <Ionicons name="trash-outline" size={20} color="#999" />
+                <TouchableOpacity
+                  onPress={() => handleDeletePress(item)}
+                  style={styles.deleteButtonContainer}
+                >
+                  <Ionicons
+                    name="trash-outline"
+                    size={18}
+                    color="#EF4444" // Red-500
+                  />
                 </TouchableOpacity>
               )}
             </View>
           )}
-          contentContainerStyle={{ gap: 8 }}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          contentContainerStyle={styles.listContent}
         />
       )}
     </View>
@@ -94,19 +103,53 @@ export default function HealthHistoryList<T>({
 }
 
 const styles = StyleSheet.create({
-  container: { marginTop: 16 },
+  container: {
+    marginTop: 12,
+  },
   filterRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 12,
     gap: 8,
   },
-  countText: { fontSize: 14, color: "#333", fontWeight: "500", flex: 1 },
-  clearText: { fontSize: 14, color: "#999", textDecorationLine: "underline" },
-  emptyText: { textAlign: "center", color: "#aaa", marginTop: 16 },
+  countText: {
+    ...TEXT_STYLES.bodySmall,
+    color: "#333",
+    flex: 1,
+  },
+  clearText: {
+    ...TEXT_STYLES.bodySmall,
+    color: "#666",
+    textDecorationLine: "underline",
+  },
+  emptyText: {
+    ...TEXT_STYLES.bodySmall,
+    color: "#999",
+    textAlign: "center",
+    marginTop: 24,
+  },
   itemRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#f0f0f0",
+    marginLeft: 4,
+    marginRight: 4,
+  },
+  listContent: {
+    paddingBottom: 8,
+  },
+  deleteButtonContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: RADIUS.sm,
+    backgroundColor: "#FEE2E2", // Red-100
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
