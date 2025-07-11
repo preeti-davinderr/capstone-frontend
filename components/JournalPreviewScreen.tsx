@@ -82,7 +82,7 @@ export default function JournalPreviewScreen() {
 
       <View style={styles.imageWrapper}>
         <Animated.Image
-          source={{ uri: images[index].url }}
+         source={{ uri: (images[index]?.uri ?? images[index]?.url) as string }}
           style={[
             styles.image,
             {
