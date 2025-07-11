@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FamilyHomeScreen from "../screens/FamilyScreens/FamilyHomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import { COLORS, SPACING, RADIUS, EFFECTS } from "../styles/globalStyles";
 
 const Tab = createBottomTabNavigator();
 
@@ -11,8 +12,25 @@ export default function FamilyTabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#6200ee",
-        tabBarInactiveTintColor: "gray",
+        tabBarActiveTintColor: COLORS.purple700,
+        tabBarInactiveTintColor: COLORS.gray700,
+        tabBarShowLabel: true,
+        tabBarStyle: {
+          position: "absolute",
+          bottom: SPACING.spacing24,
+          marginHorizontal: SPACING.spacing20,
+          backgroundColor: COLORS.white,
+          borderRadius: RADIUS.lg,
+          height: 70,
+          paddingBottom: SPACING.spacing8,
+          paddingTop: SPACING.spacing8,
+          ...EFFECTS.softShadow,
+          borderTopWidth: 0,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "500",
+        },
       }}
     >
       <Tab.Screen

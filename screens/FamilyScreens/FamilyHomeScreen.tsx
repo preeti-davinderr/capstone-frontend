@@ -10,6 +10,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "../../components/MainHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ImageEntry = {
   url: string;
@@ -47,7 +48,9 @@ const FamilyHomeScreen = ({ navigation }: any) => {
             return;
           }
 
-          const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal/familyCode?id=${parsed.familyCode}`);
+          const res = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/api/journal/familyCode?id=${parsed.familyCode}`
+          );
           const data = await res.json();
           setJournals(data.data as Journal[]);
         } catch (err) {
@@ -61,81 +64,86 @@ const FamilyHomeScreen = ({ navigation }: any) => {
     }, [])
   );
 
-  const filteredJournals = selectedCategory === "All"
-    ? journals
-    : journals.filter((journal) =>
-        journal.title.toLowerCase().includes(selectedCategory.toLowerCase()) ||
-        journal.designTemplate.toLowerCase().includes(selectedCategory.toLowerCase())
-      );
+  const filteredJournals =
+    selectedCategory === "All"
+      ? journals
+      : journals.filter(
+          (journal) =>
+            journal.title
+              .toLowerCase()
+              .includes(selectedCategory.toLowerCase()) ||
+            journal.designTemplate
+              .toLowerCase()
+              .includes(selectedCategory.toLowerCase())
+        );
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Priya’s Moments</Text>
-          <Text style={styles.headerSubtitle}>28 weeks pregnant</Text>
-        </View>
-        <Ionicons name="notifications-outline" size={24} color="#6A5ACD" />
-      </View>
-
-      {/* Filter Tabs */}
-      <View style={styles.filterTabs}>
-        {categories.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            onPress={() => setSelectedCategory(tab)}
-            style={[
-              styles.tabButton,
-              selectedCategory === tab && styles.tabSelected,
-            ]}
-          >
-            <Text
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "#fff" }}
+      edges={["left", "right", "bottom"]}
+    >
+      <MainHeader title="Priya’s Moments" subtitle="28 weeks pregnant" />
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Filter Tabs */}
+        <View style={styles.filterTabs}>
+          {categories.map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              onPress={() => setSelectedCategory(tab)}
               style={[
-                styles.tabText,
-                selectedCategory === tab && styles.tabSelectedText,
+                styles.tabButton,
+                selectedCategory === tab && styles.tabSelected,
               ]}
             >
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Journals */}
-      {filteredJournals.length > 0 ? (
-        filteredJournals.map((journal) => (
-          <TouchableOpacity
-            key={journal._id}
-            onPress={() => {
-              navigation.navigate("JournalPreview", {
-                images: journal.images,
-                title: journal.title,
-              });
-            }}
-          >
-            <View style={styles.card}>
-              <View style={styles.cardTop}>
-                <Text style={styles.cardTitle}>{journal.title}</Text>
-                <Text style={styles.cardDate}>2 days ago</Text>
-              </View>
-              <Text style={styles.cardSubtitle}>{journal.designTemplate}</Text>
-              <TouchableOpacity style={styles.tagButton}>
-                <Text style={styles.tagText}>
-                  {journal.images.length} photos
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        ))
-      ) : (
-        <View style={{ marginTop: 20, alignItems: "center" }}>
-          <Text style={{ fontSize: 16, color: "#666" }}>
-            No journals found in this category.
-          </Text>
+              <Text
+                style={[
+                  styles.tabText,
+                  selectedCategory === tab && styles.tabSelectedText,
+                ]}
+              >
+                {tab}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      )}
-    </ScrollView>
+
+        {/* Journals */}
+        {filteredJournals.length > 0 ? (
+          filteredJournals.map((journal) => (
+            <TouchableOpacity
+              key={journal._id}
+              onPress={() => {
+                navigation.navigate("JournalPreview", {
+                  images: journal.images,
+                  title: journal.title,
+                });
+              }}
+            >
+              <View style={styles.card}>
+                <View style={styles.cardTop}>
+                  <Text style={styles.cardTitle}>{journal.title}</Text>
+                  <Text style={styles.cardDate}>2 days ago</Text>
+                </View>
+                <Text style={styles.cardSubtitle}>
+                  {journal.designTemplate}
+                </Text>
+                <TouchableOpacity style={styles.tagButton}>
+                  <Text style={styles.tagText}>
+                    {journal.images.length} photos
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <View style={{ marginTop: 20, alignItems: "center" }}>
+            <Text style={{ fontSize: 16, color: "#666" }}>
+              No journals found in this category.
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
