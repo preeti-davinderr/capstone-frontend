@@ -66,10 +66,16 @@ export default function SignInScreen({ navigation }: any) {
 
       <CommonButton label="Sign In" onPress={handleLogin} />
       <Text style={styles.noAccount}>Don't have an account yet?</Text>
-      <CommonButton
+      {/* <CommonButton
         label="Create New Account"
-        onPress={() => navigation.navigate("WhoFor")}
+       
         style={styles.createAccountBtn}
+      /> */}
+      <CommonButton
+        label="Create new account"
+        onPress={() => navigation.navigate("WhoFor")}
+        variant="border"
+        style={{ backgroundColor: "#E8DBF5" }} // your light purple shade
       />
     </ScrollView>
   );

@@ -22,12 +22,11 @@ export default function WhoForScreen({ navigation }: Props) {
           label="Yes, for myself"
           onPress={() => handleSelect("self")}
         />
-
         <CommonButton
           label="No, I have a family code"
           onPress={() => handleSelect("other")}
-          style={styles.outlinedButton}
-          buttonLabel={styles.outlinedLabel}
+          variant="border"
+          style={{ backgroundColor: "#E8DBF5" }} // your light purple shade
         />
       </View>
     </View>
