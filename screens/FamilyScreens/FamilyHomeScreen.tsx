@@ -40,14 +40,14 @@ const FamilyHomeScreen = ({ navigation }: any) => {
           const user = await AsyncStorage.getItem("user");
           const parsed = user ? JSON.parse(user) : null;
           const userId = parsed?.id;
-
+          console.log("User IDparsedparsed==>:", parsed.familyCode);
           if (!userId) {
             console.error("User ID not found in AsyncStorage.");
             setLoading(false);
             return;
           }
 
-          const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal/familyCode?id=BTBUWW5`);
+          const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal/familyCode?id=${parsed.familyCode}`);
           const data = await res.json();
           setJournals(data.data as Journal[]);
         } catch (err) {

@@ -15,13 +15,17 @@ const SignUpScreen = ({ navigation, route }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [familyCode, setFamilyCode] = useState("");
   const [agreed, setAgreed] = useState(false);
 
   const handleSignup = async () => {
-    console.log("hi");
-    
     if (!name || !email || !password || !confirmPassword) {
       Alert.alert("Validation", "Please fill in all fields.");
+      return;
+    }
+
+    if (userType === "other" && !familyCode) {
+      Alert.alert("Validation", "Please enter your family code.");
       return;
     }
 
@@ -36,14 +40,23 @@ const SignUpScreen = ({ navigation, route }: any) => {
     }
 
     try {
-      console.log(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/signup`);
-      
+      const payload: any = {
+        name,
+        email,
+        password,
+        role: userType,
+      };
+
+      if (userType === "other") {
+        payload.familyCode = familyCode;
+      }
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/api/auth/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password, role: userType }),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -63,7 +76,7 @@ const SignUpScreen = ({ navigation, route }: any) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
-        {userType === "self" ? "Create Account" : "Sign Up on Behalf"}
+        {userType === "self" ? "Create Account" : "Sign Up with Family Code"}
       </Text>
 
       <TextInput
@@ -99,6 +112,16 @@ const SignUpScreen = ({ navigation, route }: any) => {
         style={styles.input}
       />
 
+      {userType === "other" && (
+        <TextInput
+          label="Enter Family Code"
+          value={familyCode}
+          mode="outlined"
+          onChangeText={setFamilyCode}
+          style={styles.input}
+        />
+      )}
+
       <TouchableOpacity
         style={styles.checkboxRow}
         activeOpacity={0.8}
@@ -132,10 +155,6 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
-  },
-  Checkbox: {
-    borderColor: "black",
-    borderWidth: 1,
   },
   checkboxRow: {
     flexDirection: "row",
