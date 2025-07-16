@@ -39,6 +39,9 @@
     },
     "updates": {
       "enabled": false
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

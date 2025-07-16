@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { TextInput, Text, Checkbox } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import CommonButton from "../../components/CommonButton";
 
 const SignUpScreen = ({ navigation, route }: any) => {
@@ -17,6 +18,25 @@ const SignUpScreen = ({ navigation, route }: any) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [familyCode, setFamilyCode] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [dueDate, setDueDate] = useState<string | null>(null);
+  const [nickName, setNickName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userString = await AsyncStorage.getItem("user");
+        if (userString) {
+          const user = JSON.parse(userString);
+          setNickName(user.nickName || "");
+          setDueDate(user.dueDate || null);
+        }
+      } catch (err) {
+        console.error("Failed to load user from AsyncStorage", err);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const handleSignup = async () => {
     if (!name || !email || !password || !confirmPassword) {
@@ -45,8 +65,12 @@ const SignUpScreen = ({ navigation, route }: any) => {
         email,
         password,
         role: userType,
+        nickName,
+        dueDate,
       };
 
+      console.log(payload,">>");
+      
       if (userType === "other") {
         payload.familyCode = familyCode;
       }
@@ -66,7 +90,7 @@ const SignUpScreen = ({ navigation, route }: any) => {
         Alert.alert("Success", "Account created. Please sign in.");
         navigation.replace("SignIn");
       } else {
-        Alert.alert("Signup Failed", data.message);
+        Alert.alert("Signup Failed", data.message || "Something went wrong.");
       }
     } catch (error) {
       Alert.alert("Error", "Network error");
