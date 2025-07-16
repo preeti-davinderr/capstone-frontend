@@ -19,6 +19,14 @@ import ChatBot from "./screens/ChatBot";
 import SyncNowScreen from "./screens/Health/SyncNowFitbitData";
 import FamilyTabNavigator from "./navigation/FamilyTabNavigator";
 
+import {
+  useFonts,
+  WixMadeforDisplay_400Regular,
+  WixMadeforDisplay_500Medium,
+  WixMadeforDisplay_600SemiBold,
+  WixMadeforDisplay_700Bold,
+} from "@expo-google-fonts/wix-madefor-display";
+
 export type RootStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
@@ -45,9 +53,22 @@ export type RootStackParamList = {
   FamilyApp: undefined;
 };
 
+
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    "WixMadeforDisplay-Regular": WixMadeforDisplay_400Regular,
+    "WixMadeforDisplay-Medium": WixMadeforDisplay_500Medium,
+    "WixMadeforDisplay-SemiBold": WixMadeforDisplay_600SemiBold,
+    "WixMadeforDisplay-Bold": WixMadeforDisplay_700Bold,
+  });
+  
+  if (!fontsLoaded) {
+    return null; // Or <AppLoading /> if using expo-app-loading
+  }
+  
   return (
     <View style={styles.container}>
       <NavigationContainer>

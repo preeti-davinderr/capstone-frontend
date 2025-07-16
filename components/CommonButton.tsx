@@ -6,6 +6,7 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native";
+import { COLORS } from "../styles/globalStyles";
 
 interface Props {
   label: string;
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   primary: {
-    backgroundColor: "#8C63C7", // Purple 700
+    backgroundColor: COLORS.purple500, // Purple 700
   },
   border: {
     backgroundColor: "#FFFFFF",
