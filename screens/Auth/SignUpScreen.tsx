@@ -6,9 +6,15 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { TextInput, Text, Checkbox } from "react-native-paper";
+import { Text, Checkbox } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CommonInput from "../../components/CommonInput";
 import CommonButton from "../../components/CommonButton";
+import {
+  COLORS,
+  TEXT_STYLES,
+  SPACING,
+} from "../../styles/globalStyles";
 
 const SignUpScreen = ({ navigation, route }: any) => {
   const userType = route.params?.userType;
@@ -34,7 +40,6 @@ const SignUpScreen = ({ navigation, route }: any) => {
         console.error("Failed to load user from AsyncStorage", err);
       }
     };
-
     loadUserData();
   }, []);
 
@@ -69,8 +74,6 @@ const SignUpScreen = ({ navigation, route }: any) => {
         dueDate,
       };
 
-      console.log(payload,">>");
-      
       if (userType === "other") {
         payload.familyCode = familyCode;
       }
@@ -99,98 +102,113 @@ const SignUpScreen = ({ navigation, route }: any) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>
+      <Text style={styles.heading}>
         {userType === "self" ? "Create Account" : "Sign Up with Family Code"}
       </Text>
 
-      <TextInput
-        label="Full Name"
-        value={name}
-        mode="outlined"
-        onChangeText={setName}
-        style={styles.input}
-      />
-      <TextInput
-        label="Email"
-        value={email}
-        mode="outlined"
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        style={styles.input}
-      />
-      <TextInput
-        label="Password"
-        value={password}
-        mode="outlined"
-        secureTextEntry
-        onChangeText={setPassword}
-        style={styles.input}
-      />
-      <TextInput
-        label="Confirm Password"
-        value={confirmPassword}
-        mode="outlined"
-        secureTextEntry
-        onChangeText={setConfirmPassword}
-        style={styles.input}
-      />
-
-      {userType === "other" && (
-        <TextInput
-          label="Enter Family Code"
-          value={familyCode}
-          mode="outlined"
-          onChangeText={setFamilyCode}
-          style={styles.input}
+      <View style={styles.form}>
+        <CommonInput
+          label="Full Name"
+          value={name}
+          onChangeText={setName}
+          placeholder="Your name"
         />
-      )}
+        <CommonInput
+          label="Email Address"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <CommonInput
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          secureTextEntry
+        />
+        <CommonInput
+          label="Confirm Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          placeholder="Confirm Password"
+          secureTextEntry
+        />
+        {userType === "other" && (
+          <CommonInput
+            label="Enter Family Code"
+            value={familyCode}
+            onChangeText={setFamilyCode}
+            placeholder="Family Code"
+          />
+        )}
+      </View>
 
       <TouchableOpacity
         style={styles.checkboxRow}
         activeOpacity={0.8}
         onPress={() => setAgreed(!agreed)}
       >
-        <Checkbox
+        <Checkbox.Android
           status={agreed ? "checked" : "unchecked"}
           onPress={() => setAgreed(!agreed)}
-          color="#000"
+          color={COLORS.purple500}
         />
         <Text style={styles.agreeText}>I have read and agree to the Terms</Text>
       </TouchableOpacity>
 
       <CommonButton label="Create Account" onPress={handleSignup} />
+
+      <Text style={styles.signInLink}>
+        Already have an account?{" "}
+        <Text
+          onPress={() => navigation.replace("SignIn")}
+          style={styles.linkText}
+        >
+          Sign In
+        </Text>
+      </Text>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: SPACING.spacing48,
     flexGrow: 1,
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.background,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "600",
-    marginBottom: 24,
+  heading: {
+    ...TEXT_STYLES.displayH1,
     textAlign: "center",
+    marginBottom: SPACING.spacing32,
   },
-  input: {
-    marginBottom: 16,
+  form: {
+    gap: SPACING.spacing16,
+    marginBottom: SPACING.spacing32,
   },
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: SPACING.spacing24,
   },
   agreeText: {
-    fontSize: 14,
-    color: "#333",
-    marginLeft: 8,
+    ...TEXT_STYLES.bodyBase,
+    color: COLORS.gray700,
+    marginLeft: SPACING.spacing8,
     flex: 1,
     flexWrap: "wrap",
+  },
+  signInLink: {
+    ...TEXT_STYLES.bodyBase,
+    marginTop: SPACING.spacing32,
+    textAlign: "center",
+  },
+  linkText: {
+    color: COLORS.purple500,
+    fontWeight: "700",
   },
 });
 

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   Image,
   ScrollView,
@@ -11,13 +10,9 @@ import {
   TouchableOpacity,
   StatusBar,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CommonButton from "../../components/CommonButton";
-import CommonDatePicker from "../../components/CommonDatePicker";
 import {
   COLORS,
   EFFECTS,
@@ -26,7 +21,7 @@ import {
   TEXT_STYLES,
 } from "../../styles/globalStyles";
 import CommonDateInput from "../../components/CommonDateInput";
-import { LinearGradient } from "expo-linear-gradient";
+import CommonInput from "../../components/CommonInput";
 
 const pages = [
   {
@@ -63,8 +58,6 @@ const OnboardingScreen = ({ navigation }: any) => {
   const [isFirstPregnancy, setIsFirstPregnancy] = useState<null | boolean>(
     null
   );
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const page = pages[step];
 
@@ -144,12 +137,10 @@ const OnboardingScreen = ({ navigation }: any) => {
       <Text style={styles.subtitle}>{page.subtitle}</Text>
 
       <Text style={styles.question}>What should we call you?</Text>
-      <TextInput
-        style={styles.input}
+      <CommonInput
         placeholder="Your name"
         value={nickName}
         onChangeText={setName}
-        placeholderTextColor={COLORS.gray500}
       />
 
       <Text style={styles.question}>When is your due date?</Text>
@@ -215,14 +206,6 @@ const OnboardingScreen = ({ navigation }: any) => {
             behavior={Platform.OS === "ios" ? "padding" : undefined}
             style={{ flex: 1 }}
           >
-            {/* <View
-              style={{
-                width: "100%",
-                maxWidth: 360,
-                alignSelf: "center",
-                flex: 1,
-              }}
-            > */}
             <View style={styles.iconInside}>
               <Image source={page.icon} style={styles.icon} />
             </View>
@@ -403,18 +386,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textAlign: "center",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: COLORS.gray300,
-    borderRadius: 12,
-    paddingVertical: SPACING.spacing12,
-    paddingHorizontal: SPACING.spacing16,
-    width: "100%",
-    backgroundColor: COLORS.white,
-    fontFamily: TEXT_STYLES.bodyBase.fontFamily,
-    fontSize: 16,
-    color: COLORS.gray900,
-  },
   question: {
     ...TEXT_STYLES.bodyBase,
     fontWeight: "500",
@@ -454,30 +425,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.gray900,
     fontFamily: TEXT_STYLES.bodySmall.fontFamily,
-  },
-  dateInput: {
-    borderWidth: 1,
-    borderColor: COLORS.gray300,
-    borderRadius: 12,
-    paddingVertical: SPACING.spacing12,
-    paddingHorizontal: SPACING.spacing16,
-    width: "100%",
-    backgroundColor: COLORS.white,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: SPACING.spacing16,
-  },
-  dateText: {
-    fontSize: 16,
-    fontFamily: TEXT_STYLES.bodyBase.fontFamily,
-    color: COLORS.gray900,
-  },
-  calendarIcon: {
-    width: 20,
-    height: 20,
-    tintColor: COLORS.gray900,
-    resizeMode: "contain",
   },
 });
 
