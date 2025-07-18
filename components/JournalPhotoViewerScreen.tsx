@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import Header from "./SubHeader";
 
 const { width } = Dimensions.get("window");
 
@@ -29,9 +30,11 @@ export default function JournalPhotoViewerScreen() {
   const images = imagesByWeek?.[currentWeek] || [];
   const showWeekTabs = title?.toLowerCase() === "baby bump";
   return (
+    <>
+    <Header title={title} />
     <View style={styles.container}>
       {/* Header with back button */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
@@ -39,7 +42,7 @@ export default function JournalPhotoViewerScreen() {
           {typeof title === "string" ? title : "Journal"}
         </Text>
         <View style={{ width: 24 }} /> {/* Placeholder for symmetry */}
-      </View>
+      {/* </View> */} 
   
       {/* Week Tabs if needed */}
       {showWeekTabs && imagesByWeek && typeof imagesByWeek === "object" && (
@@ -93,6 +96,7 @@ export default function JournalPhotoViewerScreen() {
         </View>
       )}
     </View>
+    </>
   );
 }
 

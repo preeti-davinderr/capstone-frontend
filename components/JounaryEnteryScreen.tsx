@@ -240,7 +240,7 @@
 //         />
 //       )}
 //         <Text style={styles.subHeading}>{description}</Text>
-  
+
 //         <View style={styles.imageGrid}>
 //           {Array.from({ length: 4 }).map((_, index) => (
 //             <TouchableOpacity
@@ -411,8 +411,6 @@
 //   },
 // });
 
-
-
 // import React, { useState, useEffect } from "react";
 // import {
 //   View,
@@ -486,9 +484,9 @@
 //               uri: img.url,
 //               description: img.description || "",
 //             })) || [];
-  
+
 //           const isBabyBump = title?.toLowerCase() === "baby bump";
-  
+
 //           if (isBabyBump) {
 //             const weekMap: Record<string, ImageItem[]> = {};
 //             loadedImages.forEach((img: ImageItem, i: number) => {
@@ -505,7 +503,6 @@
 //         .catch((err) => console.error("Error fetching journal:", err));
 //     }
 //   }, [journalId, isEdit]);
-  
 
 //   const pickImages = async () => {
 //     const isBabyBump = title?.toLowerCase() === "baby bump";
@@ -514,16 +511,16 @@
 //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
 //       quality: 1,
 //     });
-  
+
 //     if (!result.canceled && result.assets) {
 //       const selected = result.assets.map((img) => ({
 //         uri: img.uri,
 //         description: "",
 //       }));
-  
+
 //       setImagesByWeek((prev) => {
 //         const current = prev[selectedWeek] || [];
-  
+
 //         if (isBabyBump) {
 //           // Only one image allowed per week
 //           return { ...prev, [selectedWeek]: [selected[0]] };
@@ -533,7 +530,6 @@
 //       });
 //     }
 //   };
-  
 
 //   const updateDescription = (index: number, text: string) => {
 //     const currentImages = [...(imagesByWeek[selectedWeek] || [])];
@@ -929,7 +925,7 @@
 //     width: "100%",
 //     marginBottom: 24,
 //   },
-  
+
 //   imageContainerLarge: {
 //     width: "100%",
 //     height: 240,
@@ -938,7 +934,7 @@
 //     backgroundColor: "#f2f2f2",
 //     marginBottom: 10,
 //   },
-  
+
 //   imageDescriptionLarge: {
 //     minHeight: 60,
 //     maxHeight: 140,
@@ -971,6 +967,8 @@ import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "./SubHeader";
+import CommonButton from "./CommonButton";
+import { SPACING } from "../styles/globalStyles";
 
 // const { width } = Dimensions.get("window");
 
@@ -992,13 +990,19 @@ export default function JournalEntryScreen({ navigation }: any) {
 
   const [note, setNote] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
-  const [imagesByWeek, setImagesByWeek] = useState<Record<string, ImageItem[]>>({});
+  const [imagesByWeek, setImagesByWeek] = useState<Record<string, ImageItem[]>>(
+    {}
+  );
   const [loading, setLoading] = useState(false);
-  const [journalId, setJournalId] = useState<string | null>(passedJournalId || null);
+  const [journalId, setJournalId] = useState<string | null>(
+    passedJournalId || null
+  );
   const [userID, setUserID] = useState<string | null>(null);
   const weeks = Array.from({ length: 40 }, (_, i) => `Week ${i + 1}`);
   const [selectedWeek, setSelectedWeek] = useState("Week 1");
-  const [editableTitle, setEditableTitle] = useState(title || "Untitled Journal");
+  const [editableTitle, setEditableTitle] = useState(
+    title || "Untitled Journal"
+  );
 
   useEffect(() => {
     const fetchUserID = async () => {
@@ -1015,7 +1019,9 @@ export default function JournalEntryScreen({ navigation }: any) {
 
   useEffect(() => {
     if (isEdit && journalId) {
-      fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal/byId?id=${journalId}`)
+      fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/journal/byId?id=${journalId}`
+      )
         .then((res) => res.json())
         .then((data) => {
           setNote(data.data?.note || "");
@@ -1052,13 +1058,13 @@ export default function JournalEntryScreen({ navigation }: any) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
-  
+
     if (!result.canceled && result.assets) {
       const selected = result.assets.map((img) => ({
         uri: img.uri,
         description: "",
       }));
-  
+
       setImagesByWeek((prev) => {
         if (isBabyBump) {
           // Only one image per week (overwrite)
@@ -1077,7 +1083,6 @@ export default function JournalEntryScreen({ navigation }: any) {
       });
     }
   };
-  
 
   const updateDescription = (index: number, text: string) => {
     const currentImages = [...(imagesByWeek[selectedWeek] || [])];
@@ -1106,7 +1111,10 @@ export default function JournalEntryScreen({ navigation }: any) {
 
   const handleSave = async () => {
     if (!userID) {
-      Alert.alert("User ID missing", "Unable to save journal. Please try again.");
+      Alert.alert(
+        "User ID missing",
+        "Unable to save journal. Please try again."
+      );
       return;
     }
 
@@ -1130,7 +1138,9 @@ export default function JournalEntryScreen({ navigation }: any) {
             };
           }
 
-          const fileName = `journal/${Date.now()}-${Math.random().toString(36).substring(2)}.jpg`;
+          const fileName = `journal/${Date.now()}-${Math.random()
+            .toString(36)
+            .substring(2)}.jpg`;
           const contentType = getMimeType(img.uri);
           const base64 = await FileSystem.readAsStringAsync(img.uri, {
             encoding: FileSystem.EncodingType.Base64,
@@ -1155,11 +1165,14 @@ export default function JournalEntryScreen({ navigation }: any) {
         isPrivate,
       };
 
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/journal`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
       let data;
       try {
@@ -1176,7 +1189,9 @@ export default function JournalEntryScreen({ navigation }: any) {
         Alert.alert("Upload failed", data.error || "Unknown error");
       } else {
         if (!isEdit) setJournalId(data.journal?._id || null);
-        Alert.alert(isEdit ? "Journal updated!" : "Journal saved successfully!");
+        Alert.alert(
+          isEdit ? "Journal updated!" : "Journal saved successfully!"
+        );
         setImagesByWeek({});
         setNote("");
       }
@@ -1193,15 +1208,28 @@ export default function JournalEntryScreen({ navigation }: any) {
       <ScrollView style={{ flex: 1, padding: 20 }}>
         {/* week tabs */}
         {title?.toLowerCase() === "baby bump" && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginBottom: 20 }}
+          >
             <View style={styles.weekTabRow}>
               {weeks.map((week) => (
                 <TouchableOpacity
                   key={week}
-                  style={[styles.weekTab, selectedWeek === week && styles.weekTabSelected]}
+                  style={[
+                    styles.weekTab,
+                    selectedWeek === week && styles.weekTabSelected,
+                  ]}
                   onPress={() => setSelectedWeek(week)}
                 >
-                  <Text style={selectedWeek === week ? styles.weekTabTextSelected : styles.weekTabText}>
+                  <Text
+                    style={
+                      selectedWeek === week
+                        ? styles.weekTabTextSelected
+                        : styles.weekTabText
+                    }
+                  >
                     {week}
                   </Text>
                 </TouchableOpacity>
@@ -1233,7 +1261,10 @@ export default function JournalEntryScreen({ navigation }: any) {
           <View key={index} style={styles.imageBlock}>
             <View style={styles.imageContainerLarge}>
               <Image source={{ uri: img.uri }} style={styles.imagePreview} />
-              <TouchableOpacity style={styles.deleteIcon} onPress={() => deleteImage(index)}>
+              <TouchableOpacity
+                style={styles.deleteIcon}
+                onPress={() => deleteImage(index)}
+              >
                 <Ionicons name="close-circle" size={24} color="#fff" />
               </TouchableOpacity>
             </View>
@@ -1243,8 +1274,8 @@ export default function JournalEntryScreen({ navigation }: any) {
               onChangeText={(text) => updateDescription(index, text)}
               placeholder="Write a detailed memory or emotion..."
               style={styles.noteInput}
-          multiline
-          maxLength={200}
+              multiline
+              maxLength={200}
               textAlignVertical="top"
             />
           </View>
@@ -1254,8 +1285,6 @@ export default function JournalEntryScreen({ navigation }: any) {
         <TouchableOpacity onPress={pickImages} style={styles.imageAdd}>
           <Ionicons name="add" size={32} color="#aaa" />
         </TouchableOpacity>
-
-        
 
         {/* <Text style={styles.label}>How are you feeling today?</Text>
         <TextInput
@@ -1267,30 +1296,32 @@ export default function JournalEntryScreen({ navigation }: any) {
           onChangeText={setNote}
         /> */}
 
-        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 15 }}>
+        <View
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 15 }}
+        >
           <Text>Keep it Private</Text>
-          <Switch value={isPrivate} onValueChange={setIsPrivate} style={{ marginLeft: 10 }} />
+          <Switch
+            value={isPrivate}
+            onValueChange={setIsPrivate}
+            style={{ marginLeft: 10 }}
+          />
         </View>
 
+<View style={styles.buttons}>
         {isEdit && Object.values(imagesByWeek).flat().length > 0 && (
-          <View style={{ marginTop: 10 }}>
-            <TouchableOpacity
-              style={styles.galleryButton}
-              onPress={() => {
-                const allImages = Object.values(imagesByWeek).flat();
-                navigation.navigate("JournalPreview", {
-                  images: allImages,
-                  title,
-                });
-              }}
-            >
-              <Text style={styles.buttonText}>🎞️ Preview Journal Video</Text>
-            </TouchableOpacity>
-          </View>
+          <CommonButton
+            label="🎞️ Preview Journal Video"
+            onPress={() => {
+              const allImages = Object.values(imagesByWeek).flat();
+              navigation.navigate("JournalPreview", {
+                images: allImages,
+                title,
+              });
+            }}
+          />
         )}
-
-        <TouchableOpacity
-          style={styles.galleryButton}
+        <CommonButton
+          label="📷 View Photos"
           onPress={() =>
             navigation.navigate("JournalPhotoViewer", {
               imagesByWeek,
@@ -1298,15 +1329,18 @@ export default function JournalEntryScreen({ navigation }: any) {
               selectedWeek,
             })
           }
-        >
-          <Text style={styles.buttonText}>📷 View Photos</Text>
-        </TouchableOpacity>
+        />
+        <CommonButton
+          label={
+            loading ? "Saving..." : isEdit ? "Update Journal" : "Save Journal"
+          }
+          onPress={handleSave}
+        />
+        </View>
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>
-            {loading ? "Saving..." : isEdit ? "Update Journal" : "Save Journal"}
-          </Text>
-        </TouchableOpacity>
+        {/* <TouchableOpacity style={styles.saveButton}>
+          <Text style={styles.saveButtonText}></Text>
+        </TouchableOpacity> */}
       </ScrollView>
     </>
   );
@@ -1447,8 +1481,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  buttons: {
+    gap: SPACING.spacing16,
+    width: "100%",
+    marginTop:SPACING.spacing4,
+  },
 });
-
 
 // const styles = StyleSheet.create({
 //   subHeading: {
@@ -1579,4 +1617,3 @@ const styles = StyleSheet.create({
 //     fontWeight: "600",
 //   },
 // });
-
