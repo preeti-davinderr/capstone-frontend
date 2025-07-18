@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CommonInput from "../../components/CommonInput";
 import CommonButton from "../../components/CommonButton";
 import {
@@ -61,7 +62,7 @@ export default function SignInScreen({ navigation }: any) {
         Every journey begins{"\n"}with a moment.
       </Text>
       <Text style={styles.subheading}>
-        Sign in to start tracking your{"\n"}little one’s milestones.
+        Sign in to start tracking your little one’s milestones.
       </Text>
 
       <View style={styles.form}>
@@ -92,13 +93,13 @@ export default function SignInScreen({ navigation }: any) {
           Sign Up
         </Text>
       </Text>
-      <Text style={styles.orText}>- Or continue With -</Text>
+      <Text style={styles.orText}>- or continue with -</Text>
 
       <View style={styles.socialRow}>
         <TouchableOpacity>
           <View style={styles.socialCircle}>
             <Image
-              source={require("../../assets/splash/person.png")}
+              source={require("../../assets/splash/google.png")}
               style={styles.socialIcon}
             />
           </View>
@@ -145,8 +146,8 @@ const styles = StyleSheet.create({
     marginTop: SPACING.spacing16,
   },
   socialIcon: {
-    width: 48,
-    height: 48,
+    width: 28,
+    height: 28,
     // resizeMode: "contain",
   },
   signUpText: {
