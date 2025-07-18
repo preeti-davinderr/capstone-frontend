@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   agreeText: {
     ...TEXT_STYLES.bodyBase,
     color: COLORS.gray700,
-    marginLeft: SPACING.spacing8,
+    marginLeft: SPACING.spacing2,
     flex: 1,
     flexWrap: "wrap",
   },

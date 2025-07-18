@@ -61,7 +61,7 @@ export default function SignInScreen({ navigation }: any) {
         Every journey begins{"\n"}with a moment.
       </Text>
       <Text style={styles.subheading}>
-        Sign in to start tracking your{"\n"}little one’s milestones.
+        Sign in to start tracking your little one’s milestones.
       </Text>
 
       <View style={styles.form}>
@@ -92,7 +92,7 @@ export default function SignInScreen({ navigation }: any) {
           Sign Up
         </Text>
       </Text>
-      <Text style={styles.orText}>- Or continue With -</Text>
+      <Text style={styles.orText}>- or continue with -</Text>
 
       <View style={styles.socialRow}>
         <TouchableOpacity>

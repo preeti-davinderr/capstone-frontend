@@ -39,6 +39,7 @@ export const COLORS = {
 };
 
 export const SPACING = {
+    spacing2: 2,
     spacing4: 4,
     spacing6: 6,
     spacing8: 8,
