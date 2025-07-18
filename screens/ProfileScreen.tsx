@@ -18,7 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../styles/globalStyles";
 import MainHeader from "../components/MainHeader";
 import CommonButton from "../components/CommonButton";
-import * as Clipboard from "expo-clipboard";
+// import * as Clipboard from "expo-clipboard";
 
 const InfoRow = ({ icon, iconType = "icon", label, value }: any) => (
   <View style={styles.infoRow}>
@@ -85,7 +85,7 @@ export default function ProfileScreen() {
     console.log("hi");
     
     if (profile?.familyCode) {
-      await Clipboard.setStringAsync(profile.familyCode);
+      // await Clipboard.setStringAsync(profile.familyCode);
       Alert.alert("Copied", "Family code copied to clipboard.");
     } else {
       Alert.alert("Unavailable", "Family code is not available to copy.");
