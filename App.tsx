@@ -15,6 +15,7 @@ import WeightTracker from "./screens/Health/Weighttracker";
 import KickCounterScreen from "./screens/KickCounterScreen";
 import JournalEntryScreen from "./components/JounaryEnteryScreen";
 import JournalPreviewScreen from "./components/JournalPreviewScreen";
+import JournalPhotoViewerScreen from "./components/JournalPhotoViewerScreen";
 import ChatBot from "./screens/ChatBot";
 import SyncNowScreen from "./screens/Health/SyncNowFitbitData";
 import FamilyTabNavigator from "./navigation/FamilyTabNavigator";
@@ -44,6 +45,11 @@ export type RootStackParamList = {
     meta?: string;
     isEdit?: boolean;
   };
+  JournalPhotoViewer: {
+    imagesByWeek: Record<string, { uri: string; description: string }[]>;
+    title: string;
+    selectedWeek: string;
+  };
   JournalPreview: {
     images: { uri: string; description: string }[];
     title: string;
@@ -52,7 +58,6 @@ export type RootStackParamList = {
   FitBitSummary: undefined;
   FamilyApp: undefined;
 };
-
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -85,6 +90,7 @@ export default function App() {
           <Stack.Screen name="ChatBot" component={ChatBot} />
           <Stack.Screen name="journalEntery" component={JournalEntryScreen} />
           <Stack.Screen name="JournalPreview" component={JournalPreviewScreen} />
+          <Stack.Screen name="JournalPhotoViewer" component={JournalPhotoViewerScreen} />
           <Stack.Screen name="FitBitSummary" component={SyncNowScreen} />
           <Stack.Screen name="FamilyApp" component={FamilyTabNavigator} />
         </Stack.Navigator>
