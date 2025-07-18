@@ -1,8 +1,10 @@
 import React from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { Text } from "react-native-paper";
 import CommonButton from "../../components/CommonButton";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
+import { COLORS, TEXT_STYLES, SPACING } from "../../styles/globalStyles";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WhoFor">;
 
@@ -18,17 +20,29 @@ export default function WhoForScreen({ navigation }: Props) {
         <Text style={styles.subtitle}>
           This helps set up the right features for you.
         </Text>
-        <CommonButton
-          label="Yes, for myself"
-          onPress={() => handleSelect("self")}
-        />
-        <CommonButton
-          label="No, I have a family code"
-          onPress={() => handleSelect("other")}
-          variant="border"
-          style={{ backgroundColor: "#E8DBF5" }} // your light purple shade
-        />
+
+        <View style={styles.buttons}>
+          <CommonButton
+            label="Yes, for myself"
+            onPress={() => handleSelect("self")}
+          />
+          <CommonButton
+            label="No, I have a family code"
+            onPress={() => handleSelect("other")}
+            variant="border"
+            style={{ backgroundColor: "#E8DBF5" }}
+          />
+        </View>
       </View>
+      <Text style={styles.signInLink}>
+        Already have an account?{" "}
+        <Text
+          onPress={() => navigation.replace("SignIn")}
+          style={styles.linkText}
+        >
+          Sign In
+        </Text>
+      </Text>
     </View>
   );
 }
@@ -36,34 +50,38 @@ export default function WhoForScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingVertical: 48,
-    paddingHorizontal: 24,
+    backgroundColor: COLORS.background,
+    paddingVertical: SPACING.spacing48,
+    paddingHorizontal: SPACING.spacing48,
     justifyContent: "center",
   },
   centeredContent: {
     alignItems: "center",
     justifyContent: "center",
-    gap: 16,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "600",
+    ...TEXT_STYLES.displayH1,
     textAlign: "center",
-    marginBottom: 24,
+    marginBottom: SPACING.spacing12,
   },
   subtitle: {
-    fontSize: 14,
-    color: "#444",
+    ...TEXT_STYLES.headingH2,
     textAlign: "center",
-    paddingHorizontal: 8,
+    color: COLORS.gray700,
+    marginBottom: SPACING.spacing48,
+    paddingHorizontal: SPACING.spacing4,
   },
-  outlinedButton: {
-    backgroundColor: "#fff",
-    borderColor: "#000",
-    borderWidth: 1,
+  buttons: {
+    gap: SPACING.spacing16,
+    width: "100%",
   },
-  outlinedLabel: {
-    color: "#000",
+  signInLink: {
+    ...TEXT_STYLES.bodyBase,
+    marginTop: SPACING.spacing32,
+    textAlign: "center",
+  },
+  linkText: {
+    color: COLORS.purple500,
+    fontWeight: "700",
   },
 });

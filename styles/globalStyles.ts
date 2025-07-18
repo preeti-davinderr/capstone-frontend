@@ -2,7 +2,7 @@
 
 export const COLORS = {
     // Primary
-    purple500: "#7C55C3",    
+    purple500: "#7C55C3",
     purple100: "#B89AD9",
     // purple700: "#8C63C7",
     purple700: "#522F83",
@@ -26,6 +26,7 @@ export const COLORS = {
     gray100: "#F6F6F6",
     subHeading: '#3B434E',
     displayH1: '#000000',
+    displayH2: "#101828",
 
     // Background
     background: "#F9F9F9",
@@ -46,7 +47,7 @@ export const SPACING = {
     spacing20: 20,
     spacing24: 24,
     spacing32: 32,
-    spacing48:44
+    spacing48: 44
 };
 
 export const RADIUS = {
@@ -58,7 +59,7 @@ export const RADIUS = {
 export const TEXT_STYLES = {
     // Display / Headings
     displayH1: {
-        fontSize: 32,
+        fontSize: 30,
         lineHeight: 40,
         fontWeight: "700" as const,
         color: COLORS.displayH1,
@@ -66,10 +67,11 @@ export const TEXT_STYLES = {
     },
     headingH2: {
         fontSize: 24,
-        lineHeight: 32,
-        fontWeight: "700" as const,
-        color: COLORS.gray900,
-        fontFamily: "WixMadeforDisplay-Bold",
+        lineHeight: 31, // 130% of 24
+        fontWeight: "500" as const,
+        fontFamily: "WixMadeforDisplay-Medium",
+        color: COLORS.displayH2,
+        textAlign: "center",
     },
     subheading: {
         fontSize: 20,
@@ -100,7 +102,7 @@ export const TEXT_STYLES = {
         fontSize: 14,
         lineHeight: 20,
         fontWeight: "400" as const,
-        color: COLORS.gray900,
+        color: COLORS.displayH2,
         fontFamily: "WixMadeforDisplay-Regular",
     },
 

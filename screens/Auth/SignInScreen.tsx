@@ -1,16 +1,27 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { Text, TextInput } from "react-native-paper";
-import CommonButton from "../../components/CommonButton";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import { Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CommonInput from "../../components/CommonInput";
+import CommonButton from "../../components/CommonButton";
+import {
+  COLORS,
+  TEXT_STYLES,
+  SPACING,
+  EFFECTS,
+} from "../../styles/globalStyles";
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    console.log("hi");
-
     const response = await fetch(
       `${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`,
       {
@@ -46,69 +57,116 @@ export default function SignInScreen({ navigation }: any) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <TextInput
-        label="Email"
-        value={email}
-        mode="outlined"
-        onChangeText={setEmail}
-        style={styles.input}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        label="Password"
-        value={password}
-        mode="outlined"
-        secureTextEntry
-        onChangeText={setPassword}
-        style={styles.input}
-      />
+      <Text style={styles.heading}>
+        Every journey begins{"\n"}with a moment.
+      </Text>
+      <Text style={styles.subheading}>
+        Sign in to start tracking your{"\n"}little one’s milestones.
+      </Text>
 
-      <CommonButton label="Sign In" onPress={handleLogin} />
-      <Text style={styles.noAccount}>Don't have an account yet?</Text>
-      {/* <CommonButton
-        label="Create New Account"
-       
-        style={styles.createAccountBtn}
-      /> */}
-      <CommonButton
-        label="Create new account"
-        onPress={() => navigation.navigate("WhoFor")}
-        variant="border"
-        style={{ backgroundColor: "#E8DBF5" }} // your light purple shade
-      />
+      <View style={styles.form}>
+        <CommonInput
+          label="Email Address"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email Address"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+
+        <CommonInput
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          secureTextEntry
+        />
+      </View>
+      <CommonButton label="Log In" onPress={handleLogin} />
+      <Text style={styles.signUpText}>
+        Don’t have an account?{" "}
+        <Text
+          onPress={() => navigation.navigate("WhoFor")}
+          style={styles.signUpLink}
+        >
+          Sign Up
+        </Text>
+      </Text>
+      <Text style={styles.orText}>- Or continue With -</Text>
+
+      <View style={styles.socialRow}>
+        <TouchableOpacity>
+          <View style={styles.socialCircle}>
+            <Image
+              source={require("../../assets/splash/person.png")}
+              style={styles.socialIcon}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: SPACING.spacing48,
     flexGrow: 1,
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.background,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 24,
+  heading: {
+    ...TEXT_STYLES.displayH1,
     textAlign: "center",
+    marginBottom: SPACING.spacing12,
+    color: COLORS.gray900,
   },
-  input: {
-    marginBottom: 16,
-  },
-  noAccount: {
-    fontSize: 14,
-    color: "#888",
-    marginTop: 8,
+  subheading: {
+    ...TEXT_STYLES.headingH2,
     textAlign: "center",
+    color: COLORS.gray700,
+    marginBottom: SPACING.spacing48,
   },
-  createAccountBtn: {
-    backgroundColor: "white",
+  form: {
+    gap: SPACING.spacing16,
+    // marginTop: SPACING.spacing16,
+    marginBottom: SPACING.spacing32,
+  },
+  orText: {
+    ...TEXT_STYLES.bodyBase,
+    marginTop: SPACING.spacing16,
+    textAlign: "center",
+    // marginVertical: SPACING.spacing24,
+  },
+  socialRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: SPACING.spacing24,
+    marginTop: SPACING.spacing16,
+  },
+  socialIcon: {
+    width: 48,
+    height: 48,
+    // resizeMode: "contain",
+  },
+  signUpText: {
+    ...TEXT_STYLES.bodyBase,
+    textAlign: "center",
+    marginTop: SPACING.spacing32,
+  },
+  signUpLink: {
+    color: COLORS.purple500,
+    fontWeight: "700",
+  },
+  socialCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     borderWidth: 1,
-    borderColor: "black",
-  },
-  createAccountLabel: {
-    color: "black",
+    borderColor: COLORS.gray300,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.white, // optional
+    ...EFFECTS.softShadow, // if you want to add subtle elevation
   },
 });
