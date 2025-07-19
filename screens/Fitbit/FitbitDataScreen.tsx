@@ -111,7 +111,7 @@ export default function FitbitDataScreen({ accessToken }: FitbitDataScreenProps)
   const [error, setError] = useState<string | null>(null);
 
   // const today = new Date().toISOString().split('T')[0];
-      const yesterday = new Date();
+    const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const date = yesterday.toISOString().split('T')[0]; 
 
