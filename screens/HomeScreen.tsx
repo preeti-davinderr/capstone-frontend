@@ -15,13 +15,40 @@ import GradientCard from "../components/GradientCard";
 import WeekDevelopmentInfo from "../components/WeekDevelopmentInfo";
 import TrimesterCare from "../components/TrimesterCare";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS, SPACING, TEXT_STYLES } from "../styles/globalStyles";
 
 const HomeScreen = () => {
   const [selectedWeek, setSelectedWeek] = useState<number>(5);
   const [name, setName] = useState<string | null>(null);
+  const [dueDate, setDueDate] = useState<string | null>(null);
+  const [daysLeft, setDaysLeft] = useState<number>(0);
+
+
+  const calculateCurrentWeek = (dueDateString: string) => {
+    try {
+      const dueDate = new Date(dueDateString);
+      const today = new Date();
+      
+    
+      today.setHours(0, 0, 0, 0);
+      dueDate.setHours(0, 0, 0, 0);
+      
+  
+      const daysSinceConception = 280 - Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+      
+  
+      const currentWeek = Math.floor(daysSinceConception / 7) + 1;
+      
+    
+      return Math.max(1, Math.min(40, currentWeek));
+    } catch (error) {
+      console.error("Error calculating current week:", error);
+      return 5; 
+    }
+  };
 
   useEffect(() => {
-    const loadUserName = async () => {
+    const loadUserData = async () => {
       try {
         const userString = await AsyncStorage.getItem("user");
         if (userString) {
@@ -29,13 +56,70 @@ const HomeScreen = () => {
           if (user?.name) {
             setName(user.name);
           }
+          
+         
+          if (user?.dueDate) {
+            setDueDate(user.dueDate);
+            calculateDaysLeft(user.dueDate);
+            const currentWeek = calculateCurrentWeek(user.dueDate);
+            setSelectedWeek(currentWeek);
+          } else if (user?.id) {
+            
+            try {
+              const response = await fetch(
+                `${process.env.EXPO_PUBLIC_API_URL}/api/user/userProfile?id=${user.id}`
+              );
+              const data = await response.json();
+              
+              if (data.success && data.data?.dueDate) {
+                setDueDate(data.data.dueDate);
+                calculateDaysLeft(data.data.dueDate);
+                const currentWeek = calculateCurrentWeek(data.data.dueDate);
+                setSelectedWeek(currentWeek);
+              }
+            } catch (apiError) {
+              console.error("Error fetching user profile:", apiError);
+            }
+          }
         }
       } catch (error) {
         console.error("Error loading user from AsyncStorage:", error);
       }
     };
-    loadUserName();
+    loadUserData();
   }, []);
+
+  const calculateDaysLeft = (dueDateString: string) => {
+    try {
+      const dueDate = new Date(dueDateString);
+      const today = new Date();
+      
+      // Reset time to start of day for accurate calculation
+      today.setHours(0, 0, 0, 0);
+      dueDate.setHours(0, 0, 0, 0);
+      
+      const timeDiff = dueDate.getTime() - today.getTime();
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      
+      setDaysLeft(Math.max(0, daysDiff)); // Ensure days left is not negative
+    } catch (error) {
+      console.error("Error calculating days left:", error);
+      setDaysLeft(0);
+    }
+  };
+
+  const formatDueDate = (dueDateString: string) => {
+    try {
+      const date = new Date(dueDateString);
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    } catch (error) {
+      console.error("Error formatting due date:", error);
+      return "N/A";
+    }
+  };
 
   const currentWeekData: WeekDetails = weekData.find(
     (w) => w.week === selectedWeek
@@ -43,7 +127,7 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "#fff" }}
+      style={{ flex: 1, backgroundColor: COLORS.background }}
       edges={["left", "right", "bottom"]}
     >
       <MainHeader
@@ -54,17 +138,20 @@ const HomeScreen = () => {
       <View style={{ flex: 1 }}>
         <ScrollView
           style={styles.container}
-          contentContainerStyle={{ paddingBottom: 40 }} // ensures content does not hide under the button
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
         >
           <HorizontalScroll
             weekData={weekData}
-            style={{ marginBottom: 24 }}
+            style={styles.horizontalScroll}
             onWeekChange={(week) => setSelectedWeek(week)}
+            initialWeek={selectedWeek}
           />
+          
           <PregnancyProgressCard
             week={selectedWeek}
-            dueDate="Aug 15"
-            daysLeft={112 - (selectedWeek - 23) * 7}
+            dueDate={dueDate ? formatDueDate(dueDate) : "N/A"}
+            daysLeft={daysLeft}
             trimester={
               selectedWeek < 13
                 ? "First Trimester"
@@ -72,7 +159,7 @@ const HomeScreen = () => {
                 ? "Second Trimester"
                 : "Third Trimester"
             }
-            style={{ marginBottom: 24 }}
+            style={styles.pregnancyCard}
           />
 
           <WeekDevelopmentCard
@@ -102,8 +189,6 @@ const HomeScreen = () => {
                 : "Third Trimester Care"
             }
           />
-
-         
         </ScrollView>
         <FloatingBotButton />
       </View>
@@ -112,85 +197,25 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  description: {
-    fontSize: 16,
-    marginBottom: 16,
+  container: {
+    backgroundColor: COLORS.background,
+  },
+  contentContainer: {
+    padding: SPACING.spacing16,
+    paddingBottom: 82, // Space for floating button
+  },
+  horizontalScroll: {
+    marginBottom: SPACING.spacing24,
+  },
+  pregnancyCard: {
+    marginBottom: SPACING.spacing24,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  bullet: {
-    fontSize: 15,
-    marginVertical: 4,
-  },
-  highlightsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
-    marginBottom: 24,
-  },
-  highlightCard: {
-    width: "47%",
-    backgroundColor: "#f0f0f0",
-    borderRadius: 12,
-    padding: 12,
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  icon: {
-    fontSize: 24,
-    marginBottom: 8,
-  },
-  highlightTitle: {
-    fontWeight: "600",
-  },
-  highlightSubtitle: {
-    color: "#555",
-    fontSize: 12,
-    textAlign: "center",
-  },
-  articleCard: {
-    flexDirection: "row",
-    backgroundColor: "#f9f9f9",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  articleLabel: {
-    width: 50,
-    height: 50,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  articleTitle: {
-    fontWeight: "600",
-  },
-  articleSubtitle: {
-    fontSize: 13,
-    color: "#666",
-    marginVertical: 4,
-  },
-  articleMeta: {
-    fontSize: 12,
-    color: "#888",
+    ...TEXT_STYLES.headingH2,
+    fontSize: 20,
+    textAlign: "left",
+    marginBottom: SPACING.spacing12,
+    marginTop: SPACING.spacing24,
   },
 });
 
