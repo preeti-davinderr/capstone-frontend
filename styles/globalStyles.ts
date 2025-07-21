@@ -55,6 +55,7 @@ export const RADIUS = {
     sm: 4,
     md: 8,
     lg: 12,
+    xl:24,
 };
 
 export const TEXT_STYLES = {
@@ -119,6 +120,13 @@ export const TEXT_STYLES = {
 
 
 export const EFFECTS = {
+    shadow: {
+        shadowColor: 'rgba(136, 136, 136, 1)', // full color
+        shadowOffset: { width: 0, height: 4 }, // position: 0 4
+        shadowOpacity: 0.1, // 10% opacity
+        shadowRadius: 8, // blur
+        elevation: 2, // optional for Android (tune based on visual)
+      },
     softShadow: {
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },

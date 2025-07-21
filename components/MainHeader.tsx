@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...TEXT_STYLES.displayH1,
-    color: COLORS.purple700,
+    color: COLORS.purple500,
     textAlign: "left",
   },
   subtitle: {
