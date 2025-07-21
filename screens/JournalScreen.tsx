@@ -497,35 +497,47 @@ export default function JournalScreen({ navigation }: any) {
 
         {/* Pre-Designed Journals */}
         <Text style={styles.sectionTitle}>Pre-Designed Journals</Text>
-        {journalData.map((item, index) => (
-          <View key={index} style={styles.journalCard}>
-            <View
-              style={[
-                styles.journalIconContainer,
-                { backgroundColor: item.bgColor },
-              ]}
-            >
-              {item.icon()}
+
+          {journalData.map((item, index) => (
+            <View key={index} style={styles.journalCard}>
+              {/* Icon on the left */}
+              <View
+                style={[
+                  styles.journalIconContainer,
+                  { backgroundColor: item.bgColor },
+                ]}
+              >
+                {item.icon()}
+              </View>
+
+              {/* Text and button on the right */}
+              <View style={styles.journalTextGroup}>
+                <View style={styles.journalHeader}>
+                  <View>
+                    <Text style={styles.journalTitle}>{item.title}</Text>
+                    <Text style={styles.journalMeta}>{item.subtitle}</Text>
+                  </View>
+
+                  <CommonButton
+                    label="Start"
+                    size="small"
+                    style={styles.startButton}
+                    labelStyle={styles.startLabel}
+                    onPress={() => {
+                      navigation.navigate("journalEntery", {
+                        title: item.title,
+                        description: item.subtitle,
+                        meta: item.meta,
+                      });
+                    }}
+                  />
+                </View>
+
+                <Text style={styles.journalDescription}>{item.description}</Text>
+              </View>
             </View>
-            <View style={styles.journalTextGroup}>
-              <Text style={styles.journalTitle}>{item.title}</Text>
-              <Text style={styles.journalMeta}>{item.subtitle}</Text>
-              <Text style={styles.journalDescription}>{item.description}</Text>
-            </View>
-            <CommonButton
-              label="Start"
-              size="small"
-              style={{ width: 70 }}
-              onPress={() => {
-                navigation.navigate("journalEntery", {
-                  title: item.title,
-                  description: item.subtitle,
-                  meta: item.meta,
-                });
-              }}
-            />
-          </View>
-        ))}
+          
+          ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -606,46 +618,82 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     color: "#333",
   },
-  journalCard: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  journalIconContainer: {
-    width: 52,
-    height: 52,
-    top: 0,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 16,
-  },
-  journalTextGroup: {
-    flex: 1,
-  },
-  journalTitle: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#1F2937",
-  },
-  journalMeta: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginTop: 2,
-  },
-  journalDescription: {
-    fontSize: 12,
-    color: "#4B5563",
-    marginTop: 4,
-  },
+//   journalCard: {
+//   flexDirection: "row",
+//   backgroundColor: "#fff",
+//   borderRadius: 16,
+//   padding: 16,
+//   marginBottom: 16,
+//   alignItems: "flex-start",
+//   shadowColor: "#000",
+//   shadowOpacity: 0.04,
+//   shadowOffset: { width: 0, height: 2 },
+//   shadowRadius: 6,
+//   elevation: 2,
+// },
+journalCard: {
+  flexDirection: "row", // Ensures icon and content are side by side
+  backgroundColor: "#fff",
+  borderRadius: 16,
+  padding: 16,
+  marginBottom: 16,
+  alignItems: "flex-start",
+  shadowColor: "#000",
+  shadowOpacity: 0.04,
+  shadowOffset: { width: 0, height: 2 },
+  shadowRadius: 6,
+  elevation: 2,
+},
+
+journalTextGroup: {
+  flex: 1,
+  flexDirection: "column", // stack title, subtitle, and description
+},
+journalIconContainer: {
+  width: 42,
+  height: 42,
+  borderRadius: 16,
+  alignItems: "center",
+  justifyContent: "center",
+  marginRight: 14,
+},
+journalHeader: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+},
+journalTitle: {
+  fontSize: 17,
+  fontWeight: "600",
+  color: "#1F2937",
+},
+
+journalMeta: {
+  fontSize: 14,
+  color: "#6B7280",
+  marginTop: 2,
+},
+
+journalDescription: {
+  fontSize: 13,
+  color: "#4B5563",
+  marginTop: 10,
+  lineHeight: 18,
+},
+
+startButton: {
+  paddingVertical: 0,
+  paddingHorizontal: 0,
+  borderRadius: 12,
+  width: 70,
+  backgroundColor: "#9f7aea",
+},
+
+startLabel: {
+  fontSize: 14,
+  color: "#fff",
+  fontWeight: "600",
+},
   activeCard: {
     flexDirection: "row",
     backgroundColor: "#fff",
