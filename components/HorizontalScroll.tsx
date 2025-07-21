@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   ScrollView,
   StyleProp,
@@ -26,19 +26,40 @@ interface WeekScrollProps {
   weekData: WeekInfo[];
   style?: StyleProp<ViewStyle>;
   onWeekChange?: (week: number) => void;
+  initialWeek?: number;
 }
 
 const screenWidth = Dimensions.get('window').width;
 const weekButtonWidth = screenWidth / 4.5;
 
-const HorizontalScroll: React.FC<WeekScrollProps> = ({ weekData, style, onWeekChange }) => {
-  const [selectedWeek, setSelectedWeek] = useState<number>(weekData[0].week);
+const HorizontalScroll: React.FC<WeekScrollProps> = ({ weekData, style, onWeekChange, initialWeek }) => {
+  const [selectedWeek, setSelectedWeek] = useState<number>(initialWeek || weekData[0].week);
+  const scrollViewRef = useRef<ScrollView>(null);
   const currentWeek = weekData.find(w => w.week === selectedWeek)!;
+
+  // Scroll to current week when component mounts or initialWeek changes
+  useEffect(() => {
+    if (initialWeek && scrollViewRef.current) {
+      const weekIndex = weekData.findIndex(w => w.week === initialWeek);
+      if (weekIndex !== -1) {
+        const scrollToX = weekIndex * (weekButtonWidth + SPACING.spacing8);
+        scrollViewRef.current.scrollTo({
+          x: scrollToX,
+          animated: true,
+        });
+      }
+    }
+  }, [initialWeek, weekData]);
 
   return (
     <View style={[styles.container, style]}>
       {/* Horizontal Week Selector */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.weekScroll}>
+      <ScrollView 
+        ref={scrollViewRef}
+        horizontal 
+        showsHorizontalScrollIndicator={false} 
+        style={styles.weekScroll}
+      >
         {weekData.map(item => (
           <TouchableOpacity
             key={item.week}
@@ -96,13 +117,21 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.spacing8,
     paddingHorizontal: SPACING.spacing8,
     borderRadius: 999,
-    backgroundColor: COLORS.gray100,
+    backgroundColor: COLORS.white,
     marginRight: SPACING.spacing8,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.gray300,
+    shadowColor: COLORS.gray900,
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   activeWeekButton: {
     backgroundColor: COLORS.purple500,
+    borderColor: COLORS.purple500,
   },
   weekButtonText: {
     color: COLORS.gray700,

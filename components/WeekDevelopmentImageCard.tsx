@@ -23,11 +23,13 @@ const WeekDevelopmentImageCard: React.FC<WeekDevelopmentImageCardProps> = ({ ima
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.purple100,
+    backgroundColor: COLORS.background,
     borderRadius: RADIUS.lg,
     padding: SPACING.spacing20,
     alignItems: 'center',
     marginBottom: SPACING.spacing20,
+    borderWidth: 1,
+    borderColor: COLORS.gray300,
     shadowColor: COLORS.gray900,
     shadowOpacity: 0.07,
     shadowRadius: 6,
@@ -35,17 +37,20 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   imageContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: SPACING.spacing12,
-  },
-  image: {
     width: 200,
     height: 200,
     borderRadius: 100,
-    resizeMode: 'contain',
-    backgroundColor: 'transparent',
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.spacing12,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 100,
+    resizeMode: 'cover',
   },
   sizeWeightRow: {
     flexDirection: 'row',

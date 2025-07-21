@@ -3,11 +3,14 @@ node_modules/
 
 # Expo
 .expo/
+.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# Native (ignore if using managed workflow only)
+android/
+ios/
 .kotlin/
 .orig.
 *.jks
@@ -29,8 +32,12 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
 .env
+.env*.local
 
 # typescript
 *.tsbuildinfo
+
+# (Optional) lock files (only if you don’t want reproducible builds)
+# package-lock.json
+# yarn.lock

@@ -28,7 +28,7 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
       colors={["#E8D8F5", "#FFE7EF"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.gradientCard, { paddingBottom: 32 }, style]}
+      style={[styles.gradientCard, style]}
     >
       <View style={styles.cardContent}>
         <View style={styles.leftSection}>
@@ -59,7 +59,9 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
 const styles = StyleSheet.create({
   gradientCard: {
     borderRadius: RADIUS.lg,
-    padding: SPACING.spacing24,
+    paddingTop: SPACING.spacing16,
+    paddingHorizontal: SPACING.spacing20,
+    paddingBottom: SPACING.spacing24,
     marginHorizontal: SPACING.spacing4,
     marginBottom: SPACING.spacing24,
     shadowColor: COLORS.gray900,
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    marginBottom: SPACING.spacing16,
+    marginBottom: SPACING.spacing4,
   },
   leftSection: {
     flex: 2,
@@ -100,7 +102,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: SPACING.spacing16,
     right: SPACING.spacing16,
-    bottom: SPACING.spacing8,
+    bottom: SPACING.spacing12,
     height: 14,
     borderRadius: RADIUS.md,
     backgroundColor: COLORS.purple100,
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.purple500,
   },
   progressBarSpacer: {
-    height: SPACING.spacing16,
+    height: SPACING.spacing20,
   },
 });
 
