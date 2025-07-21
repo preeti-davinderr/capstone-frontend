@@ -10,7 +10,8 @@ import {
 import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useFitbitAuth } from '../Fitbit/FitbitAuthScreen';
 import { fetchFitbitData } from '../Fitbit/fetchFitbitData';
-
+import CommonButton from '../../components/CommonButton';
+import MainHeader from '../../components/MainHeader';
 export type FitbitData = {
   steps: {
     value: number;
@@ -97,7 +98,7 @@ export default function SyncNowScreen() {
 
   return (
     <>
-    <ScrollView style={{ flex: 1 }}>
+    {/* <ScrollView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text style={styles.header}>Sync Now</Text>
 
@@ -115,6 +116,32 @@ export default function SyncNowScreen() {
           </TouchableOpacity>
         )}
       </View>
+    </ScrollView> */}
+    <ScrollView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <MainHeader title="Sync Now" />
+
+        {/* 🌀 Loading and Error States */}
+
+        {loading && <ActivityIndicator size="large" />}
+        {error.length > 0 && <Text style={styles.error}>{error}</Text>}
+
+        {data && <FitbitSummaryCard data={data} />}
+
+        {!loading && (
+          <View style={styles.syncButtonWrapper}>
+              <CommonButton
+                label="Sync Again"
+                onPress={() => {
+                  setLoading(true);
+                  promptAsync();
+                }}
+                style={styles.syncButton}
+                labelStyle={styles.syncButtonText} // if you support labelStyle in CommonButton
+              />
+            </View>
+        )}
+      </View>
     </ScrollView>
     </>
   );
@@ -124,50 +151,129 @@ export default function SyncNowScreen() {
 // 🧾 Card component
 export function FitbitSummaryCard({ data }: { data: FitbitData }){
   return (
-    <View>
-      {/* Steps */}
-      <View style={styles.card}>
-        <FontAwesome5 name="shoe-prints" size={20} />
-        <Text style={styles.title}>Steps</Text>
-        <Text style={styles.value}>{data.steps.value} / {data.steps.goal}</Text>
-        <Text style={styles.subText}>
-          {data.steps.completed} completed - {data.steps.remaining}
+    <View style={styles.section}>
+  {/* Steps */}
+  <View style={styles.card}>
+    <View style={styles.iconWrapperPurple}>
+      <FontAwesome5 name="shoe-prints" size={16} color="#fff" />
+    </View>
+    <View style={styles.textGroup}>
+      <Text style={styles.cardTitle}>Steps</Text>
+      <Text style={styles.cardValue}>{data.steps.value} / {data.steps.goal}</Text>
+      <View style={styles.sleepDetailRow}>
+        <Text style={styles.cardSubText}>
+          Completed: {data.steps.completed}
         </Text>
-      </View>
-
-      {/* Heart */}
-      <View style={styles.card}>
-        <MaterialCommunityIcons name="heart-pulse" size={20} />
-        <Text style={styles.title}>Heart Rate</Text>
-        <Text style={styles.value}>{data.heart.avg} BPM</Text>
-        <Text style={styles.subText}>
-          Rest: {data.heart.resting}, Peak: {data.heart.peak}, Zone: {data.heart.inZone}
-        </Text>
-      </View>
-
-      {/* Sleep */}
-      <View style={[styles.card, styles.sleepCard]}>
-        <MaterialCommunityIcons name="sleep" size={20} />
-        <Text style={styles.title}>Sleep</Text>
-        <Text style={styles.value}>Last night: {data.sleep.total}</Text>
-        <Text style={styles.subText}>
-          ⏰ {data.sleep.bedtime} → {data.sleep.wakeUp} | Score: {data.sleep.score}
-        </Text>
-        <View style={styles.sleepDetailRow}>
-          <Text style={styles.subText}>Deep: {data.sleep.deep}</Text>
-          <Text style={styles.subText}>Light: {data.sleep.light}</Text>
-          <Text style={styles.subText}>REM: {data.sleep.rem}</Text>
-        </View>
       </View>
     </View>
+  </View>
+
+  {/* Heart Rate */}
+  <View style={styles.card}>
+    <View style={styles.iconWrapperRed}>
+      <MaterialCommunityIcons name="heart-pulse" size={16} color="#fff" />
+    </View>
+    <View style={styles.textGroup}>
+      <Text style={styles.cardTitle}>Heart Rate</Text>
+      <Text style={styles.cardValue}>{data.heart.avg} BPM</Text>
+      <View style={styles.sleepDetailRow}>
+        <Text style={styles.cardSubText}>Rest: {data.heart.resting}</Text>
+        <Text style={styles.cardSubText}>Peak: {data.heart.peak} </Text>
+        <Text style={styles.cardSubText}>Zone: {data.heart.inZone} </Text>
+      </View>
+    </View>
+  </View>
+
+  {/* Sleep */}
+  <View style={styles.card}>
+    <View style={styles.iconWrapperBlue}>
+      <MaterialCommunityIcons name="sleep" size={16} color="#fff" />
+    </View>
+    <View style={styles.textGroup}>
+      <Text style={styles.cardTitle}>Sleep</Text>
+      <Text style={styles.cardValue}>Last night: {data.sleep.total}</Text>
+      <View style={styles.sleepDetailRow}>
+        <Text style={styles.cardSubText}>Deep: {data.sleep.deep}</Text>
+        <Text style={styles.cardSubText}>Light: {data.sleep.light}</Text>
+        <Text style={styles.cardSubText}>REM: {data.sleep.rem}</Text>
+      </View>
+    </View>
+  </View>
+</View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    // padding: 16,
     backgroundColor: '#fff',
     flex: 1,
+  },
+  syncButtonWrapper: {
+  padding: 16,
+  marginTop: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+  section: {
+    // paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 10,
+    margin: 16,
+    marginBottom: 16,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  iconWrapperPurple: {
+    backgroundColor: "#b18cff",
+    borderRadius: 20,
+    padding: 8,
+    marginRight: 12,
+  },
+  iconWrapperRed: {
+    backgroundColor: "#ff6b6b",
+    borderRadius: 20,
+    padding: 8,
+    marginRight: 12,
+  },
+  iconWrapperBlue: {
+    backgroundColor: "#63cdda",
+    borderRadius: 20,
+    padding: 8,
+    marginRight: 12,
+  },
+  textGroup: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
+    color: "#333",
+  },
+  cardValue: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#000",
+  },
+  cardSubText: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 2,
+  },
+  sleepDetailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 6,
   },
   header: {
     fontSize: 22,
@@ -175,48 +281,49 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
-  card: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginTop: 8,
-  },
-  value: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginTop: 6,
-  },
-  subText: {
-    color: '#555',
-    marginTop: 4,
-    fontSize: 13,
-  },
-  sleepCard: {
-    borderColor: '#8ecae6',
-    borderWidth: 1,
-  },
-  sleepDetailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
+  // card: {
+  //   backgroundColor: '#fff',
+  //   padding: 16,
+  //   borderRadius: 12,
+  //   marginBottom: 16,
+  //   shadowColor: '#000',
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 4,
+  //   elevation: 2,
+  // },
+  // title: {
+  //   fontWeight: 'bold',
+  //   fontSize: 16,
+  //   marginTop: 8,
+  // },
+  // value: {
+  //   fontSize: 20,
+  //   fontWeight: '600',
+  //   marginTop: 6,
+  // },
+  // subText: {
+  //   color: '#555',
+  //   marginTop: 4,
+  //   fontSize: 13,
+  // },
+  // sleepCard: {
+  //   borderColor: '#8ecae6',
+  //   borderWidth: 1,
+  // },
+  // sleepDetailRow: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   marginTop: 8,
+  // },
   error: {
     color: 'red',
     textAlign: 'center',
     marginVertical: 12,
   },
   syncButton: {
-    backgroundColor: '#007AFF',
+    // backgroundColor: '#007AFF',
     paddingVertical: 12,
+    width: '60%',
     borderRadius: 10,
     marginTop: 20,
     alignItems: 'center',
