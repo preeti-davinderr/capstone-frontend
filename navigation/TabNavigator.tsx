@@ -14,7 +14,7 @@ export default function TabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.purple700,
+        tabBarActiveTintColor: COLORS.purple500,
         tabBarInactiveTintColor: COLORS.gray700,
         tabBarShowLabel: true,
         tabBarStyle: {
@@ -22,8 +22,8 @@ export default function TabNavigator() {
           bottom: SPACING.spacing24,
           marginHorizontal: SPACING.spacing20, // ✅ fixes side spacing
           backgroundColor: COLORS.white,
-          borderRadius: RADIUS.lg,
-          height: 70,
+          borderRadius: RADIUS.xl,
+          height: 80,
           paddingBottom: SPACING.spacing8,
           paddingTop: SPACING.spacing8,
           ...EFFECTS.softShadow,
@@ -32,6 +32,7 @@ export default function TabNavigator() {
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "500",
+          fontFamily: "WixMadeforDisplay-Medium",
         },
       }}
     >
