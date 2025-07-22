@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import { Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
+import {
+  useAuthRequest,
+  ResponseType,
+  makeRedirectUri,
+  exchangeCodeAsync,
+} from "expo-auth-session";
+
 import CommonInput from "../../components/CommonInput";
 import CommonButton from "../../components/CommonButton";
 import {
@@ -18,41 +26,116 @@ import {
   EFFECTS,
 } from "../../styles/globalStyles";
 
+WebBrowser.maybeCompleteAuthSession();
+
+const CLIENT_ID = "179983777454-hn5gk917in11l7ag6f2j39enoref7j38.apps.googleusercontent.com";
+
+const discovery = {
+  authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
+  tokenEndpoint: "https://oauth2.googleapis.com/token",
+  revocationEndpoint: "https://oauth2.googleapis.com/revoke",
+};
+
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+  const redirectUri = makeRedirectUri({
+    scheme: "capstonefrontend",
+    path: "redirect",
+    // useProxy: true, 
+  });
+
+  console.log(redirectUri,"???");
+  
+
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: CLIENT_ID,
+      redirectUri,
+      responseType: ResponseType.Token,
+      scopes: ["openid", "profile", "email"],
+      // usePKCE: true,
+    },
+    discovery
+  );
+
+  useEffect(() => {
+    const handleAuth = async () => {
+      if (response?.type === "success") {
+        try {
+          const { code } = response.params;
+
+          const tokenResult = await exchangeCodeAsync(
+            {
+              clientId: CLIENT_ID,
+              code,
+              redirectUri,
+              extraParams: {
+                code_verifier: request?.codeVerifier || "",
+              },
+            },
+            discovery
+          );
+
+          const accessToken = tokenResult.accessToken;
+
+          const res = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+
+          const userInfo = await res.json();
+
+          await AsyncStorage.setItem("token", accessToken);
+          await AsyncStorage.setItem("user", JSON.stringify(userInfo));
+
+          navigation.replace("MainApp");
+        } catch (err) {
+          console.error("Auth Error:", err);
+          Alert.alert("Login Failed", "Something went wrong with Google login.");
+        }
       }
-    );
+    };
 
-    const data = await response.json();
+    handleAuth();
+  }, [response]);
 
-    if (response.ok) {
-      await AsyncStorage.setItem("token", data.token);
-      await AsyncStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: data.user.id,
-          role: data.user.role,
-          name: data.user.name,
-          familyCode: data.user.familyCode,
-        })
+  const handleGoogleLogin = () => {
+    promptAsync();
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
       );
 
-      if (data.user.role === "other") {
-        navigation.replace("FamilyApp");
+      const data = await response.json();
+
+      if (response.ok) {
+        await AsyncStorage.setItem("token", data.token);
+        await AsyncStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: data.user.id,
+            role: data.user.role,
+            name: data.user.name,
+            familyCode: data.user.familyCode,
+          })
+        );
+
+        navigation.replace(data.user.role === "other" ? "FamilyApp" : "MainApp");
       } else {
-        navigation.replace("MainApp");
+        Alert.alert("Login Failed", data.message);
       }
-    } else {
-      alert(data.message);
+    } catch (error) {
+      console.error("Login error:", error);
+      Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };
 
@@ -83,7 +166,9 @@ export default function SignInScreen({ navigation }: any) {
           secureTextEntry
         />
       </View>
+
       <CommonButton label="Log In" onPress={handleLogin} />
+
       <Text style={styles.signUpText}>
         Don’t have an account?{" "}
         <Text
@@ -93,10 +178,11 @@ export default function SignInScreen({ navigation }: any) {
           Sign Up
         </Text>
       </Text>
+
       <Text style={styles.orText}>- or continue with -</Text>
 
       <View style={styles.socialRow}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleGoogleLogin} disabled={!request}>
           <View style={styles.socialCircle}>
             <Image
               source={require("../../assets/splash/google.png")}
@@ -130,14 +216,12 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: SPACING.spacing16,
-    // marginTop: SPACING.spacing16,
     marginBottom: SPACING.spacing32,
   },
   orText: {
     ...TEXT_STYLES.bodyBase,
     marginTop: SPACING.spacing16,
     textAlign: "center",
-    // marginVertical: SPACING.spacing24,
   },
   socialRow: {
     flexDirection: "row",
@@ -148,7 +232,6 @@ const styles = StyleSheet.create({
   socialIcon: {
     width: 28,
     height: 28,
-    // resizeMode: "contain",
   },
   signUpText: {
     ...TEXT_STYLES.bodyBase,
@@ -167,7 +250,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.gray300,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.white, // optional
-    ...EFFECTS.softShadow, // if you want to add subtle elevation
+    backgroundColor: COLORS.white,
+    ...EFFECTS.softShadow,
   },
 });

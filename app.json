@@ -2,11 +2,9 @@
   "expo": {
     "name": "capstonefrontend",
     "slug": "capstonefrontend",
+    "owner": "preetibhutta",                 
     "scheme": "capstonefrontend",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +13,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#dadada"
     },
     "ios": {
       "supportsTablet": true,
@@ -24,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#dadada"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.khushpreetcapstone.capstonefrontend"
@@ -41,7 +39,8 @@
       "enabled": false
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ]
   }
 }

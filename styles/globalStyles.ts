@@ -30,6 +30,7 @@ export const COLORS = {
 
     // Background
     background: "#F9F9F9",
+    // background: "#F6F6F6",
 
     // Cards
     card: "#FFFFFF",
