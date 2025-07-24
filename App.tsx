@@ -20,6 +20,7 @@ import ChatBot from "./screens/ChatBot";
 import SyncNowScreen from "./screens/Health/SyncNowFitbitData";
 import FamilyTabNavigator from "./navigation/FamilyTabNavigator";
 import ArticlesScreen from "./screens/ArticlesScreen";
+import ArticleDetailScreen from "./screens/ArticleDetailScreen";
 
 import {
   useFonts,
@@ -59,6 +60,12 @@ export type RootStackParamList = {
   FitBitSummary: undefined;
   FamilyApp: undefined;
   Articles: { trimester: string };
+  ArticleDetail: {
+    title: string;
+    description: string;
+    readTime: string;
+    image: any;
+  };
 };
 
 
@@ -96,6 +103,7 @@ export default function App() {
           <Stack.Screen name="FitBitSummary" component={SyncNowScreen} />
           <Stack.Screen name="FamilyApp" component={FamilyTabNavigator} />
           <Stack.Screen name="Articles" component={ArticlesScreen} />
+          <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
