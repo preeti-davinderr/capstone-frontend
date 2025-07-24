@@ -19,6 +19,7 @@ import JournalPhotoViewerScreen from "./components/JournalPhotoViewerScreen";
 import ChatBot from "./screens/ChatBot";
 import SyncNowScreen from "./screens/Health/SyncNowFitbitData";
 import FamilyTabNavigator from "./navigation/FamilyTabNavigator";
+import ArticlesScreen from "./screens/ArticlesScreen";
 
 import {
   useFonts,
@@ -57,6 +58,7 @@ export type RootStackParamList = {
   ChatBot: undefined;
   FitBitSummary: undefined;
   FamilyApp: undefined;
+  Articles: { trimester: string };
 };
 
 
@@ -93,6 +95,7 @@ export default function App() {
           <Stack.Screen name="JournalPhotoViewer" component={JournalPhotoViewerScreen} />
           <Stack.Screen name="FitBitSummary" component={SyncNowScreen} />
           <Stack.Screen name="FamilyApp" component={FamilyTabNavigator} />
+          <Stack.Screen name="Articles" component={ArticlesScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

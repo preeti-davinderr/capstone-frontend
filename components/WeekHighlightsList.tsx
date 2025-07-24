@@ -1,11 +1,14 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SPACING, RADIUS } from "../styles/globalStyles";
 
 interface HighlightItem {
   icon: string;
   title: string;
   subtitle: string;
+  iconColor?: string;
+  bgColor?: string;
 }
 
 interface WeekHighlightsListProps {
@@ -21,8 +24,12 @@ const WeekHighlightsList: React.FC<WeekHighlightsListProps> = ({ highlights }) =
           {/* Top line (not for first) */}
           {idx !== 0 && <View style={styles.timelineLine} />}
           {/* Icon */}
-          <View style={styles.iconWrapper}>
-            <Text style={styles.icon}>{item.icon}</Text>
+          <View style={[styles.iconWrapper, { backgroundColor: COLORS.purple500 }]}>
+            <MaterialCommunityIcons 
+              name={item.icon as any} 
+              size={16} 
+              color={COLORS.white} 
+            />
           </View>
           {/* Bottom line (not for last) */}
           {idx !== highlights.length - 1 && <View style={styles.timelineLine} />}
@@ -75,7 +82,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: '#fff',
-    borderRadius: 14,
+    borderRadius: 18,
     padding: 14,
     marginLeft: 4,
     shadowColor: COLORS.gray900,

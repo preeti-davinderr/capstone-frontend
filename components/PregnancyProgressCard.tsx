@@ -49,7 +49,12 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
         </View>
       </View>
       <View style={styles.progressBarBackground}>
-        <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
+        <LinearGradient
+          colors={["#7C55C3", "#ED97BA"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.progressBarFill, { width: `${progress * 100}%` }]}
+        />
       </View>
       <View style={styles.progressBarSpacer} />
     </LinearGradient>
@@ -58,7 +63,7 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
 
 const styles = StyleSheet.create({
   gradientCard: {
-    borderRadius: RADIUS.lg,
+    borderRadius: 24,
     paddingTop: SPACING.spacing16,
     paddingHorizontal: SPACING.spacing20,
     paddingBottom: SPACING.spacing24,
@@ -89,7 +94,7 @@ const styles = StyleSheet.create({
   trimester: {},
   dueDateBox: {
     backgroundColor: COLORS.white,
-    borderRadius: RADIUS.md,
+    borderRadius: 16,
     paddingVertical: SPACING.spacing8,
     paddingHorizontal: SPACING.spacing12,
     alignItems: "center",
@@ -105,13 +110,12 @@ const styles = StyleSheet.create({
     bottom: SPACING.spacing12,
     height: 14,
     borderRadius: RADIUS.md,
-    backgroundColor: COLORS.purple100,
+    backgroundColor: COLORS.gray100,
     overflow: "hidden",
   },
   progressBarFill: {
     height: 14,
     borderRadius: RADIUS.md,
-    backgroundColor: COLORS.purple500,
   },
   progressBarSpacer: {
     height: SPACING.spacing20,

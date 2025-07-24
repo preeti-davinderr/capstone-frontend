@@ -177,8 +177,8 @@ const HomeScreen = () => {
           <Text style={styles.sectionTitle}>This Week's Highlights</Text>
           <WeekHighlightsList highlights={currentWeekData.highlights} />
 
-          <Text style={styles.sectionTitle}>Useful Articles</Text>
-          <ArticleList articles={currentWeekData.articles} />
+          {/* <Text style={styles.sectionTitle}>Useful Articles</Text>
+          <ArticleList articles={currentWeekData.articles} /> */}
 
           <TrimesterCare
             title={
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: SPACING.spacing16,
-    paddingBottom: 82, // Space for floating button
+    paddingBottom: 120, // Space for floating button and navbar
   },
   horizontalScroll: {
     marginBottom: SPACING.spacing24,
