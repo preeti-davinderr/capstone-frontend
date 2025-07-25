@@ -11,7 +11,9 @@ import {
 } from "react-native";
 import SubHeader from "../components/SubHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../styles/globalStyles";
+import { COLORS, SPACING, TEXT_STYLES } from "../styles/globalStyles";
+import CommonButton from "../components/CommonButton";
+import CommonInput from "../components/CommonInput";
 
 export default function ChatBot() {
   const [messages, setMessages] = useState([
@@ -98,7 +100,11 @@ export default function ChatBot() {
               onChangeText={setInput}
               placeholder="Type your question..."
             />
-            <Button title="Send" onPress={sendMessage} />
+            <CommonButton
+              label="Send"
+              onPress={sendMessage}
+              style={styles.sendButton}
+            />
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -114,14 +120,25 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   chatBox: { flex: 1 },
-  inputRow: { flexDirection: "row", alignItems: "center", marginBottom: 40 },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingBottom: 24,
+    marginTop: 12,
+    width: "100%",
+  },
   input: {
-    flex: 1,
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginRight: 8,
-    borderRadius: 8,
+    borderColor: COLORS.gray300,
+    borderRadius: 12,
+    paddingVertical: SPACING.spacing12,
+    paddingHorizontal: SPACING.spacing16,
+    backgroundColor: COLORS.white,
+    fontFamily: TEXT_STYLES.bodyBase.fontFamily,
+    fontSize: 16,
+    color: COLORS.gray900,
+    flex: 4, // 80%
+    marginRight: 6,
   },
   messageBubble: {
     maxWidth: "75%",
@@ -131,7 +148,7 @@ const styles = StyleSheet.create({
   },
   userBubble: {
     alignSelf: "flex-end",
-    backgroundColor: "#6200ee",
+    backgroundColor: COLORS.pink500,
     borderTopRightRadius: 0,
   },
   botBubble: {
@@ -143,9 +160,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   userText: {
-    color: "#fff",
+    color: "#000",
   },
   botText: {
     color: "#000",
+  },
+  sendButton: {
+    width: "20%",
   },
 });

@@ -32,7 +32,7 @@ function getBPStatus(systolic: string, diastolic: string): string {
   const sys = parseInt(systolic, 10);
   const dia = parseInt(diastolic, 10);
   if (isNaN(sys) || isNaN(dia)) return "Invalid";
-  if (sys > 180 || dia > 120) return "Seek Medical Help";
+  if (sys > 180 || dia > 120) return "Very High";
   if (sys < 90 || dia < 60) return "Low";
   if (sys >= 140 || dia >= 90) return "High";
   if ((sys >= 130 && sys <= 139) || (dia >= 80 && dia <= 89)) return "High";
@@ -179,7 +179,7 @@ export default function BloodPressureTracker() {
         return { backgroundColor: "e6f4ea", color: COLORS.success };
 
       case "High":
-      case "Seek Medical Help":
+      case "Very High":
         return { backgroundColor: "#fdecea", color: COLORS.error };
       case "Low":
         return { backgroundColor: "#fff8e1", color: COLORS.warning };
