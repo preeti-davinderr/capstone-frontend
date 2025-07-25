@@ -1265,10 +1265,15 @@ const styles = StyleSheet.create({
   },
   recommendationCard: {
     flexDirection: "row",
-    backgroundColor: COLORS.gray100,
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.md,
     padding: SPACING.spacing12,
     marginBottom: SPACING.spacing12,
+    shadowColor: COLORS.gray900,
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   recommendationImageContainer: {
     width: 60,

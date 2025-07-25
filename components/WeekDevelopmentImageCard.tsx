@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     marginBottom: SPACING.spacing20,
-    borderRadius: 24,
+    borderRadius: RADIUS.lg,
     overflow: 'hidden',
     shadowColor: COLORS.gray900,
     shadowOpacity: 0.07,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   pill: {
     backgroundColor: COLORS.white,
-    borderRadius: 20,
+    borderRadius: RADIUS.xl,
     paddingHorizontal: SPACING.spacing16,
     paddingVertical: SPACING.spacing8,
     shadowColor: COLORS.gray900,

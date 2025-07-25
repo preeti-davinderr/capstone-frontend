@@ -25,7 +25,7 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
 
   return (
     <LinearGradient
-      colors={["#E8D8F5", "#FFE7EF"]}
+      colors={["#FFE3D6", "#E8D8F5"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.gradientCard, style]}
@@ -35,7 +35,7 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
           <Text style={[styles.title, TEXT_STYLES.bodyBase, { color: COLORS.purple700, fontWeight: "600" }]}>
             Your Pregnancy
           </Text>
-          <Text style={[styles.week, TEXT_STYLES.displayH1, { fontWeight: "bold" }]}>Week {week}</Text>
+          <Text style={[styles.week, TEXT_STYLES.displayH1, { color: COLORS.purple700 }]}>Week {week}</Text>
           <Text style={[styles.trimester, TEXT_STYLES.bodySmall, { color: COLORS.gray700, fontWeight: "500" }]}>
             {trimester}
           </Text>
@@ -50,7 +50,7 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
       </View>
       <View style={styles.progressBarBackground}>
         <LinearGradient
-          colors={["#ED97BA", "#7C55C3"]}
+          colors={["#ED97BA", "#8B5CF6"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.progressBarFill, { width: `${progress * 100}%` }]}
@@ -63,16 +63,17 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
 
 const styles = StyleSheet.create({
   gradientCard: {
-    borderRadius: 24,
+    borderRadius: RADIUS.lg,
     paddingTop: SPACING.spacing16,
     paddingHorizontal: SPACING.spacing20,
     paddingBottom: SPACING.spacing24,
     marginHorizontal: SPACING.spacing4,
     marginBottom: SPACING.spacing24,
     shadowColor: COLORS.gray900,
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
     position: "relative",
     overflow: "hidden",
   },
