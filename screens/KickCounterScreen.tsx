@@ -242,10 +242,10 @@ export default function KickCounterScreen() {
         {/* Show add buttons only for today */}
         {isToday(kickDate) && (
           <>
-            <View style={styles.outerCard}>
+            {/* <View style={styles.outerCard}>
               <Text style={styles.cardLabel}>Automatic Detection</Text>
               <CommonButton label="Start Detection" onPress={startDetection} />
-            </View>
+            </View> */}
 
             <View style={styles.outerCard}>
               <Text style={styles.cardLabel}>Manual Entry</Text>
