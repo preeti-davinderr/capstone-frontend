@@ -248,21 +248,6 @@ const styles = StyleSheet.create({
     ...TEXT_STYLES.lead,
     marginBottom: SPACING.spacing12,
   },
-  unitSwitchRow: {
-    flexDirection: "row",
-    backgroundColor: COLORS.gray100,
-    borderRadius: RADIUS.md,
-    overflow: "hidden",
-    marginBottom: SPACING.spacing12,
-  },
-  unitSwitch: {
-    flex: 1,
-    paddingVertical: SPACING.spacing8,
-    alignItems: "center",
-  },
-  unitSwitchActive: {
-    backgroundColor: COLORS.white,
-  },
   unitSwitchText: {
     ...TEXT_STYLES.bodyBase,
     color: COLORS.gray500,
@@ -321,4 +306,25 @@ const styles = StyleSheet.create({
     color: COLORS.gray500,
     marginTop: 2,
   },
+  unitSwitchRow: {
+    flexDirection: "row",
+    backgroundColor: "#E8D8F5", // ✅ light purple background
+    borderRadius: RADIUS.lg,
+    overflow: "hidden",
+    marginBottom: SPACING.spacing12,
+    padding:SPACING.spacing6
+  },
+  
+  unitSwitch: {
+    flex: 1,
+    paddingVertical: SPACING.spacing8,
+    alignItems: "center",
+    borderRadius: RADIUS.lg,
+
+  },
+  
+  unitSwitchActive: {
+    backgroundColor: COLORS.white, // ✅ white background for active tab
+  },
+  
 });

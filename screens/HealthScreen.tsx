@@ -343,6 +343,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginBottom: SPACING.spacing12,
+    textAlign:"left"
   },
   cardRow: {
     flexDirection: "row",
@@ -398,13 +399,14 @@ const styles = StyleSheet.create({
   value: { ...TEXT_STYLES.caption, color: COLORS.gray700 },
   statusBadge: {
     borderWidth: 1,
-    borderColor: COLORS.success,
-    backgroundColor: COLORS.gray100,
+    borderColor: "#014611",
+    backgroundColor: "rgba(34, 197, 94, 0.12)",
+    // opacity:0.12,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.spacing12,
     paddingVertical: SPACING.spacing4,
   },
-  statusText: { ...TEXT_STYLES.caption, color: COLORS.success },
+  statusText: { ...TEXT_STYLES.caption, color: "#014611" },
   card_connected: {
     backgroundColor: COLORS.white,
     borderRadius: RADIUS.lg,
