@@ -6,6 +6,7 @@ import { COLORS, SPACING, RADIUS, TEXT_STYLES } from "../styles/globalStyles";
 
 interface TrimesterCareProps {
   title: string;
+  selectedWeek?: number;
 }
 
 interface Article {
@@ -20,11 +21,11 @@ interface Article {
   bgColor: string;
 }
 
-const TrimesterCare: React.FC<TrimesterCareProps> = ({ title }) => {
+const TrimesterCare: React.FC<TrimesterCareProps> = ({ title, selectedWeek }) => {
   const navigation = useNavigation<any>();
 
   const handleTitlePress = () => {
-    navigation.navigate("Articles", { trimester: title });
+    navigation.navigate("Articles", { trimester: title, selectedWeek: selectedWeek || 5 });
   };
 
   // Get articles based on trimester

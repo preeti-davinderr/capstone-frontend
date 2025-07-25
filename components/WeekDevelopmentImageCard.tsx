@@ -90,8 +90,6 @@ const styles = StyleSheet.create({
   sizeText: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.gray700,
-    fontWeight: 'bold',
-    fontSize: 16,
   },
 });
 

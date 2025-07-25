@@ -15,34 +15,54 @@ interface WeekHighlightsListProps {
   highlights: HighlightItem[];
 }
 
-const WeekHighlightsList: React.FC<WeekHighlightsListProps> = ({ highlights }) => (
-  <View style={styles.listContainer}>
-    {highlights.map((item, idx) => (
-      <View key={idx} style={styles.timelineRow}>
-        {/* Timeline line */}
-        <View style={styles.timelineColumn}>
-          {/* Top line (not for first) */}
-          {idx !== 0 && <View style={styles.timelineLine} />}
-          {/* Icon */}
-          <View style={[styles.iconWrapper, { backgroundColor: COLORS.purple500 }]}>
-            <MaterialCommunityIcons 
-              name={item.icon as any} 
-              size={16} 
-              color={COLORS.white} 
-            />
+const WeekHighlightsList: React.FC<WeekHighlightsListProps> = ({ highlights }) => {
+
+  const iconColors = [
+    COLORS.purple500,   
+    COLORS.peach400,     
+    COLORS.blush100,     
+    COLORS.purple100,    
+    COLORS.white,        
+  ];
+
+  return (
+    <View style={styles.listContainer}>
+      {highlights.map((item, idx) => {
+        const colorIndex = idx % iconColors.length;
+        const iconColor = iconColors[colorIndex];
+        
+        let iconTextColor = COLORS.white;
+        if (iconColor === COLORS.blush100 || iconColor === COLORS.purple100 || iconColor === COLORS.white) {
+          iconTextColor = COLORS.purple700;
+        }
+        
+        return (
+          <View key={idx} style={styles.timelineRow}>
+
+            <View style={styles.timelineColumn}>
+  
+              {idx !== 0 && <View style={styles.timelineLine} />}
+
+              <View style={[styles.iconWrapper, { backgroundColor: iconColor }]}>
+                <MaterialCommunityIcons 
+                  name={item.icon as any} 
+                  size={16} 
+                  color={iconTextColor} 
+                />
+              </View>
+
+              {idx !== highlights.length - 1 && <View style={styles.timelineLine} />}
+            </View>
+            <View style={styles.card}>
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.subtitle}>{item.subtitle}</Text>
+            </View>
           </View>
-          {/* Bottom line (not for last) */}
-          {idx !== highlights.length - 1 && <View style={styles.timelineLine} />}
-        </View>
-        {/* Card */}
-        <View style={styles.card}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.subtitle}>{item.subtitle}</Text>
-        </View>
-      </View>
-    ))}
-  </View>
-);
+        );
+      })}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   listContainer: {

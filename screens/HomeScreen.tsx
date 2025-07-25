@@ -188,6 +188,7 @@ const HomeScreen = () => {
                 ? "Second Trimester Care"
                 : "Third Trimester Care"
             }
+            selectedWeek={selectedWeek}
           />
         </ScrollView>
         <FloatingBotButton />
