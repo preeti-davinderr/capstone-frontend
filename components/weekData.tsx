@@ -69,6 +69,7 @@
 //   ];
   
 // data/weekDetails.ts
+import { COLORS } from "../styles/globalStyles";
 
 export interface WeekDetails {
   week: number;
@@ -83,7 +84,9 @@ export interface WeekDetails {
   highlights: {
     title: string;
     subtitle: string;
-    icon: string; // Just a placeholder, you can add icon names
+    icon: string;
+    iconColor?: string;
+    bgColor?: string;
   }[];
   articles: {
     title: string;
@@ -93,6 +96,79 @@ export interface WeekDetails {
     url: string;
   }[];
 }
+
+// Helper function to get trimester-specific articles
+const getTrimesterArticles = (week: number) => {
+  if (week <= 13) {
+    // First Trimester (Weeks 1-13)
+    return [
+      {
+        title: 'Your Guide to a Healthy Pregnancy',
+        subtitle: 'Comprehensive information on prenatal care and lifestyle choices',
+        readTime: '8 min read',
+        date: '2 hours ago',
+        url: 'https://www.canada.ca/en/public-health/services/health-promotion/healthy-pregnancy/healthy-pregnancy-guide.html'
+      },
+      {
+        title: 'Oral Health and Pregnancy',
+        subtitle: 'The significance of maintaining oral hygiene during pregnancy',
+        readTime: '5 min read',
+        date: '1 day ago',
+        url: 'https://www.canada.ca/en/public-health/services/pregnancy/oral-health-pregnancy.html'
+      },
+      {
+        title: 'Folic Acid & Neural Tube Defects',
+        subtitle: 'The role of folic acid in preventing neural tube defects',
+        readTime: '6 min read',
+        date: '2 days ago',
+        url: 'https://www.canada.ca/en/public-health/services/pregnancy/folic-acid.html'
+      }
+    ];
+  } else if (week <= 27) {
+    // Second Trimester (Weeks 14-27)
+    return [
+      {
+        title: 'Healthy Eating When Pregnant & Breastfeeding',
+        subtitle: 'Guidance on dietary choices and nutritional requirements',
+        readTime: '9 min read',
+        date: '3 hours ago',
+        url: 'https://food-guide.canada.ca/en/tips-for-healthy-eating/pregnant-breastfeeding/'
+      },
+      {
+        title: 'Family-Centred Maternity & Newborn Care',
+        subtitle: 'National Guidelines for prenatal care and practices',
+        readTime: '10 min read',
+        date: '1 day ago',
+        url: 'https://www.canada.ca/en/public-health/services/maternity-newborn-care-guidelines.html'
+      },
+      {
+        title: 'Healthy Weight Gain During Pregnancy',
+        subtitle: 'PDF guide on recommended weight gain ranges',
+        readTime: '6 min read',
+        date: '2 days ago',
+        url: 'https://www.canada.ca/content/dam/hc-sc/migration/hc-sc/fn-an/alt_formats/pdf/nutrition/prenatal/hwgdp-ppspg-eng.pdf'
+      }
+    ];
+  } else {
+    // Third Trimester (Weeks 28-40)
+    return [
+      {
+        title: 'Immunization in Pregnancy & Breastfeeding',
+        subtitle: 'Safety and importance of vaccines during pregnancy',
+        readTime: '8 min read',
+        date: '4 hours ago',
+        url: 'https://www.canada.ca/en/public-health/services/publications/healthy-living/canadian-immunization-guide-part-3-vaccination-specific-populations/page-4-immunization-pregnancy-breastfeeding.html'
+      },
+      {
+        title: 'Your Guide to a Healthy Pregnancy',
+        subtitle: 'Week-by-week overview of pregnancy development',
+        readTime: '12 min read',
+        date: '1 day ago',
+        url: 'https://www.canada.ca/en/public-health/services/health-promotion/healthy-pregnancy/healthy-pregnancy-guide.html'
+      }
+    ];
+  }
+};
 
 export const weekData: WeekDetails[] = [
     {
@@ -110,33 +186,11 @@ export const weekData: WeekDetails[] = [
         'Basic brain structure develops'
       ],
       highlights: [
-        { title: 'Tiny Seed', subtitle: 'Just beginning to grow', icon: '🌱' },
-        { title: 'Heart Start', subtitle: 'Primitive heart begins forming', icon: '❤️' },
-        { title: 'Brain Foundation', subtitle: 'Neural tube developing', icon: '🧠' },
+        { title: 'Tiny Seed', subtitle: 'Just beginning to grow', icon: 'seed', iconColor: COLORS.peach400, bgColor: COLORS.white },
+        { title: 'Heart Start', subtitle: 'Primitive heart begins forming', icon: 'heart-pulse', iconColor: COLORS.peach400, bgColor: COLORS.peach400 },
+        { title: 'Brain Foundation', subtitle: 'Neural tube developing', icon: 'brain', iconColor: COLORS.purple500, bgColor: COLORS.purple100 }
       ],
-      articles: [
-        {
-          title: 'First Trimester Nutrition Guide',
-          subtitle: 'Essential nutrients for early pregnancy',
-          readTime: '5 min read',
-          date: '2 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Managing Morning Sickness',
-          subtitle: 'Tips to cope with early pregnancy symptoms',
-          readTime: '3 min read',
-          date: '1 day ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Safe Exercises During Pregnancy',
-          subtitle: 'Stay active safely throughout your pregnancy',
-          readTime: '7 min read',
-          date: '2 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        }
-      ]
+      articles: getTrimesterArticles(1)
     },
     {
       week: 2,
@@ -153,34 +207,12 @@ export const weekData: WeekDetails[] = [
         'Basic brain structure develops'
       ],
       highlights: [
-        { title: 'Heart Forms', subtitle: 'Primitive heart begins', icon: '❤️' },
-        { title: 'Brain Growth', subtitle: 'Neural development', icon: '🧠' },
-        { title: 'Eye Buds', subtitle: 'Vision development', icon: '👁️' },
-        { title: 'Limb Buds', subtitle: 'Arms and legs form', icon: '✋' }
+        { title: 'Heart Forms', subtitle: 'Primitive heart begins', icon: 'heart', iconColor: COLORS.peach400, bgColor: COLORS.peach400 },
+        { title: 'Brain Growth', subtitle: 'Neural development', icon: 'brain', iconColor: COLORS.purple500, bgColor: COLORS.purple100 },
+        { title: 'Eye Buds', subtitle: 'Vision development', icon: 'eye', iconColor: COLORS.purple500, bgColor: COLORS.blush100 },
+        { title: 'Limb Buds', subtitle: 'Arms and legs form', icon: 'human-handsup', iconColor: COLORS.peach400, bgColor: COLORS.white }
       ],
-      articles: [
-        {
-          title: 'Your First Trimester Checklist',
-          subtitle: 'Things to do in early pregnancy',
-          readTime: '6 min read',
-          date: '3 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Early Pregnancy Symptoms Explained',
-          subtitle: 'Understanding what to expect',
-          readTime: '4 min read',
-          date: '1 day ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Choosing Your Prenatal Vitamins',
-          subtitle: 'Key ingredients for a healthy start',
-          readTime: '5 min read',
-          date: '2 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        }
-      ]
+      articles: getTrimesterArticles(2)
     },
     {
       week: 3,
@@ -197,26 +229,11 @@ export const weekData: WeekDetails[] = [
         'Basic brain structure develops'
       ],
       highlights: [
-        { title: 'Continued Growth', subtitle: 'Rapid cell division', icon: '📈' },
-        { title: 'Organ Beginnings', subtitle: 'Early internal organ development', icon: '🫀' },
-        { title: 'Nervous System', subtitle: 'Neural tube progressing', icon: '🧠' }
+        { title: 'Continued Growth', subtitle: 'Rapid cell division', icon: 'trending-up', iconColor: COLORS.peach400, bgColor: COLORS.white },
+        { title: 'Organ Beginnings', subtitle: 'Early internal organ development', icon: 'heart-pulse', iconColor: COLORS.peach400, bgColor: COLORS.peach400 },
+        { title: 'Nervous System', subtitle: 'Neural tube progressing', icon: 'brain', iconColor: COLORS.purple500, bgColor: COLORS.purple100 }
       ],
-      articles: [
-        {
-          title: 'Understanding Early Fetal Development',
-          subtitle: 'What happens in the first few weeks',
-          readTime: '7 min read',
-          date: '4 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'The Importance of Folic Acid',
-          subtitle: 'Crucial for neural tube development',
-          readTime: '3 min read',
-          date: '2 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(3)
     },
     {
       week: 4,
@@ -233,27 +250,12 @@ export const weekData: WeekDetails[] = [
         'Basic brain structure develops'
       ],
       highlights: [
-        { title: 'Heart Forms', subtitle: 'Primitive heart begins', icon: '❤️' },
-        { title: 'Brain Growth', subtitle: 'Neural development', icon: '🧠' },
-        { title: 'Eye Buds', subtitle: 'Vision development', icon: '👁️' },
-        { title: 'Limb Buds', subtitle: 'Arms and legs form', icon: '✋' }
+        { title: 'Heart Forms', subtitle: 'Primitive heart begins', icon: 'heart', iconColor: COLORS.peach400, bgColor: COLORS.peach400 },
+        { title: 'Brain Growth', subtitle: 'Neural development', icon: 'brain', iconColor: COLORS.purple500, bgColor: COLORS.purple100 },
+        { title: 'Eye Buds', subtitle: 'Vision development', icon: 'eye', iconColor: COLORS.purple500, bgColor: COLORS.blush100 },
+        { title: 'Limb Buds', subtitle: 'Arms and legs form', icon: 'human-handsup', iconColor: COLORS.peach400, bgColor: COLORS.white }
       ],
-      articles: [
-        {
-          title: 'Your First Prenatal Appointment',
-          subtitle: 'What to expect at your initial visit',
-          readTime: '5 min read',
-          date: '1 day ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Early Pregnancy Scans: What They Show',
-          subtitle: 'The first glimpses of your baby',
-          readTime: '6 min read',
-          date: '3 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(4)
     },
     {
       week: 5,
@@ -270,26 +272,11 @@ export const weekData: WeekDetails[] = [
         'Basic brain structure develops'
       ],
       highlights: [
-        { title: 'Size Increase', subtitle: 'Growing rapidly in size', icon: '📏' },
-        { title: 'More Defined Organs', subtitle: 'Key organs continue to develop', icon: '🫀' },
-        { title: 'Circulatory System', subtitle: 'Blood vessels forming', icon: '🩸' }
+        { title: 'Size Increase', subtitle: 'Growing rapidly in size', icon: 'ruler', iconColor: COLORS.peach400, bgColor: COLORS.white },
+        { title: 'More Defined Organs', subtitle: 'Key organs continue to develop', icon: 'heart-pulse', iconColor: COLORS.peach400, bgColor: COLORS.peach400 },
+        { title: 'Circulatory System', subtitle: 'Blood vessels forming', icon: 'water', iconColor: COLORS.purple500, bgColor: COLORS.blush100 }
       ],
-      articles: [
-        {
-          title: 'Managing Fatigue in Early Pregnancy',
-          subtitle: 'Tips to boost your energy',
-          readTime: '4 min read',
-          date: '5 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Emotional Changes During Pregnancy',
-          subtitle: 'Coping with mood swings',
-          readTime: '6 min read',
-          date: '2 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        }
-      ]
+      articles: getTrimesterArticles(5)
     },
     {
       week: 6,
@@ -306,27 +293,12 @@ export const weekData: WeekDetails[] = [
         'Basic brain structure develops'
       ],
       highlights: [
-        { title: 'Heart Forms', subtitle: 'Primitive heart begins', icon: '❤️' },
-        { title: 'Brain Growth', subtitle: 'Neural development', icon: '🧠' },
-        { title: 'Eye Buds', subtitle: 'Vision development', icon: '👁️' },
-        { title: 'Limb Buds', subtitle: 'Arms and legs form', icon: '✋' }
+        { title: 'Heart Forms', subtitle: 'Primitive heart begins', icon: 'heart', iconColor: COLORS.peach400, bgColor: COLORS.peach400 },
+        { title: 'Brain Growth', subtitle: 'Neural development', icon: 'brain', iconColor: COLORS.purple500, bgColor: COLORS.purple100 },
+        { title: 'Eye Buds', subtitle: 'Vision development', icon: 'eye', iconColor: COLORS.purple500, bgColor: COLORS.blush100 },
+        { title: 'Limb Buds', subtitle: 'Arms and legs form', icon: 'human-handsup', iconColor: COLORS.peach400, bgColor: COLORS.white }
       ],
-      articles: [
-        {
-          title: 'Common Pregnancy Discomforts and Remedies',
-          subtitle: 'Dealing with nausea, heartburn, and more',
-          readTime: '8 min read',
-          date: '1 day ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Partner Support During Pregnancy',
-          subtitle: 'How partners can help and prepare',
-          readTime: '5 min read',
-          date: '4 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(6)
     },
     {
       week: 7,
@@ -339,26 +311,11 @@ export const weekData: WeekDetails[] = [
       description: 'Brain development continues, hands and feet develop ridges, and internal organs form.',
       developments: ['Brain development continues', 'Hands and feet develop ridges', 'Internal organs form'],
       highlights: [
-        { title: 'Brain Boost', subtitle: 'Ongoing brain development', icon: '🧠' },
-        { title: 'Hand & Foot Ridges', subtitle: 'Beginning of digits', icon: '🦶' },
-        { title: 'Organ Formation', subtitle: 'Internal organs taking shape', icon: '🫁' }
+        { title: 'Brain Boost', subtitle: 'Ongoing brain development', icon: 'brain', iconColor: COLORS.purple500, bgColor: COLORS.purple100 },
+        { title: 'Hand & Foot Ridges', subtitle: 'Beginning of digits', icon: 'human-male', iconColor: COLORS.peach400, bgColor: COLORS.white },
+        { title: 'Organ Formation', subtitle: 'Internal organs taking shape', icon: 'heart', iconColor: COLORS.purple500, bgColor: COLORS.blush100 }
       ],
-      articles: [
-        {
-          title: 'The Marvel of Embryonic Development',
-          subtitle: 'A closer look at early stages',
-          readTime: '7 min read',
-          date: '6 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Choosing a Healthcare Provider for Pregnancy',
-          subtitle: 'Factors to consider for your care',
-          readTime: '5 min read',
-          date: '2 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        }
-      ]
+      articles: getTrimesterArticles(7)
     },
     {
       week: 8,
@@ -371,26 +328,11 @@ export const weekData: WeekDetails[] = [
       description: 'Fingers and toes form, eyelids and lips appear, and the tail is nearly gone.',
       developments: ['Fingers and toes form', 'Eyelids and lips appear', 'Tail nearly gone'],
       highlights: [
-        { title: 'Digits Emerge', subtitle: 'Fingers and toes forming', icon: '🖐️' },
-        { title: 'Facial Features', subtitle: 'Eyelids and lips appear', icon: '😊' },
-        { title: 'Tail Recedes', subtitle: 'Embryonic tail almost gone', icon: '✨' }
+        { title: 'Digits Emerge', subtitle: 'Fingers and toes forming', icon: 'human-handsup', iconColor: COLORS.peach400, bgColor: COLORS.white },
+        { title: 'Facial Features', subtitle: 'Eyelids and lips appear', icon: 'face-woman', iconColor: COLORS.purple500, bgColor: COLORS.blush100 },
+        { title: 'Tail Recedes', subtitle: 'Embryonic tail almost gone', icon: 'star', iconColor: COLORS.peach400, bgColor: COLORS.peach400 }
       ],
-      articles: [
-        {
-          title: 'Your Baby\'s Development: Week by Week',
-          subtitle: 'A detailed guide to growth',
-          readTime: '10 min read',
-          date: '1 day ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Preparing for Your First Ultrasound',
-          subtitle: 'What to expect and how to prepare',
-          readTime: '4 min read',
-          date: '3 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(8)
     },
     {
       week: 9,
@@ -403,26 +345,11 @@ export const weekData: WeekDetails[] = [
       description: 'Eyelids cover the eyes, arms grow longer, and the embryo becomes a fetus.',
       developments: ['Eyelids cover eyes', 'Arms grow longer', 'Embryo becomes a fetus'],
       highlights: [
-        { title: 'Eyelids Cover', subtitle: 'Eyes protected for development', icon: '👁️' },
-        { title: 'Arms Lengthen', subtitle: 'Limbs growing in proportion', icon: '💪' },
-        { title: 'Fetus Stage', subtitle: 'Transition from embryo to fetus', icon: '👶' }
+        { title: 'Eyelids Cover', subtitle: 'Eyes protected for development', icon: 'eye', iconColor: COLORS.purple500, bgColor: COLORS.blush100 },
+        { title: 'Arms Lengthen', subtitle: 'Limbs growing in proportion', icon: 'human', iconColor: COLORS.peach400, bgColor: COLORS.white },
+        { title: 'Fetus Stage', subtitle: 'Transition from embryo to fetus', icon: 'baby', iconColor: COLORS.peach400, bgColor: COLORS.peach400 }
       ],
-      articles: [
-        {
-          title: 'The Fetal Period: What Changes?',
-          subtitle: 'From embryo to a tiny human',
-          readTime: '6 min read',
-          date: '8 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Coping with Pregnancy Hormones',
-          subtitle: 'Understanding the emotional rollercoaster',
-          readTime: '5 min read',
-          date: '2 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(9)
     },
     {
       week: 10,
@@ -435,26 +362,11 @@ export const weekData: WeekDetails[] = [
       description: 'Eyelids fuse, external ears develop, and limbs bend at the joints.',
       developments: ['Eyelids fuse', 'External ears develop', 'Limbs bend at joints'],
       highlights: [
-        { title: 'Eyelids Fuse', subtitle: 'Temporary fusion for development', icon: '🔒' },
-        { title: 'Ears Develop', subtitle: 'External ears are forming', icon: '👂' },
-        { title: 'Joint Movement', subtitle: 'Limbs can bend at joints', icon: '🦵' }
+        { title: 'Eyelids Fuse', subtitle: 'Temporary fusion for development', icon: 'eye', iconColor: COLORS.purple500, bgColor: COLORS.purple100 },
+        { title: 'Ears Develop', subtitle: 'External ears are forming', icon: 'ear-hearing', iconColor: COLORS.peach400, bgColor: COLORS.white },
+        { title: 'Joint Movement', subtitle: 'Limbs can bend at joints', icon: 'human', iconColor: COLORS.peach400, bgColor: COLORS.peach400 }
       ],
-      articles: [
-        {
-          title: 'Baby\'s First Movements: When Will You Feel Them?',
-          subtitle: 'Understanding quickening',
-          readTime: '3 min read',
-          date: '1 day ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Nutrition for a Healthy Second Trimester',
-          subtitle: 'Key foods for continued growth',
-          readTime: '7 min read',
-          date: '4 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(10)
     },
     {
       week: 11,
@@ -467,26 +379,11 @@ export const weekData: WeekDetails[] = [
       description: 'Finger and toe nails appear, bones are hardening, and genitals begin forming.',
       developments: ['Finger and toe nails appear', 'Bones hardening', 'Genitals begin forming'],
       highlights: [
-        { title: 'Nail Growth', subtitle: 'Tiny nails emerging', icon: '💅' },
-        { title: 'Bones Hardening', subtitle: 'Skeleton becoming stronger', icon: '🦴' },
-        { title: 'Genital Formation', subtitle: 'External genitals developing', icon: '🚻' }
+        { title: 'Nail Growth', subtitle: 'Tiny nails emerging', icon: 'human-handsup', iconColor: COLORS.peach400, bgColor: COLORS.white },
+        { title: 'Bones Hardening', subtitle: 'Skeleton becoming stronger', icon: 'human', iconColor: COLORS.purple500, bgColor: COLORS.blush100 },
+        { title: 'Genital Formation', subtitle: 'External genitals developing', icon: 'human', iconColor: COLORS.purple500, bgColor: COLORS.purple100 }
       ],
-      articles: [
-        {
-          title: 'Understanding Your Baby\'s Gender',
-          subtitle: 'When and how you might find out',
-          readTime: '4 min read',
-          date: '9 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Preparing Your Home for Baby',
-          subtitle: 'Safety and nursery essentials',
-          readTime: '8 min read',
-          date: '3 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(11)
     },
     {
       week: 12,
@@ -499,26 +396,11 @@ export const weekData: WeekDetails[] = [
       description: 'Reflexes are active, the digestive system begins working, and hormones start flowing.',
       developments: ['Reflexes active', 'Digestive system begins working', 'Hormones start flowing'],
       highlights: [
-        { title: 'Reflexes Active', subtitle: 'Practice movements', icon: '⚡' },
-        { title: 'Digestion Starts', subtitle: 'Digestive system begins function', icon: '🍎' },
-        { title: 'Hormone Flow', subtitle: 'Endocrine system becoming active', icon: '🧪' }
+        { title: 'Reflexes Active', subtitle: 'Practice movements', icon: 'lightning-bolt', iconColor: COLORS.peach400, bgColor: COLORS.peach400 },
+        { title: 'Digestion Starts', subtitle: 'Digestive system begins function', icon: 'food-apple', iconColor: COLORS.purple500, bgColor: COLORS.white },
+        { title: 'Hormone Flow', subtitle: 'Endocrine system becoming active', icon: 'flask', iconColor: COLORS.purple500, bgColor: COLORS.blush100 }
       ],
-      articles: [
-        {
-          title: 'The Second Trimester: A Guide',
-          subtitle: 'The "golden" period of pregnancy',
-          readTime: '7 min read',
-          date: '1 day ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Prenatal Testing Options Explained',
-          subtitle: 'Making informed decisions',
-          readTime: '9 min read',
-          date: '5 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(12)
     },
     {
       week: 13,
@@ -531,26 +413,11 @@ export const weekData: WeekDetails[] = [
       description: 'Vocal cords form, ribs are visible, and the intestines are functional.',
       developments: ['Vocal cords form', 'Ribs visible', 'Intestines functional'],
       highlights: [
-        { title: 'Vocal Cord Form', subtitle: 'Ready for first cries', icon: '🗣️' },
-        { title: 'Ribs Visible', subtitle: 'Developing chest structure', icon: '🦴' },
-        { title: 'Intestines Functional', subtitle: 'Digestive system active', icon: '🍎' }
+        { title: 'Vocal Cord Form', subtitle: 'Ready for first cries', icon: 'microphone-variant' },
+        { title: 'Ribs Visible', subtitle: 'Developing chest structure', icon: 'bone' },
+        { title: 'Intestines Functional', subtitle: 'Digestive system active', icon: 'food-apple' }
       ],
-      articles: [
-        {
-          title: 'Understanding Your Growing Bump',
-          subtitle: 'Changes in your body during pregnancy',
-          readTime: '4 min read',
-          date: '10 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Exercise Safely in Your Second Trimester',
-          subtitle: 'Maintaining fitness during pregnancy',
-          readTime: '6 min read',
-          date: '2 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(13)
     },
     {
       week: 14,
@@ -563,9 +430,9 @@ export const weekData: WeekDetails[] = [
       description: 'Genitals are visible, facial expressions form, and lanugo starts growing.',
       developments: ['Genitals visible', 'Facial expressions form', 'Lanugo starts growing'],
       highlights: [
-        { title: 'Genitals Visible', subtitle: 'Sex can be determined', icon: '🚻' },
-        { title: 'Facial Expressions', subtitle: 'Practice frowns and smiles', icon: '😊' },
-        { title: 'Lanugo Grows', subtitle: 'Fine hair covering skin', icon: ' Fuzzy' }
+        { title: 'Genitals Visible', subtitle: 'Sex can be determined', icon: 'human-male-female' },
+        { title: 'Facial Expressions', subtitle: 'Practice frowns and smiles', icon: 'emoticon' },
+        { title: 'Lanugo Grows', subtitle: 'Fine hair covering skin', icon: 'human' }
       ],
       articles: [
         {
@@ -595,9 +462,9 @@ export const weekData: WeekDetails[] = [
       description: 'Bones lengthen, the baby can move its limbs, and skin begins forming.',
       developments: ['Bones lengthen', 'Baby can move limbs', 'Skin begins forming'],
       highlights: [
-        { title: 'Bones Lengthen', subtitle: 'Rapid growth in length', icon: '📏' },
-        { title: 'Limb Movement', subtitle: 'Active wiggles and kicks', icon: '🤸' },
-        { title: 'Skin Formation', subtitle: 'Developing protective layers', icon: '🧴' }
+        { title: 'Bones Lengthen', subtitle: 'Rapid growth in length', icon: 'ruler' },
+        { title: 'Limb Movement', subtitle: 'Active wiggles and kicks', icon: 'human-handsup' },
+        { title: 'Skin Formation', subtitle: 'Developing protective layers', icon: 'human' }
       ],
       articles: [
         {
@@ -627,9 +494,9 @@ export const weekData: WeekDetails[] = [
       description: 'The head straightens, eyes move, and fingernails are fully grown.',
       developments: ['Head straightens', 'Eyes move', 'Fingernails fully grow'],
       highlights: [
-        { title: 'Head Straightens', subtitle: 'More upright posture', icon: '⬆️' },
-        { title: 'Eye Movements', subtitle: 'Eyes are starting to move', icon: '👀' },
-        { title: 'Fingernails Complete', subtitle: 'Fully formed nails', icon: '💅' }
+        { title: 'Head Straightens', subtitle: 'More upright posture', icon: 'arrow-up' },
+        { title: 'Eye Movements', subtitle: 'Eyes are starting to move', icon: 'eye' },
+        { title: 'Fingernails Complete', subtitle: 'Fully formed nails', icon: 'human-handsup' }
       ],
       articles: [
         {
@@ -659,26 +526,11 @@ export const weekData: WeekDetails[] = [
       description: 'Sweat glands form, the heartbeat is stronger, and cartilage hardens into bone.',
       developments: ['Sweat glands form', 'Heartbeat stronger', 'Cartilage hardens into bone'],
       highlights: [
-        { title: 'Sweat Glands', subtitle: 'Starting to regulate temperature', icon: '💧' },
-        { title: 'Strong Heartbeat', subtitle: 'Easily audible heartbeat', icon: '💓' },
-        { title: 'Bone Hardening', subtitle: 'Cartilage turning to bone', icon: '🦴' }
+        { title: 'Sweat Glands', subtitle: 'Starting to regulate temperature', icon: 'water' },
+        { title: 'Strong Heartbeat', subtitle: 'Easily audible heartbeat', icon: 'heart-pulse' },
+        { title: 'Bone Hardening', subtitle: 'Cartilage turning to bone', icon: 'bone' }
       ],
-      articles: [
-        {
-          title: 'Understanding Your Weight Gain in Pregnancy',
-          subtitle: 'Healthy ranges and expectations',
-          readTime: '5 min read',
-          date: '12 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Dealing with Pregnancy Brain',
-          subtitle: 'Tips for forgetfulness and focus',
-          readTime: '4 min read',
-          date: '3 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(17)
     },
     {
       week: 18,
@@ -691,26 +543,11 @@ export const weekData: WeekDetails[] = [
       description: 'Ears stick out, eyes are sensitive to light, and the uterus forms (if it is a girl).',
       developments: ['Ears stick out', 'Eyes sensitive to light', 'Uterus forms (if girl)'],
       highlights: [
-        { title: 'Ears Prominent', subtitle: 'Ears taking their shape', icon: '👂' },
-        { title: 'Light Sensitivity', subtitle: 'Reacting to light changes', icon: '💡' },
-        { title: 'Uterus Forms (Girls)', subtitle: 'Developing female reproductive organs', icon: '♀️' }
+        { title: 'Ears Prominent', subtitle: 'Ears taking their shape', icon: 'ear-hearing' },
+        { title: 'Light Sensitivity', subtitle: 'Reacting to light changes', icon: 'lightbulb' },
+        { title: 'Uterus Forms (Girls)', subtitle: 'Developing female reproductive organs', icon: 'human-female' }
       ],
-      articles: [
-        {
-          title: 'The Wonder of Fetal Hearing Development',
-          subtitle: 'What your baby can hear inside',
-          readTime: '6 min read',
-          date: '1 day ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Choosing a Name for Your Baby',
-          subtitle: 'Tips and inspiration',
-          readTime: '7 min read',
-          date: '6 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(18)
     },
     {
       week: 19,
@@ -723,26 +560,11 @@ export const weekData: WeekDetails[] = [
       description: 'The skin develops layers, arms and legs are in proportion, and the baby swallows amniotic fluid.',
       developments: ['Skin develops layers', 'Arms/legs in proportion', 'Baby swallows amniotic fluid'],
       highlights: [
-        { title: 'Skin Layers', subtitle: 'Skin is thickening and maturing', icon: '🧴' },
-        { title: 'Proportional Limbs', subtitle: 'Arms and legs reaching final proportions', icon: '⚖️' },
-        { title: 'Swallowing Fluid', subtitle: 'Practicing for digestion', icon: '😋' }
+        { title: 'Skin Layers', subtitle: 'Skin is thickening and maturing', icon: 'human' },
+        { title: 'Proportional Limbs', subtitle: 'Arms and legs reaching final proportions', icon: 'scale-balance' },
+        { title: 'Swallowing Fluid', subtitle: 'Practicing for digestion', icon: 'food' }
       ],
-      articles: [
-        {
-          title: 'The Role of Amniotic Fluid in Development',
-          subtitle: 'More than just a cushion',
-          readTime: '4 min read',
-          date: '13 hours ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-        {
-          title: 'Maternity Clothes: Comfort and Style',
-          subtitle: 'Embracing your changing body',
-          readTime: '5 min read',
-          date: '3 days ago',
-          url: 'https://en.wikipedia.org/wiki/Pregnancy'
-        },
-      ]
+      articles: getTrimesterArticles(19)
     },
     {
       week: 20,
@@ -755,9 +577,9 @@ export const weekData: WeekDetails[] = [
       description: 'Eyebrows and hair form, sex is identifiable by ultrasound, and the heartbeat is audible with a stethoscope.',
       developments: ['Eyebrows and hair form', 'Sex identifiable by ultrasound', 'Heartbeat audible with stethoscope'],
       highlights: [
-        { title: 'Hair & Brows', subtitle: 'First signs of hair', icon: '💇' },
-        { title: 'Sex Identifiable', subtitle: 'Gender often visible now', icon: '💙' },
-        { title: 'Heartbeat Audible', subtitle: 'Loud and clear heart sounds', icon: '🩺' }
+        { title: 'Hair & Brows', subtitle: 'First signs of hair', icon: 'human' },
+        { title: 'Sex Identifiable', subtitle: 'Gender often visible now', icon: 'human-male-female' },
+        { title: 'Heartbeat Audible', subtitle: 'Loud and clear heart sounds', icon: 'stethoscope' }
       ],
       articles: [
         {
@@ -787,9 +609,9 @@ export const weekData: WeekDetails[] = [
       description: 'Bone marrow is making blood, kicks are stronger, and the skin is translucent.',
       developments: ['Bone marrow making blood', 'Kicks stronger', 'Skin translucent'],
       highlights: [
-        { title: 'Blood Production', subtitle: 'Bone marrow takes over blood cell formation', icon: '🩸' },
-        { title: 'Stronger Kicks', subtitle: 'Feeling more pronounced movements', icon: '🦵' },
-        { title: 'Translucent Skin', subtitle: 'Skin still thin and transparent', icon: '✨' }
+        { title: 'Blood Production', subtitle: 'Bone marrow takes over blood cell formation', icon: 'blood-bag' },
+        { title: 'Stronger Kicks', subtitle: 'Feeling more pronounced movements', icon: 'human-handsup' },
+        { title: 'Translucent Skin', subtitle: 'Skin still thin and transparent', icon: 'star' }
       ],
       articles: [
         {
@@ -819,8 +641,8 @@ export const weekData: WeekDetails[] = [
       description: 'The sense of taste develops, hair is more visible, and the pancreas starts producing hormones.',
       developments: ['Taste sense develops', 'Hair more visible', 'Pancreas starts producing hormones'],
       highlights: [
-        { title: 'Taste Buds Develop', subtitle: 'Exploring flavors in amniotic fluid', icon: '👅' },
-        { title: 'Hair Growth', subtitle: 'More visible hair on head and body', icon: '💇' },
+        { title: 'Taste Buds Develop', subtitle: 'Exploring flavors in amniotic fluid', icon: 'food-variant' },
+        { title: 'Hair Growth', subtitle: 'More visible hair on head and body', icon: 'human' },
         { title: 'Pancreas Active', subtitle: 'Beginning hormone production', icon: 'Insulin' }
       ],
       articles: [
@@ -851,9 +673,9 @@ export const weekData: WeekDetails[] = [
       description: 'Lungs form blood vessels, fat starts depositing, and hearing is more developed.',
       developments: ['Lungs form blood vessels', 'Fat starts depositing', 'Hearing more developed'],
       highlights: [
-        { title: 'Lung Vessels Form', subtitle: 'Preparing for breathing air', icon: '🫁' },
-        { title: 'Fat Deposits', subtitle: 'Gaining insulating fat for warmth', icon: '👶' },
-        { title: 'Hearing Improves', subtitle: 'Can hear sounds more clearly', icon: '👂' }
+        { title: 'Lung Vessels Form', subtitle: 'Preparing for breathing air', icon: 'lungs' },
+        { title: 'Fat Deposits', subtitle: 'Gaining insulating fat for warmth', icon: 'baby-face' },
+        { title: 'Hearing Improves', subtitle: 'Can hear sounds more clearly', icon: 'ear' }
       ],
       articles: [
         {
@@ -883,9 +705,9 @@ export const weekData: WeekDetails[] = [
       description: 'Lung surfactant starts forming, the skin is pink and wrinkled, and the face is well-defined.',
       developments: ['Lung surfactant starts forming', 'Skin pink and wrinkled', 'Face well-defined'],
       highlights: [
-        { title: 'Lung Surfactant', subtitle: 'Critical for breathing outside the womb', icon: '💨' },
-        { title: 'Pink & Wrinkled Skin', subtitle: 'Developing its own character', icon: '👶' },
-        { title: 'Well-Defined Face', subtitle: 'Facial features are clearer', icon: '😊' }
+        { title: 'Lung Surfactant', subtitle: 'Critical for breathing outside the womb', icon: 'weather-windy' },
+        { title: 'Pink & Wrinkled Skin', subtitle: 'Developing its own character', icon: 'baby-face' },
+        { title: 'Well-Defined Face', subtitle: 'Facial features are clearer', icon: 'face-woman' }
       ],
       articles: [
         {
@@ -915,9 +737,9 @@ export const weekData: WeekDetails[] = [
       description: 'Hair thickens, the spine forms 33 vertebrae, and the hands have a grasp reflex.',
       developments: ['Hair thickens', 'Spine forms 33 vertebrae', 'Hands grasp reflex'],
       highlights: [
-        { title: 'Hair Thicker', subtitle: 'More hair on the head and body', icon: '💇' },
-        { title: 'Spine Forms', subtitle: '33 vertebrae are now in place', icon: '🦴' },
-        { title: 'Grasp Reflex', subtitle: 'Practicing gripping firmly', icon: '🤏' }
+        { title: 'Hair Thicker', subtitle: 'More hair on the head and body', icon: 'human' },
+        { title: 'Spine Forms', subtitle: '33 vertebrae are now in place', icon: 'bone' },
+        { title: 'Grasp Reflex', subtitle: 'Practicing gripping firmly', icon: 'human-handsup' }
       ],
       articles: [
         {
@@ -947,9 +769,9 @@ export const weekData: WeekDetails[] = [
       description: 'Eyes open, breathing practice starts, and fingerprints are clearly visible.',
       developments: ['Eyes open', 'Breathing practice starts', 'Fingerprints clearly visible'],
       highlights: [
-        { title: 'Eyes Open', subtitle: 'Can open and close eyes', icon: '👀' },
-        { title: 'Breathing Practice', subtitle: 'Mimicking breathing movements', icon: '🌬️' },
-        { title: 'Fingerprints Visible', subtitle: 'Unique identity forming', icon: ' fingerprints' }
+        { title: 'Eyes Open', subtitle: 'Can open and close eyes', icon: 'eye' },
+        { title: 'Breathing Practice', subtitle: 'Mimicking breathing movements', icon: 'weather-windy' },
+        { title: 'Fingerprints Visible', subtitle: 'Unique identity forming', icon: 'fingerprint' }
       ],
       articles: [
         {
@@ -979,9 +801,9 @@ export const weekData: WeekDetails[] = [
       description: 'The nervous system matures, muscle tone improves, and brain tissue is expanding.',
       developments: ['Nervous system matures', 'Muscle tone improves', 'Brain tissue expanding'],
       highlights: [
-        { title: 'Nervous System Maturing', subtitle: 'Brain and nerves developing connections', icon: '🧠' },
-        { title: 'Improved Muscle Tone', subtitle: 'Stronger and more coordinated movements', icon: '💪' },
-        { title: 'Brain Tissue Expands', subtitle: 'Rapid brain growth continues', icon: '💡' }
+        { title: 'Nervous System Maturing', subtitle: 'Brain and nerves developing connections', icon: 'brain' },
+        { title: 'Improved Muscle Tone', subtitle: 'Stronger and more coordinated movements', icon: 'arm-flex' },
+        { title: 'Brain Tissue Expands', subtitle: 'Rapid brain growth continues', icon: 'lightbulb' },
       ],
       articles: [
         {
@@ -1011,9 +833,9 @@ export const weekData: WeekDetails[] = [
       description: 'The brain develops grooves, eyes move, and the baby practices breathing.',
       developments: ['Brain develops grooves', 'Eyes move', 'Baby practices breathing'],
       highlights: [
-        { title: 'Brain Grooves Develop', subtitle: 'Brain becoming more complex', icon: '🧠' },
-        { title: 'Eye Movement', subtitle: 'Eyes moving and tracking', icon: '👀' },
-        { title: 'Breathing Practice', subtitle: 'More regular breathing movements', icon: '🌬️' }
+        { title: 'Brain Grooves Develop', subtitle: 'Brain becoming more complex', icon: 'brain' },
+        { title: 'Eye Movement', subtitle: 'Eyes moving and tracking', icon: 'eye' },
+        { title: 'Breathing Practice', subtitle: 'More regular breathing movements', icon: 'weather-windy' }
       ],
       articles: [
         {
@@ -1043,9 +865,9 @@ export const weekData: WeekDetails[] = [
       description: 'Muscles tone up, the baby stretches and kicks often, and the senses sharpen.',
       developments: ['Muscles tone up', 'Baby stretches/kicks often', 'Senses sharpen'],
       highlights: [
-        { title: 'Muscles Tone Up', subtitle: 'Stronger and more defined muscles', icon: '💪' },
-        { title: 'Stretching & Kicking', subtitle: 'Active movements are common', icon: '🤸' },
-        { title: 'Senses Sharpen', subtitle: 'Sensory perception improving', icon: '✨' }
+        { title: 'Muscles Tone Up', subtitle: 'Stronger and more defined muscles', icon: 'arm-flex' },
+        { title: 'Stretching & Kicking', subtitle: 'Active movements are common', icon: 'human-handsup' },
+        { title: 'Senses Sharpen', subtitle: 'Sensory perception improving', icon: 'star' }
       ],
       articles: [
         {
@@ -1075,9 +897,9 @@ export const weekData: WeekDetails[] = [
       description: 'Eyesight is improving, red blood cell production is in the bone marrow, and the skin is smoother.',
       developments: ['Eyesight improving', 'Red blood cell production in bone marrow', 'Skin smoother'],
       highlights: [
-        { title: 'Eyesight Improves', subtitle: 'Can perceive light and shadow better', icon: '👀' },
-        { title: 'Red Blood Cell Production', subtitle: 'Bone marrow is now the primary site', icon: '🩸' },
-        { title: 'Smoother Skin', subtitle: 'Losing wrinkles as fat deposits increase', icon: '👶' }
+        { title: 'Eyesight Improves', subtitle: 'Can perceive light and shadow better', icon: 'eye' },
+        { title: 'Red Blood Cell Production', subtitle: 'Bone marrow is now the primary site', icon: 'blood-bag' },
+        { title: 'Smoother Skin', subtitle: 'Losing wrinkles as fat deposits increase', icon: 'baby-face' }
       ],
       articles: [
         {
@@ -1107,9 +929,9 @@ export const weekData: WeekDetails[] = [
       description: 'The nervous system is fully functional, the bladder fills regularly, and the baby is aware of sounds.',
       developments: ['Nervous system fully functional', 'Bladder fills regularly', 'Baby aware of sounds'],
       highlights: [
-        { title: 'Nervous System Functional', subtitle: 'Brain and nerves are well-developed', icon: '🧠' },
-        { title: 'Bladder Fills', subtitle: 'Practicing urination', icon: '🚽' },
-        { title: 'Aware of Sounds', subtitle: 'Reacting to voices and music', icon: '👂' }
+        { title: 'Nervous System Functional', subtitle: 'Brain and nerves are well-developed', icon: 'brain' },
+        { title: 'Bladder Fills', subtitle: 'Practicing urination', icon: 'toilet' },
+        { title: 'Aware of Sounds', subtitle: 'Reacting to voices and music', icon: 'ear-hearing' }
       ],
       articles: [
         {
@@ -1139,9 +961,9 @@ export const weekData: WeekDetails[] = [
       description: 'A breathing rhythm is established, toenails are complete, and the bones are soft.',
       developments: ['Breathing rhythm established', 'Toenails complete', 'Soft bones'],
       highlights: [
-        { title: 'Breathing Rhythm', subtitle: 'Developing a consistent breathing pattern', icon: '🌬️' },
-        { title: 'Toenails Complete', subtitle: 'All ten tiny toenails are formed', icon: '🦶' },
-        { title: 'Soft Bones', subtitle: 'Bones are still soft for birth', icon: '🦴' }
+        { title: 'Breathing Rhythm', subtitle: 'Developing a consistent breathing pattern', icon: 'weather-windy' },
+        { title: 'Toenails Complete', subtitle: 'All ten tiny toenails are formed', icon: 'human-male' },
+        { title: 'Soft Bones', subtitle: 'Bones are still soft for birth', icon: 'bone' }
       ],
       articles: [
         {
@@ -1171,9 +993,9 @@ export const weekData: WeekDetails[] = [
       description: 'Skull bones are soft, pupils dilate, and the baby can detect light and dark.',
       developments: ['Skull bones soft', 'Pupils dilate', 'Baby detects light/dark'],
       highlights: [
-        { title: 'Soft Skull Bones', subtitle: 'Flexible for passage through birth canal', icon: '👶' },
-        { title: 'Pupils Dilate', subtitle: 'Eyes reacting to light changes', icon: '💡' },
-        { title: 'Detects Light/Dark', subtitle: 'Can perceive changes in illumination', icon: '🌓' }
+        { title: 'Soft Skull Bones', subtitle: 'Flexible for passage through birth canal', icon: 'baby-face' },
+        { title: 'Pupils Dilate', subtitle: 'Eyes reacting to light changes', icon: 'lightbulb' },
+        { title: 'Detects Light/Dark', subtitle: 'Can perceive changes in illumination', icon: 'weather-night' }
       ],
       articles: [
         {
@@ -1203,9 +1025,9 @@ export const weekData: WeekDetails[] = [
       description: 'The central nervous system matures, eyes are open during wake time, and the baby hiccups often.',
       developments: ['Central nervous system matures', 'Eyes open during wake time', 'Baby hiccups often'],
       highlights: [
-        { title: 'CNS Maturing', subtitle: 'Further development of brain and spinal cord', icon: '🧠' },
-        { title: 'Eyes Open When Awake', subtitle: 'Exploring the surrounding environment', icon: '👀' },
-        { title: 'Frequent Hiccups', subtitle: 'Common as lungs mature', icon: ' hiccup' }
+        { title: 'CNS Maturing', subtitle: 'Further development of brain and spinal cord', icon: 'brain' },
+        { title: 'Eyes Open When Awake', subtitle: 'Exploring the surrounding environment', icon: 'eye' },
+        { title: 'Frequent Hiccups', subtitle: 'Common as lungs mature', icon: 'baby-face' }
       ],
       articles: [
         {
@@ -1235,9 +1057,9 @@ export const weekData: WeekDetails[] = [
       description: 'Lanugo is mostly gone, organs are maturing, and movements are strong.',
       developments: ['Lanugo mostly gone', 'Organs maturing', 'Strong movements'],
       highlights: [
-        { title: 'Lanugo Fades', subtitle: 'Fine hair is mostly shed', icon: '✨' },
-        { title: 'Organs Maturing', subtitle: 'All systems are almost ready for birth', icon: '🫀' },
-        { title: 'Strong Movements', subtitle: 'Feeling powerful kicks and stretches', icon: '💪' }
+        { title: 'Lanugo Fades', subtitle: 'Fine hair is mostly shed', icon: 'star' },
+        { title: 'Organs Maturing', subtitle: 'All systems are almost ready for birth', icon: 'heart' },
+        { title: 'Strong Movements', subtitle: 'Feeling powerful kicks and stretches', icon: 'arm-flex' },
       ],
       articles: [
         {
@@ -1267,9 +1089,9 @@ export const weekData: WeekDetails[] = [
       description: 'The baby is gaining fat, the digestive system is ready, and the bones are soft but firm.',
       developments: ['Baby gaining fat', 'Digestive system ready', 'Bones soft but firm'],
       highlights: [
-        { title: 'Gaining Fat', subtitle: 'Plumping up for birth', icon: '👶' },
-        { title: 'Digestive System Ready', subtitle: 'Prepared for first feedings', icon: '🍎' },
-        { title: 'Bones Soft & Firm', subtitle: 'Strong enough, yet flexible for birth', icon: '🦴' }
+        { title: 'Gaining Fat', subtitle: 'Plumping up for birth', icon: 'baby-face' },
+        { title: 'Digestive System Ready', subtitle: 'Prepared for first feedings', icon: 'food-apple' },
+        { title: 'Bones Soft & Firm', subtitle: 'Strong enough, yet flexible for birth', icon: 'bone' }
       ],
       articles: [
         {
@@ -1299,9 +1121,9 @@ export const weekData: WeekDetails[] = [
       description: 'The baby is full-term, the lungs are fully mature, and there is a strong grasp reflex.',
       developments: ['Baby full-term', 'Lungs fully mature', 'Strong grasp reflex'],
       highlights: [
-        { title: 'Full-Term', subtitle: 'Considered full-term this week', icon: '✔️' },
-        { title: 'Lungs Mature', subtitle: 'Ready to breathe independently', icon: '🫁' },
-        { title: 'Strong Grasp Reflex', subtitle: 'Can hold onto fingers tightly', icon: '🤏' }
+        { title: 'Full-Term', subtitle: 'Considered full-term this week', icon: 'check-circle' },
+        { title: 'Lungs Mature', subtitle: 'Ready to breathe independently', icon: 'lungs' },
+        { title: 'Strong Grasp Reflex', subtitle: 'Can hold onto fingers tightly', icon: 'human-handsup' },
       ],
       articles: [
         {
@@ -1331,9 +1153,9 @@ export const weekData: WeekDetails[] = [
       description: 'The skin is smooth, the body is plump, and the vernix thickens.',
       developments: ['Skin smooth', 'Body plump', 'Vernix thickens'],
       highlights: [
-        { title: 'Smooth Skin', subtitle: 'Wrinkles disappear as fat increases', icon: '🧴' },
-        { title: 'Plump Body', subtitle: 'Well-rounded and ready for birth', icon: '👶' },
-        { title: 'Vernix Thickens', subtitle: 'Protective coating is abundant', icon: '✨' }
+        { title: 'Smooth Skin', subtitle: 'Wrinkles disappear as fat increases', icon: 'human' },
+        { title: 'Plump Body', subtitle: 'Well-rounded and ready for birth', icon: 'baby-face' },
+        { title: 'Vernix Thickens', subtitle: 'Protective coating is abundant', icon: 'star' },
       ],
       articles: [
         {
@@ -1363,9 +1185,9 @@ export const weekData: WeekDetails[] = [
       description: 'The organs are complete, and the baby is practicing breathing and gripping.',
       developments: ['Organs complete', 'Baby practicing breathing and gripping'],
       highlights: [
-        { title: 'Organs Complete', subtitle: 'All vital organs fully developed', icon: '🫀' },
-        { title: 'Breathing Practice', subtitle: 'Refining breathing patterns', icon: '🌬️' },
-        { title: 'Gripping Practice', subtitle: 'Strengthening hand grasp', icon: '🤏' }
+        { title: 'Organs Complete', subtitle: 'All vital organs fully developed', icon: 'heart' },
+        { title: 'Breathing Practice', subtitle: 'Refining breathing patterns', icon: 'weather-windy' },
+        { title: 'Gripping Practice', subtitle: 'Strengthening hand grasp', icon: 'human-handsup' }
       ],
       articles: [
         {
@@ -1395,9 +1217,9 @@ export const weekData: WeekDetails[] = [
       description: 'Fully developed, with strong reflexes, and ready for birth.',
       developments: ['Fully developed', 'Strong reflexes', 'Ready for birth'],
       highlights: [
-        { title: 'Fully Developed', subtitle: 'All systems are go!', icon: '✅' },
-        { title: 'Strong Reflexes', subtitle: 'Ready for life outside the womb', icon: '⚡' },
-        { title: 'Ready for Birth', subtitle: 'Your little one is preparing to meet you!', icon: '👣' }
+        { title: 'Fully Developed', subtitle: 'All systems are go!', icon: 'check-circle' },
+        { title: 'Strong Reflexes', subtitle: 'Ready for life outside the womb', icon: 'lightning-bolt' },
+        { title: 'Ready for Birth', subtitle: 'Your little one is preparing to meet you!', icon: 'foot-print' },
       ],
       articles: [
         {

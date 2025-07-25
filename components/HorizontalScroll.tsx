@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.purple500,
   },
   weekButtonText: {
-    color: COLORS.gray700,
+    color: COLORS.gray500,
     fontWeight: '500',
     fontSize: 15,
   },

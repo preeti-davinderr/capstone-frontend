@@ -24,7 +24,7 @@ const WeekDevelopmentInfo: React.FC<WeekDevelopmentInfoProps> = ({ footer, descr
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 20,
+    borderRadius: 24,
     paddingVertical: 28,
     paddingHorizontal: 18,
     marginBottom: 24,
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   infoBox: {
     backgroundColor: "#f3e6f7",
-    borderRadius: 16,
+    borderRadius: 20,
     paddingVertical: 20,
     paddingHorizontal: 18,
     width: "100%",
