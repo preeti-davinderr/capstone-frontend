@@ -633,7 +633,7 @@ export const weekData: WeekDetails[] = [
     {
       week: 22,
       title: 'Your Little One - Week 22',
-      size: 'Spaghetti squash (~27.8 cm)',
+      size: 'Spaghetti (~27.8 cm)',
       weight: '~430g',
       visualText: 'Week 22',
       image: require('../assets/development/week (22).webp'),
@@ -857,7 +857,7 @@ export const weekData: WeekDetails[] = [
     {
       week: 29,
       title: 'Your Little One - Week 29',
-      size: 'Butternut squash (~38.6 cm)',
+      size: 'Squash (~38.6 cm)',
       weight: '~1.2 kg',
       visualText: 'Week 29',
       image: require('../assets/development/week (29).webp'),
@@ -1049,7 +1049,7 @@ export const weekData: WeekDetails[] = [
     {
       week: 35,
       title: 'Your Little One - Week 35',
-      size: 'Honeydew melon (~46.2 cm)',
+      size: 'Melon (~46.2 cm)',
       weight: '~2.4 kg',
       visualText: 'Week 35',
       image: require('../assets/development/week (35).webp'),
@@ -1081,7 +1081,7 @@ export const weekData: WeekDetails[] = [
     {
       week: 36,
       title: 'Your Little One - Week 36',
-      size: 'Romaine lettuce (~47.4 cm)',
+      size: 'Lettuce (~47.4 cm)',
       weight: '~2.6 kg',
       visualText: 'Week 36',
       image: require('../assets/development/week (36).webp'),
@@ -1177,7 +1177,7 @@ export const weekData: WeekDetails[] = [
     {
       week: 39,
       title: 'Your Little One - Week 39',
-      size: 'Mini watermelon (~50.7 cm)',
+      size: 'Watermelon (~50.7 cm)',
       weight: '~3.3 kg',
       visualText: 'Week 39',
       image: require('../assets/development/week (39).webp'),
@@ -1209,7 +1209,7 @@ export const weekData: WeekDetails[] = [
     {
       week: 40,
       title: 'Your Little One - Week 40',
-      size: 'Small pumpkin (~51.2 cm)',
+      size: 'Pumpkin (~51.2 cm)',
       weight: '~3.5–4 kg',
       visualText: 'Week 40',
       image: require('../assets/development/week (40).webp'),
