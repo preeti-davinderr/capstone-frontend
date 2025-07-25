@@ -59,7 +59,7 @@ export type RootStackParamList = {
   ChatBot: undefined;
   FitBitSummary: undefined;
   FamilyApp: undefined;
-  Articles: { trimester: string };
+  Articles: { trimester: string; selectedWeek: number };
   ArticleDetail: {
     title: string;
     description: string;
