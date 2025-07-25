@@ -15,7 +15,12 @@ import { RootStackParamList } from "../App";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../styles/globalStyles";
+import { COLORS,
+  EFFECTS,
+  RADIUS,
+  SPACING,
+  TEXT_STYLES,
+ } from "../styles/globalStyles";
 import MainHeader from "../components/MainHeader";
 import CommonButton from "../components/CommonButton";
 // import * as Clipboard from "expo-clipboard";
@@ -49,6 +54,7 @@ export default function ProfileScreen() {
   const [notifications, setNotifications] = useState(true);
   const [miscarriageSupport, setMiscarriageSupport] = useState(false);
   const [prematureBirthInfo, setPrematureBirthInfo] = useState(false);
+  const [showFAQ, setShowFAQ] = useState(false); // 
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -97,8 +103,8 @@ export default function ProfileScreen() {
       style={{ flex: 1, backgroundColor: COLORS.background }}
       edges={["left", "right", "bottom"]}
     >
-      <MainHeader title="My Profile" subtitle="" />
-      <ScrollView style={styles.container}>
+  <MainHeader title="My Profile" subtitle="" />
+    <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.profileCard}>
           <View style={styles.avatarWrapper}>
             <View style={styles.avatar} />
@@ -110,12 +116,12 @@ export default function ProfileScreen() {
                 source={require("../assets/profile_images/user.png")} // adjust path based on your folder
                 style={styles.iconImage}
               />
-              <Text style={styles.subText}>22 weeks pregnant</Text>
+              <Text style={styles.subText}>{profile?.dueDate ?? "dueDate"}</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.editIcon}>
+          {/* <TouchableOpacity style={styles.editIcon}>
             <Ionicons name="create-outline" size={18} color="#000" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View style={styles.section}>
@@ -154,7 +160,7 @@ export default function ProfileScreen() {
             value="Augusto Wong (Connected)"
           />
           <InfoRow icon="person" label="Mom" value="Lydia Li (Connected)" />
-          <InfoRow icon="person" label="Family Code" value="." />
+          <InfoRow icon="person" label="Family Code" value=" " />
           <CommonButton
             label={`${profile?.familyCode ?? ""}`}
             onPress={handleCopyFamilyCode}
@@ -167,7 +173,7 @@ export default function ProfileScreen() {
           <View style={styles.switchRow}>
             <Image
               source={require("../assets/profile_images/Notification.png")}
-              style={styles.iconImage}
+              style={styles.imageIcon}
             />
             <Text style={styles.switchLabel}>Notifications</Text>
             <Switch value={notifications} onValueChange={setNotifications} />
@@ -176,7 +182,7 @@ export default function ProfileScreen() {
           <View style={styles.switchRow}>
             <Image
               source={require("../assets/profile_images/MiscarriageSupport.png")}
-              style={styles.iconImage}
+              style={styles.imageIcon}
             />
             <Text style={styles.switchLabel}>Miscarriage Support</Text>
             <Switch
@@ -188,7 +194,7 @@ export default function ProfileScreen() {
           <View style={styles.switchRow}>
             <Image
               source={require("../assets/profile_images/PrematureBirth.png")}
-              style={styles.iconImage}
+              style={styles.imageIcon}
             />
             <Text style={styles.switchLabel}>Premature Birth Info</Text>
             <Switch
@@ -205,7 +211,7 @@ export default function ProfileScreen() {
             <View style={styles.row}>
               <Image
                 source={require("../assets/profile_images/ChangePassword.png")}
-                style={styles.iconImage}
+                style={styles.imageIcon}
               />
               <Text style={styles.linkText}>Change Password</Text>
             </View>
@@ -215,7 +221,7 @@ export default function ProfileScreen() {
             <View style={styles.row}>
               <Image
                 source={require("../assets/profile_images/Logout.png")}
-                style={styles.iconImage}
+                style={styles.imageIcon}
               />
               <Text style={styles.linkText}>Logout</Text>
             </View>
@@ -225,7 +231,7 @@ export default function ProfileScreen() {
             <View style={styles.row}>
               <Image
                 source={require("../assets/profile_images/delete.png")}
-                style={styles.iconImage}
+                style={styles.imageIcon}
               />
               <Text style={styles.linkText}>Delete Account</Text>
             </View>
@@ -235,138 +241,196 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Support & Resources</Text>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowFAQ(true)}>
             <View style={styles.row}>
               <Image
                 source={require("../assets/profile_images/FAQ.png")}
-                style={styles.iconImage}
+                style={styles.imageIcon}
               />
               <Text style={styles.linkText}>FAQs</Text>
             </View>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* ✅ FAQ Modal */}
+          {showFAQ && (
+            <View style={styles.faqModalOverlay}>
+              <View style={styles.faqModal}>
+                <Text style={styles.faqTitle}>Frequently Asked Questions</Text>
+
+                <View style={styles.faqItem}>
+                  <Text style={styles.faqQuestion}>❓ How do I track my baby bump?</Text>
+                  <Text style={styles.faqAnswer}>Use the "Baby Bump" journal to upload weekly bump photos.</Text>
+                </View>
+
+                <View style={styles.faqItem}>
+                  <Text style={styles.faqQuestion}>❓ How can I invite family?</Text>
+                  <Text style={styles.faqAnswer}>Share your Family Code from your profile screen.</Text>
+                </View>
+
+                <CommonButton label="Close" onPress={() => setShowFAQ(false)} style={{ marginTop: 20 }} />
+              </View>
+            </View>
+          )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#fff",
+    paddingTop: 0,
+    padding: SPACING.spacing20,
+    paddingBottom: 82,
+    backgroundColor: COLORS.background,
   },
-  header: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 16,
+  imageIcon: {
+    width: 20,
+    marginRight: SPACING.spacing8,
+    resizeMode: "contain",
   },
   icon: {
-    marginRight: 10,
+    marginRight: SPACING.spacing8,
   },
   profileCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f3f0ff",
-    padding: 16,
-    borderRadius: 12,
+    backgroundColor: COLORS.purple100,
+    padding: SPACING.spacing16,
+    borderRadius: RADIUS.lg,
     position: "relative",
   },
-
   avatarWrapper: {
     width: 60,
     height: 60,
     borderRadius: 30,
     borderWidth: 2,
-    borderColor: "#A48EF0",
+    borderColor: COLORS.purple500,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 12,
+    marginRight: SPACING.spacing12,
   },
-
   avatar: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#ccc",
+    backgroundColor: COLORS.gray300,
   },
-
   textContainer: {
     flex: 1,
   },
-
   profileName: {
+    ...TEXT_STYLES.subheading,
     fontSize: 18,
-    fontWeight: "600",
-    color: "#1C1C1E",
+    textAlign: "left",
   },
-
   subRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
+    marginTop: SPACING.spacing4,
   },
   subText: {
     fontSize: 14,
-    color: "#A48EF0",
-  },
-  imageIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-    resizeMode: "contain",
-  },
-  editIcon: {
-    position: "absolute",
-    top: 12,
-    right: 12,
+    color: COLORS.purple500,
   },
   section: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 1,
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing16,
+    marginTop: SPACING.spacing20,
+    ...EFFECTS.shadow,
   },
   sectionTitle: {
-    fontSize: 16,
+    ...TEXT_STYLES.bodyBase,
     fontWeight: "600",
-    marginBottom: 10,
+    marginBottom: SPACING.spacing12,
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: SPACING.spacing8,
   },
   infoText: {
-    fontSize: 14,
+    ...TEXT_STYLES.bodySmall,
+    flexShrink: 1,
   },
   switchRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 6,
+    marginVertical: SPACING.spacing6,
   },
   linkText: {
-    fontSize: 14,
-    color: "#6b46c1",
-    paddingVertical: 6,
+    ...TEXT_STYLES.bodySmall,
+    color: COLORS.purple500,
+    paddingVertical: SPACING.spacing6,
   },
   iconImage: {
     width: 20,
     height: 20,
-    marginRight: 8,
+    marginRight: SPACING.spacing8,
+    resizeMode: "contain",
   },
   switchLabel: {
     flex: 1,
     fontSize: 15,
-    color: "#444",
+    color: COLORS.gray700,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: SPACING.spacing12,
+  },
+  iconImage_FAQ: {
+    width: 20,
+    marginRight: SPACING.spacing8,
+    alignItems: "center",
+    marginBottom: SPACING.spacing12,
+  },
+  row_FAQ: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: SPACING.spacing48,
+  },
+  faqModalOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: SPACING.spacing16,
+    zIndex: 999,
+  },
+  faqModal: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.spacing20,
+    width: "100%",
+    maxWidth: 340,
+    elevation: 5,
+  },
+  faqTitle: {
+    fontSize: 24,
+    fontWeight: "600",
+    marginBottom: SPACING.spacing20,
+    textAlign: "center",
+    color: COLORS.gray900,
+  },
+  faqItem: {
+    marginBottom: SPACING.spacing12,
+  },
+  faqQuestion: {
+    fontWeight: "600",
+    fontSize: 14,
+    marginBottom: SPACING.spacing4,
+    color: COLORS.gray900,
+  },
+  faqAnswer: {
+    fontSize: 13,
+    color: COLORS.gray700,
+    lineHeight: 18,
   },
 });
