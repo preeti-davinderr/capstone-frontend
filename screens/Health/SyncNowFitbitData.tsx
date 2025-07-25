@@ -12,6 +12,8 @@ import { useFitbitAuth } from '../Fitbit/FitbitAuthScreen';
 import { fetchFitbitData } from '../Fitbit/fetchFitbitData';
 import CommonButton from '../../components/CommonButton';
 import MainHeader from '../../components/MainHeader';
+import SubHeader from '../../components/SubHeader';
+
 export type FitbitData = {
   steps: {
     value: number;
@@ -119,7 +121,7 @@ export default function SyncNowScreen() {
     </ScrollView> */}
     <ScrollView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <MainHeader title="Sync Now" />
+        <SubHeader title="Sync Now" />
 
         {/* 🌀 Loading and Error States */}
 

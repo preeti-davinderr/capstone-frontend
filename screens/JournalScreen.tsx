@@ -1,300 +1,3 @@
-// import React, { useState, useCallback } from 'react';
-// import { View, ScrollView, TouchableOpacity, StyleSheet, Text } from 'react-native';
-// import { Ionicons, Entypo } from '@expo/vector-icons';
-// import { LinearGradient } from 'expo-linear-gradient';
-// import { useFocusEffect } from '@react-navigation/native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// type ImageEntry = {
-//   url: string;
-//   description: string;
-//   addedAt: string;
-// };
-
-// type Journal = {
-//   _id: string;
-//   title: string;
-//   designTemplate: string;
-//   createdAt: string;
-//   images: ImageEntry[];
-// };
-
-// export default function JournalScreen({ navigation }: any) {
-//   const [journals, setJournals] = useState<Journal[]>([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useFocusEffect(
-//     useCallback(() => {
-//       const fetchJournals = async () => {
-//         try {
-//           setLoading(true);
-//           const user = await AsyncStorage.getItem("user");
-//           const parsed = user ? JSON.parse(user) : null;
-//           const userId = parsed?.id;
-
-//           if (!userId) {
-//             console.error("User ID not found in AsyncStorage.");
-//             setLoading(false);
-//             return;
-//           }
-
-//           const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/journal?id=${userId}`);
-//           const data = await res.json();
-//           setJournals(data.data as Journal[]);
-//         } catch (err) {
-//           console.error("Error fetching journals:", err);
-//         } finally {
-//           setLoading(false);
-//         }
-//       };
-
-//       fetchJournals();
-//     }, [])
-//   );
-
-//   return (
-//     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-//       {/* Header */}
-//       <View style={styles.header}>
-//         <View>
-//           <Text style={styles.headerTitle}>My Journal</Text>
-//           <Text style={styles.headerSubtitle}>How are you feeling today?</Text>
-//         </View>
-//         <View style={styles.notificationIcon}>
-//           <Ionicons name="notifications-outline" size={24} color="#6A5ACD" />
-//           <View style={styles.notificationDot} />
-//         </View>
-//       </View>
-
-//       {/* Get Started Card */}
-//       <View style={styles.solidCard}>
-//   <Ionicons name="book" size={32} color="#fff" style={{ marginBottom: 10 }} />
-//   <Text style={styles.gradientTitle}>Start Your Pregnancy Journey</Text>
-//   <Text style={styles.gradientSubtitle}>Capture precious moments and memories</Text>
-//   <TouchableOpacity
-//     onPress={() => {
-//       navigation.navigate('journalEntery', {
-//         title: '',
-//         allowCustomTitle: true,
-//         description: 'Track your growing belly week by week',
-//         meta: '40 weeks',
-//       });
-//     }}
-//     style={styles.getStartedButton}
-//   >
-//     <Text style={styles.getStartedText}>Get Started</Text>
-//   </TouchableOpacity>
-// </View>
-
-//       {/* Active Journals */}
-//       {journals.length > 0 ? (
-//         <>
-//           <Text style={styles.sectionTitle}>My Active Journals</Text>
-//           {journals.map((journal) => (
-//             <View key={journal._id} style={styles.card}>
-//               <Ionicons name="book-outline" size={28} color="#6A5ACD" style={styles.cardIcon} />
-//               <View style={styles.cardContent}>
-//                 <Text style={styles.cardTitle}>{journal.title}</Text>
-//                 <Text style={styles.cardSubtitle}>{journal.designTemplate}</Text>
-//               </View>
-//               <TouchableOpacity
-//                 onPress={() => {
-//                   navigation.navigate('journalEntery', {
-//                     journalId: journal._id,
-//                     title: journal.title,
-//                     description: journal.designTemplate,
-//                     meta: journal.designTemplate,
-//                     isEdit: true,
-//                   });
-//                 }}
-//                 style={styles.cardButton}
-//               >
-//                 <Text style={styles.cardButtonText}>Open</Text>
-//               </TouchableOpacity>
-//             </View>
-//           ))}
-//         </>
-//       )
-//     :
-//     <View style={{ marginTop: 20, alignItems: 'center' }}>
-//         <Text style={{ fontSize: 16, color: '#666' }}>No active journals found. Start a new one!</Text>
-//       </View>
-//     }
-
-//       {/* Pre-Designed */}
-//       <Text style={styles.sectionTitle}>Pre-Designed Journals</Text>
-//       {journalData.map((item, index) => (
-//         <View key={index} style={styles.card}>
-//           {item.icon}
-//           <View style={styles.cardContent}>
-//             <Text style={styles.cardTitle}>{item.title}</Text>
-//             <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
-//           </View>
-//           <TouchableOpacity
-//             onPress={() => {
-//               navigation.navigate('journalEntery', {
-//                 title: item.title,
-//                 description: item.subtitle,
-//                 meta: item.meta,
-//               });
-//             }}
-//             style={styles.cardButton}
-//           >
-//             <Text style={styles.cardButtonText}>Start</Text>
-//           </TouchableOpacity>
-//         </View>
-//       ))}
-//     </ScrollView>
-//   );
-// }
-
-// const journalData = [
-//   {
-//     title: "Baby Bump",
-//     subtitle: "Weekly photo diary",
-//     meta: "40 weeks",
-//     icon: <Ionicons name="camera-outline" size={28} color="#6A5ACD" style={{ marginRight: 12 }} />,
-//   },
-//   {
-//     title: "Dear Baby",
-//     subtitle: "Letters to your little ones",
-//     meta: "Letters",
-//     icon: <Entypo name="heart-outlined" size={28} color="#6A5ACD" style={{ marginRight: 12 }} />,
-//   },
-//   {
-//     title: "My Feelings",
-//     subtitle: "Write heartfelt letters to your baby.",
-//     meta: "Feelings",
-//     icon: <Entypo name="emoji-happy" size={28} color="#6A5ACD" style={{ marginRight: 12 }} />,
-//   },
-//   {
-//     title: "First Movements",
-//     subtitle: "Record those magical first kicks.",
-//     meta: "Kicks",
-//     icon: <Entypo name="hand" size={28} color="#6A5ACD" style={{ marginRight: 12 }} />,
-//   },
-// ];
-
-// const styles = StyleSheet.create({
-//   container: {
-//     backgroundColor: '#fff',
-//     padding: 16,
-//   },
-//   header: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     marginBottom: 24,
-//   },
-//   headerTitle: {
-//     fontSize: 20,
-//     fontWeight: '700',
-//     color: '#6A5ACD',
-//   },
-//   headerSubtitle: {
-//     fontSize: 14,
-//     color: '#999',
-//     marginTop: 2,
-//   },
-//   notificationIcon: {
-//     position: 'relative',
-//   },
-//   notificationDot: {
-//     position: 'absolute',
-//     top: -2,
-//     right: -2,
-//     width: 8,
-//     height: 8,
-//     borderRadius: 4,
-//     backgroundColor: 'red',
-//   },
-//   gradientCard: {
-//     borderRadius: 16,
-//     padding: 24,
-//     marginBottom: 28,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   gradientTitle: {
-//     fontSize: 16,
-//     fontWeight: '700',
-//     color: '#fff',
-//     textAlign: 'center',
-//     marginBottom: 6,
-//   },
-//   gradientSubtitle: {
-//     fontSize: 13,
-//     color: '#f0f0f0',
-//     textAlign: 'center',
-//     marginBottom: 16,
-//   },
-//   getStartedButton: {
-//     backgroundColor: '#fff',
-//     borderRadius: 24,
-//     paddingHorizontal: 24,
-//     paddingVertical: 10,
-//   },
-//   getStartedText: {
-//     color: '#6A5ACD',
-//     fontWeight: '600',
-//     fontSize: 14,
-//   },
-//   sectionTitle: {
-//     fontSize: 16,
-//     fontWeight: '600',
-//     marginBottom: 12,
-//     color: '#333',
-//   },
-//   card: {
-//     flexDirection: 'row',
-//     backgroundColor: '#fff',
-//     borderRadius: 12,
-//     padding: 14,
-//     alignItems: 'center',
-//     marginBottom: 12,
-//     shadowColor: '#000',
-//     shadowOpacity: 0.04,
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowRadius: 4,
-//     elevation: 1,
-//   },
-//   cardIcon: {
-//     marginRight: 12,
-//   },
-//   cardContent: {
-//     flex: 1,
-//   },
-//   cardTitle: {
-//     fontSize: 15,
-//     fontWeight: '600',
-//     marginBottom: 2,
-//     color: '#333',
-//   },
-//   cardSubtitle: {
-//     fontSize: 13,
-//     color: '#666',
-//     marginBottom: 4,
-//   },
-//   cardButton: {
-//     backgroundColor: '#6A5ACD',
-//     borderRadius: 20,
-//     paddingHorizontal: 16,
-//     paddingVertical: 6,
-//   },
-//   cardButtonText: {
-//     color: '#fff',
-//     fontWeight: '600',
-//     fontSize: 13,
-//   },
-//   solidCard: {
-//     backgroundColor: '#A18CD1',
-//     borderRadius: 16,
-//     padding: 24,
-//     marginBottom: 28,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -311,7 +14,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import MainHeader from "../components/MainHeader";
 import CommonButton from "../components/CommonButton";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../styles/globalStyles";
+import { COLORS,
+EFFECTS,
+  RADIUS,
+  SPACING,
+  TEXT_STYLES,
+ } from "../styles/globalStyles";
 
 type ImageEntry = {
   url: string;
@@ -426,106 +134,116 @@ export default function JournalScreen({ navigation }: any) {
       edges={["left", "right", "bottom"]} // ⬅️ Exclude "top"
     >
       <MainHeader title="My Journal" subtitle="Track your journals." />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Get Started Card */}
-        <View style={styles.getStartedCard}>
-          <LinearGradient
-            colors={["#E6D6F2", "#FAD9E6"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.getStartedGradient}
-          />
-          <Ionicons
-            name="book"
-            size={32}
-            color="#8C63C7"
-            style={styles.getStartedIcon}
-          />
-          <Text style={styles.getStartedTitle}>
-            Start Your Pregnancy Journey
-          </Text>
-          <Text style={styles.getStartedSubtitle}>
-            Capture precious moments and{"\n"} memories
-          </Text>
-          <TouchableOpacity
-            style={styles.getStartedButton}
-            onPress={() =>
-              navigation.navigate("journalEntery", { allowCustomTitle: true })
-            }
-          >
-            <Text style={styles.getStartedButtonText}>Get Started</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Active Journals */}
-        {journals.map((journal) => (
-          <TouchableOpacity
-            key={journal._id}
-            style={styles.activeCard}
-            onPress={() => {
-              navigation.navigate("journalEntery", {
-                journalId: journal._id,
-                title: journal.title,
-                description: journal.designTemplate,
-                meta: journal.designTemplate,
-                isEdit: true,
-              });
-            }}
-          >
-            <View
-              style={[
-                styles.activeIconWrapper,
-                { backgroundColor: getJournalBgColor(journal.title) },
-              ]}
-            >
-              {getJournalIcon(journal.title)}
-            </View>
-            <View style={styles.activeTextGroup}>
-              <Text style={styles.activeTitle}>{journal.title}</Text>
-              <Text style={styles.activeMeta}>
-                Week 24 • Last updated 2 days ago
-              </Text>
-            </View>
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color="#6B7280"
-              style={styles.chevron}
+    <ScrollView contentContainerStyle={styles.container}>
+          {/* Get Started Card */}
+          <View style={styles.getStartedCard}>
+            <LinearGradient
+              colors={["#E6D6F2", "#FAD9E6"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.getStartedGradient}
             />
-          </TouchableOpacity>
-        ))}
-
-        {/* Pre-Designed Journals */}
-        <Text style={styles.sectionTitle}>Pre-Designed Journals</Text>
-        {journalData.map((item, index) => (
-          <View key={index} style={styles.journalCard}>
-            <View
-              style={[
-                styles.journalIconContainer,
-                { backgroundColor: item.bgColor },
-              ]}
+            <Ionicons
+              name="book"
+              size={32}
+              color="#8C63C7"
+              style={styles.getStartedIcon}
+            />
+            <Text style={styles.getStartedTitle}>
+              Start Your Pregnancy Journey
+            </Text>
+            <Text style={styles.getStartedSubtitle}>
+              Capture precious moments and{"\n"} memories
+            </Text>
+            <TouchableOpacity
+              style={styles.getStartedButton}
+              onPress={() =>
+                navigation.navigate("journalEntery", { allowCustomTitle: true })
+              }
             >
-              {item.icon()}
-            </View>
-            <View style={styles.journalTextGroup}>
-              <Text style={styles.journalTitle}>{item.title}</Text>
-              <Text style={styles.journalMeta}>{item.subtitle}</Text>
-              <Text style={styles.journalDescription}>{item.description}</Text>
-            </View>
-            <CommonButton
-              label="Start"
-              size="small"
-              style={{ width: 70 }}
+              <Text style={styles.getStartedButtonText}>Get Started</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Active Journals */}
+          {journals.map((journal) => (
+            <TouchableOpacity
+              key={journal._id}
+              style={styles.activeCard}
               onPress={() => {
                 navigation.navigate("journalEntery", {
-                  title: item.title,
-                  description: item.subtitle,
-                  meta: item.meta,
+                  journalId: journal._id,
+                  title: journal.title,
+                  description: journal.designTemplate,
+                  meta: journal.designTemplate,
+                  isEdit: true,
                 });
               }}
-            />
-          </View>
-        ))}
+            >
+              <View
+                style={[
+                  styles.activeIconWrapper,
+                  { backgroundColor: getJournalBgColor(journal.title) },
+                ]}
+              >
+                {getJournalIcon(journal.title)}
+              </View>
+              <View style={styles.activeTextGroup}>
+                <Text style={styles.activeTitle}>{journal.title}</Text>
+                <Text style={styles.activeMeta}>
+                  Week 24 • Last updated 2 days ago
+                </Text>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color="#6B7280"
+                style={styles.chevron}
+              />
+            </TouchableOpacity>
+          ))}
+
+          {/* Pre-Designed Journals */}
+          <Text style={styles.sectionTitle}>Pre-Designed Journals</Text>
+          {journalData.map((item, index) => (
+              <View key={index} style={styles.journalCard}>
+                {/* Icon on the left */}
+                <View
+                  style={[
+                    styles.journalIconContainer,
+                    { backgroundColor: item.bgColor },
+                  ]}
+                >
+                  {item.icon()}
+                </View>
+
+                {/* Text and button on the right */}
+                <View style={styles.journalTextGroup}>
+                  <View style={styles.journalHeader}>
+                    <View>
+                      <Text style={styles.journalTitle}>{item.title}</Text>
+                      <Text style={styles.journalMeta}>{item.subtitle}</Text>
+                    </View>
+
+                    <CommonButton
+                      label="Start"
+                      size="small"
+                      style={styles.startButton}
+                      labelStyle={styles.startLabel}
+                      onPress={() => {
+                        navigation.navigate("journalEntery", {
+                          title: item.title,
+                          description: item.subtitle,
+                          meta: item.meta,
+                        });
+                      }}
+                    />
+                  </View>
+
+                  <Text style={styles.journalDescription}>{item.description}</Text>
+                </View>
+              </View>
+              ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -533,22 +251,19 @@ export default function JournalScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F8F8F8",
-    padding: 16,
+    paddingTop: 0,
+    padding: SPACING.spacing20,
     paddingBottom: 82,
+    backgroundColor: COLORS.background,
   },
   notificationIcon: {
     position: "absolute",
-    top: 16,
-    right: 16,
-    padding: 8,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
+    top: SPACING.spacing16,
+    right: SPACING.spacing16,
+    padding: SPACING.spacing8,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.md,
+    ...EFFECTS.softShadow,
   },
   notificationDot: {
     position: "absolute",
@@ -557,12 +272,12 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "red",
+    backgroundColor: COLORS.error,
   },
   getStartedCard: {
-    borderRadius: 12,
-    padding: 24,
-    marginBottom: 32,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.spacing20,
+    marginBottom: SPACING.spacing32,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent",
@@ -570,98 +285,116 @@ const styles = StyleSheet.create({
   },
   getStartedGradient: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 12,
+    borderRadius: RADIUS.lg,
   },
   getStartedIcon: {
-    marginBottom: 12,
+    marginBottom: SPACING.spacing12,
   },
   getStartedTitle: {
+    ...TEXT_STYLES.displayH1,
     fontSize: 22,
     fontWeight: "600",
-    color: "#8C63C7",
+    color: COLORS.purple700,
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: SPACING.spacing8,
   },
   getStartedSubtitle: {
+    ...TEXT_STYLES.bodySmall,
     fontSize: 15,
-    color: "#333",
+    color: COLORS.gray900,
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: SPACING.spacing16,
   },
   getStartedButton: {
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.white,
     borderRadius: 999,
-    paddingVertical: 10,
-    paddingHorizontal: 28,
+    paddingVertical: SPACING.spacing12,
+    paddingHorizontal: SPACING.spacing20 + 8,
   },
   getStartedButtonText: {
-    color: "#8C63C7",
     fontSize: 16,
     fontWeight: "600",
+    color: COLORS.purple700,
   },
   sectionTitle: {
+    ...TEXT_STYLES.headingH2,
     fontSize: 16,
     fontWeight: "700",
-    marginTop: 24,
-    marginBottom: 12,
-    color: "#333",
+    textAlign: "left",
+    marginTop: SPACING.spacing24,
+    marginBottom: SPACING.spacing12,
+    color: COLORS.gray900,
   },
   journalCard: {
     flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  journalIconContainer: {
-    width: 52,
-    height: 52,
-    top: 0,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 16,
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.spacing16,
+    marginBottom: SPACING.spacing16,
+    alignItems: "flex-start",
+    ...EFFECTS.shadow,
   },
   journalTextGroup: {
     flex: 1,
+    flexDirection: "column",
+  },
+  journalIconContainer: {
+    width: 42,
+    height: 42,
+    borderRadius: RADIUS.md,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: SPACING.spacing12 + 2,
+  },
+  journalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   journalTitle: {
     fontSize: 17,
     fontWeight: "600",
-    color: "#1F2937",
+    color: COLORS.gray900,
   },
   journalMeta: {
     fontSize: 14,
-    color: "#6B7280",
-    marginTop: 2,
+    color: COLORS.gray700,
+    marginTop: SPACING.spacing4,
   },
   journalDescription: {
-    fontSize: 12,
-    color: "#4B5563",
-    marginTop: 4,
+    fontSize: 13,
+    color: COLORS.gray700,
+    marginTop: SPACING.spacing12,
+    lineHeight: 18,
+  },
+  startButton: {
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: RADIUS.md,
+    width: 70,
+    backgroundColor: COLORS.purple500,
+  },
+  startLabel: {
+    fontSize: 14,
+    color: COLORS.white,
+    fontWeight: "600",
   },
   activeCard: {
     flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 16,
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.spacing16,
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: SPACING.spacing12,
   },
   activeIconWrapper: {
     width: 44,
     height: 44,
-    borderRadius: 12,
-    backgroundColor: "#F3E8FF",
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.purple100,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 16,
+    marginRight: SPACING.spacing16,
   },
   activeTextGroup: {
     flex: 1,
@@ -669,14 +402,14 @@ const styles = StyleSheet.create({
   activeTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1F2937",
+    color: COLORS.gray900,
   },
   activeMeta: {
     fontSize: 14,
-    color: "#6B7280",
-    marginTop: 2,
+    color: COLORS.gray700,
+    marginTop: SPACING.spacing4,
   },
   chevron: {
-    marginLeft: 10,
+    marginLeft: SPACING.spacing12,
   },
 });
