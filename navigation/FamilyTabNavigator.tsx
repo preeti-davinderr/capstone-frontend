@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FamilyHomeScreen from "../screens/FamilyScreens/FamilyHomeScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import FamilyProfileScreen from "../screens/FamilyScreens/FamilyProfileScreen";
 import { COLORS, SPACING, RADIUS, EFFECTS } from "../styles/globalStyles";
 
 const Tab = createBottomTabNavigator();
@@ -45,7 +45,7 @@ export default function FamilyTabNavigator() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={FamilyProfileScreen}
         options={{
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons
