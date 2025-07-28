@@ -50,7 +50,7 @@ const PregnancyProgressCard: React.FC<PregnancyProgressCardProps> = ({
       </View>
       <View style={styles.progressBarBackground}>
         <LinearGradient
-          colors={["#7C55C3", "#ED97BA"]}
+          colors={["#ED97BA", "#7C55C3"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.progressBarFill, { width: `${progress * 100}%` }]}
