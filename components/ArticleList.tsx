@@ -47,12 +47,17 @@ const ArticleList: React.FC<ArticleListProps> = ({ articles }) => (
 
 const styles = StyleSheet.create({
   articleCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.md,
     padding: SPACING.spacing12,
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: SPACING.spacing12,
+    shadowColor: COLORS.gray900,
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   articleLabel: {
     backgroundColor: COLORS.purple100,

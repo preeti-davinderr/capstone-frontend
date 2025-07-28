@@ -148,7 +148,7 @@ const TrimesterCare: React.FC<TrimesterCareProps> = ({ title, selectedWeek }) =>
     <View style={styles.container}>
       <TouchableOpacity onPress={handleTitlePress} style={styles.headerContainer}>
         <Text style={styles.header}>{title}</Text>
-        <MaterialCommunityIcons name="chevron-right" size={24} color={COLORS.gray600} />
+        <MaterialCommunityIcons name="chevron-right" size={24} color={COLORS.gray700} />
       </TouchableOpacity>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {articles.map((article, idx) => (
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 170,
-    borderRadius: 20,
+    borderRadius: RADIUS.lg,
     padding: SPACING.spacing16,
     marginRight: SPACING.spacing16,
     justifyContent: "flex-start",
