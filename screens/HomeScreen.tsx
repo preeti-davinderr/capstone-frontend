@@ -18,7 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING, TEXT_STYLES } from "../styles/globalStyles";
 
 const HomeScreen = () => {
-  const [selectedWeek, setSelectedWeek] = useState<number>(5);
+  const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [name, setName] = useState<string | null>(null);
   const [dueDate, setDueDate] = useState<string | null>(null);
   const [daysLeft, setDaysLeft] = useState<number>(0);
@@ -43,7 +43,7 @@ const HomeScreen = () => {
       return Math.max(1, Math.min(40, currentWeek));
     } catch (error) {
       console.error("Error calculating current week:", error);
-      return 5; 
+      return 1; 
     }
   };
 
