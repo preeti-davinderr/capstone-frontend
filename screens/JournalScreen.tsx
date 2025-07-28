@@ -164,6 +164,7 @@ export default function JournalScreen({ navigation }: any) {
               <Text style={styles.getStartedButtonText}>Get Started</Text>
             </TouchableOpacity>
           </View>
+          
 
           {/* Active Journals */}
           {journals.map((journal) => (
@@ -171,14 +172,14 @@ export default function JournalScreen({ navigation }: any) {
               key={journal._id}
               style={styles.activeCard}
               onPress={() => {
-                navigation.navigate("journalEntery", {
-                  journalId: journal._id,
-                  title: journal.title,
-                  description: journal.designTemplate,
-                  meta: journal.designTemplate,
-                  isEdit: true,
-                });
-              }}
+                  navigation.navigate("JournalPreview", {
+                    images: journal.images,
+                    title: journal.title,
+                    journalId: journal._id,
+                    description: journal.designTemplate,
+                    meta: journal.designTemplate,
+                  });
+                }}
             >
               <View
                 style={[
@@ -191,7 +192,7 @@ export default function JournalScreen({ navigation }: any) {
               <View style={styles.activeTextGroup}>
                 <Text style={styles.activeTitle}>{journal.title}</Text>
                 <Text style={styles.activeMeta}>
-                  Week 24 • Last updated 2 days ago
+                  Week 24
                 </Text>
               </View>
               <Ionicons

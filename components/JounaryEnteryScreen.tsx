@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, RouteProp } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -26,6 +26,7 @@ import { COLORS,
   TEXT_STYLES,
  } from "../styles/globalStyles";
 
+
 // const { width } = Dimensions.get("window");
 
 interface ImageItem {
@@ -33,8 +34,19 @@ interface ImageItem {
   description: string;
 }
 
+type JournalEntryParams = {
+  JournalEntryScreen: {
+    title: string;
+    allowCustomTitle?: boolean;
+    description?: string;
+    meta?: any;
+    journalId?: string;
+    isEdit?: boolean;
+  };
+};
+
 export default function JournalEntryScreen({ navigation }: any) {
-  const route = useRoute();
+  const route = useRoute<RouteProp<JournalEntryParams, 'JournalEntryScreen'>>();
   const {
     title,
     allowCustomTitle = false,
@@ -42,7 +54,7 @@ export default function JournalEntryScreen({ navigation }: any) {
     meta,
     journalId: passedJournalId,
     isEdit = false,
-  } = route.params || {};
+  } = route.params;
 
   const [note, setNote] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
