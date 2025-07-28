@@ -107,35 +107,13 @@ export default function FamilyProfileScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Personal Information</Text>
-          <InfoRow icon={require("../../assets/profile_images/dOB.png")} iconType="image" label="Due Date" value={profile?.dueDate ?? "N/A"} />
-          <InfoRow icon={require("../../assets/profile_images/dOB.png")} iconType="image" label="Age" value={profile?.age ? `${profile.age} years` : "N/A"} />
           <InfoRow icon={require("../../assets/profile_images/email.png")} iconType="image" label="Email" value={profile?.email ?? "N/A"} />
-          <InfoRow icon={require("../../assets/profile_images/call.png")} iconType="image" label="Phone" value={profile?.phone ?? "N/A"} />
         </View>
 
-        {/* <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Family & Friends</Text>
-          <InfoRow icon="person" label="Partner" value="Augusto Wong" />
-          <CommonButton label={`${profile?.familyCode ?? ""}`} onPress={handleCopyFamilyCode} />
-        </View> */}
 
-        <View style={styles.section}>
-          <View style={styles.switchRow}>
-            <Image source={require("../../assets/profile_images/Notification.png")} style={styles.iconImage} />
-            <Text style={styles.switchLabel}>Notifications</Text>
-            <Switch value={notifications} onValueChange={setNotifications} />
-          </View>
-        </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>App Settings</Text>
-
-          <TouchableOpacity>
-            <View style={styles.row}>
-              <Image source={require("../../assets/profile_images/ChangePassword.png")} style={styles.iconImage} />
-              <Text style={styles.linkText}>Change Password</Text>
-            </View>
-          </TouchableOpacity>
 
           <TouchableOpacity onPress={handleLogout}>
             <View style={styles.row}>
