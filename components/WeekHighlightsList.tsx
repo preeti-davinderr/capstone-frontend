@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { COLORS, SPACING, RADIUS } from "../styles/globalStyles";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { COLORS, SPACING, RADIUS, EFFECTS } from "../styles/globalStyles";
 
 interface HighlightItem {
   icon: string;
@@ -15,14 +15,15 @@ interface WeekHighlightsListProps {
   highlights: HighlightItem[];
 }
 
-const WeekHighlightsList: React.FC<WeekHighlightsListProps> = ({ highlights }) => {
-
+const WeekHighlightsList: React.FC<WeekHighlightsListProps> = ({
+  highlights,
+}) => {
   const iconColors = [
-    COLORS.purple500,   
-    COLORS.peach400,     
-    COLORS.blush100,     
-    COLORS.purple100,    
-    COLORS.white,        
+    COLORS.purple500,
+    COLORS.peach400,
+    COLORS.blush100,
+    COLORS.purple100,
+    COLORS.white,
   ];
 
   return (
@@ -30,28 +31,34 @@ const WeekHighlightsList: React.FC<WeekHighlightsListProps> = ({ highlights }) =
       {highlights.map((item, idx) => {
         const colorIndex = idx % iconColors.length;
         const iconColor = iconColors[colorIndex];
-        
+
         let iconTextColor = COLORS.white;
-        if (iconColor === COLORS.blush100 || iconColor === COLORS.purple100 || iconColor === COLORS.white) {
+        if (
+          iconColor === COLORS.blush100 ||
+          iconColor === COLORS.purple100 ||
+          iconColor === COLORS.white
+        ) {
           iconTextColor = COLORS.purple700;
         }
-        
+
         return (
           <View key={idx} style={styles.timelineRow}>
-
             <View style={styles.timelineColumn}>
-  
               {idx !== 0 && <View style={styles.timelineLine} />}
 
-              <View style={[styles.iconWrapper, { backgroundColor: iconColor }]}>
-                <MaterialCommunityIcons 
-                  name={item.icon as any} 
-                  size={16} 
-                  color={iconTextColor} 
+              <View
+                style={[styles.iconWrapper, { backgroundColor: iconColor }]}
+              >
+                <MaterialCommunityIcons
+                  name={item.icon as any}
+                  size={20}
+                  color={iconTextColor}
                 />
               </View>
 
-              {idx !== highlights.length - 1 && <View style={styles.timelineLine} />}
+              {idx !== highlights.length - 1 && (
+                <View style={styles.timelineLine} />
+              )}
             </View>
             <View style={styles.card}>
               <Text style={styles.title}>{item.title}</Text>
@@ -66,55 +73,48 @@ const WeekHighlightsList: React.FC<WeekHighlightsListProps> = ({ highlights }) =
 
 const styles = StyleSheet.create({
   listContainer: {
-    width: '100%',
+    width: "100%",
     marginBottom: SPACING.spacing20,
   },
   timelineRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     marginBottom: SPACING.spacing12,
   },
   timelineColumn: {
     width: 36,
-    alignItems: 'center',
-    position: 'relative',
+    alignItems: "center",
+    position: "relative",
   },
   timelineLine: {
     width: 2,
     flex: 1,
     backgroundColor: COLORS.purple100,
-    minHeight: 12,
+    height: 8,
   },
   iconWrapper: {
     width: 28,
     height: 28,
     borderRadius: 14,
     backgroundColor: COLORS.purple100,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 1,
     marginVertical: 2,
   },
-  icon: {
-    fontSize: 16,
-    color: COLORS.purple700,
-  },
   card: {
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 18,
+    backgroundColor: "#fff",
+    borderRadius: RADIUS.lg,
     padding: 14,
     marginLeft: 4,
-    shadowColor: COLORS.gray900,
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
     borderWidth: 1,
-    borderColor: '#f2f2f2',
+    borderColor: "#f2f2f2",
+    ...EFFECTS.shadowLarge,
   },
   title: {
     fontSize: 15.5,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.purple700,
     marginBottom: 2,
   },

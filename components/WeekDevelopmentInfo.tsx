@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { COLORS, RADIUS } from "../styles/globalStyles";
+import { COLORS, GRADIENTS, RADIUS, SPACING } from "../styles/globalStyles";
 
 interface WeekDevelopmentInfoProps {
   footer: string; // e.g., "Growing Sweet: 35 Weeks to Go"
@@ -10,10 +10,10 @@ interface WeekDevelopmentInfoProps {
 
 const WeekDevelopmentInfo: React.FC<WeekDevelopmentInfoProps> = ({ footer, description }) => (
   <LinearGradient
-    colors={["#FFE7EF", "#E8D8F5"]}
-    start={{ x: 0.5, y: 0 }}
-    end={{ x: 0.5, y: 1 }}
-    style={styles.card}
+  colors={GRADIENTS.onboardingBackground}
+  start={{ x: 0, y: 0 }}
+  end={{ x: 1, y: 0 }}
+  style={styles.card}
   >
     <Text style={styles.title}>{footer}</Text>
     <View style={styles.infoBox}>
@@ -26,9 +26,11 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: RADIUS.lg,
     paddingVertical: 28,
-    paddingHorizontal: 18,
     marginBottom: 24,
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: SPACING.spacing24,
   },
   title: {
     fontSize: 17,

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import {
   ScrollView,
   StyleProp,
@@ -9,8 +9,8 @@ import {
   ViewStyle,
   Image,
   Dimensions,
-} from 'react-native';
-import { COLORS, SPACING, RADIUS } from '../styles/globalStyles';
+} from "react-native";
+import { COLORS, SPACING, RADIUS } from "../styles/globalStyles";
 
 interface WeekInfo {
   week: number;
@@ -26,47 +26,42 @@ interface WeekScrollProps {
   weekData: WeekInfo[];
   style?: StyleProp<ViewStyle>;
   onWeekChange?: (week: number) => void;
-  initialWeek?: number;
+  selectedWeek: number;
 }
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 const weekButtonWidth = screenWidth / 4.5;
 
-const HorizontalScroll: React.FC<WeekScrollProps> = ({ weekData, style, onWeekChange, initialWeek }) => {
-  const [selectedWeek, setSelectedWeek] = useState<number>(initialWeek || weekData[0].week);
+const HorizontalScroll: React.FC<WeekScrollProps> = ({
+  weekData,
+  style,
+  onWeekChange,
+  selectedWeek,
+}) => {
   const scrollViewRef = useRef<ScrollView>(null);
-  const currentWeek = weekData.find(w => w.week === selectedWeek)!;
 
-  // Scroll to current week when component mounts or initialWeek changes
   useEffect(() => {
-    if (initialWeek && scrollViewRef.current) {
-      const weekIndex = weekData.findIndex(w => w.week === initialWeek);
-      if (weekIndex !== -1) {
-        const scrollToX = weekIndex * (weekButtonWidth + SPACING.spacing8);
-        scrollViewRef.current.scrollTo({
-          x: scrollToX,
-          animated: true,
-        });
-      }
+    const weekIndex = weekData.findIndex((w) => w.week === selectedWeek);
+    if (weekIndex !== -1 && scrollViewRef.current) {
+      const scrollToX = weekIndex * (weekButtonWidth + SPACING.spacing8);
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({ x: scrollToX, animated: true });
+      }, 100); // delay ensures proper layout
     }
-  }, [initialWeek, weekData]);
+  }, [selectedWeek, weekData]);
 
   return (
     <View style={[styles.container, style]}>
-      {/* Horizontal Week Selector */}
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
-        horizontal 
-        showsHorizontalScrollIndicator={false} 
+        horizontal
+        showsHorizontalScrollIndicator={false}
         style={styles.weekScroll}
       >
-        {weekData.map(item => (
+        {weekData.map((item) => (
           <TouchableOpacity
             key={item.week}
-            onPress={() => {
-              setSelectedWeek(item.week);
-              onWeekChange?.(item.week);
-            }}
+            onPress={() => onWeekChange?.(item.week)}
             style={[
               styles.weekButton,
               { width: weekButtonWidth },
@@ -84,21 +79,6 @@ const HorizontalScroll: React.FC<WeekScrollProps> = ({ weekData, style, onWeekCh
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-      {/* Week Content Card (commented out) */}
-      {/*
-      <View style={styles.card}>
-        <Text style={styles.title}>{currentWeek.title}</Text>
-        <View style={styles.cardContent}>
-          <View>
-            <Text style={styles.sizeText}>Size: {currentWeek.size}</Text>
-            <Text style={styles.sizeText}>Weight: {currentWeek.weight}</Text>
-          </View>
-          <Image source={currentWeek.image} style={styles.image} />
-        </View>
-        <Text style={styles.footer}>{currentWeek.footer}</Text>
-      </View>
-      */}
     </View>
   );
 };
@@ -109,7 +89,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.spacing20,
   },
   weekScroll: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: SPACING.spacing12,
     paddingHorizontal: SPACING.spacing4,
   },
@@ -119,8 +99,8 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: COLORS.white,
     marginRight: SPACING.spacing8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: COLORS.gray300,
     shadowColor: COLORS.gray900,
@@ -135,7 +115,7 @@ const styles = StyleSheet.create({
   },
   weekButtonText: {
     color: COLORS.gray500,
-    fontWeight: '500',
+    fontWeight: "500",
     fontSize: 15,
   },
   activeWeekButtonText: {
@@ -146,24 +126,24 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     padding: 16,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: SPACING.spacing16,
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.purple700,
     marginBottom: 16,
   },
   cardContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
   },
   sizeText: {
     fontSize: 16,
@@ -178,9 +158,9 @@ const styles = StyleSheet.create({
     opacity: 0.15,
   },
   footer: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 16,
-    color: '#777',
+    color: "#777",
     fontSize: 13,
   },
 });

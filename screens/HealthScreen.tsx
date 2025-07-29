@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -18,6 +19,7 @@ import MainHeader from "../components/MainHeader";
 import {
   COLORS,
   EFFECTS,
+  GRADIENTS,
   RADIUS,
   SPACING,
   TEXT_STYLES,
@@ -135,7 +137,7 @@ export default function HealthScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         {/* Quick Actions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>Log Health Data</Text>
           <View style={styles.cardRow}>
             <TouchableOpacity
               style={styles.card_log}
@@ -175,7 +177,7 @@ export default function HealthScreen() {
                 <MaterialCommunityIcons
                   name="baby-face-outline"
                   size={28}
-                  color={COLORS.peach400}
+                  color={"#F97316"}
                 />
               </View>
               <Text style={styles.cardText}>Kick Count</Text>
@@ -197,58 +199,14 @@ export default function HealthScreen() {
           </View>
         </View>
 
-        {/* Today's Readings */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Today's Readings</Text>
-          <View style={styles.card}>
-            <View style={[styles.smallIconContainer, styles.pinkBackground]}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={24}
-                color={COLORS.pink500}
-              />
-            </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>Blood Pressure</Text>
-              <Text style={styles.value}>
-                {bpReading
-                  ? `${bpReading.systolic}/${bpReading.diastolic} mmHg`
-                  : "No Data"}
-              </Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>
-                {bpReading?.status || "Unknown"}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.card}>
-            <View style={[styles.smallIconContainer, styles.purpleBackground]}>
-              <MaterialCommunityIcons
-                name="scale"
-                size={24}
-                color={COLORS.purple700}
-              />
-            </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>Weight</Text>
-              <Text style={styles.value}>
-                {weightReading
-                  ? `${weightReading.value} ${weightReading.unit}`
-                  : "No Data"}
-              </Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>
-                {weightReading ? "Good" : "Unknown"}
-              </Text>
-            </View>
-          </View>
-        </View>
-
         {/* Connected Devices */}
         <Text style={styles.sectionTitle}>Connected Devices</Text>
-        <View style={styles.fitbitCard}>
+        <LinearGradient
+          colors={GRADIENTS.onboardingBackground}
+          style={styles.fitbitCard}
+          start={{ x: 0, y: 0 }} // 🔽 start at left
+          end={{ x: 1, y: 0 }}
+        >
           {/* Top Row */}
           <View style={styles.fitbitTopRow}>
             <View style={styles.fitbitDeviceInfo}>
@@ -315,6 +273,55 @@ export default function HealthScreen() {
               </Text>
             </View>
           </View>
+        </LinearGradient>
+
+        {/* Today's Readings */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Today's Readings</Text>
+          <View style={styles.card}>
+            <View style={[styles.smallIconContainer, styles.pinkBackground]}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={24}
+                color={COLORS.pink500}
+              />
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>Blood Pressure</Text>
+              <Text style={styles.value}>
+                {bpReading
+                  ? `${bpReading.systolic}/${bpReading.diastolic} mmHg`
+                  : "No Data"}
+              </Text>
+            </View>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>
+                {bpReading?.status || "Unknown"}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.card}>
+            <View style={[styles.smallIconContainer, styles.purpleBackground]}>
+              <MaterialCommunityIcons
+                name="scale"
+                size={24}
+                color={COLORS.purple700}
+              />
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>Weight</Text>
+              <Text style={styles.value}>
+                {weightReading
+                  ? `${weightReading.value} ${weightReading.unit}`
+                  : "No Data"}
+              </Text>
+            </View>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>
+                {weightReading ? "Good" : "Unknown"}
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* AI Recommendations */}
@@ -343,7 +350,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginBottom: SPACING.spacing12,
-    textAlign:"left"
+    textAlign: "left",
   },
   cardRow: {
     flexDirection: "row",
@@ -358,7 +365,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.1)",
-    ...EFFECTS.softShadow,
+    ...EFFECTS.shadowLarge,
+    // ...GRADIENTS.onboardingBackground
   },
   iconContainer: {
     width: 56,
@@ -378,7 +386,7 @@ const styles = StyleSheet.create({
   },
   pinkBackground: { backgroundColor: COLORS.blush100 },
   purpleBackground: { backgroundColor: COLORS.purple100 },
-  peachBackground: { backgroundColor: COLORS.peach400 + "20" },
+  peachBackground: { backgroundColor: "#fabc9c" },
   cardText: {
     ...TEXT_STYLES.bodyBase,
     marginTop: SPACING.spacing8,
@@ -392,7 +400,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.spacing12,
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.1)",
-    ...EFFECTS.softShadow,
+    ...EFFECTS.shadowLarge,
   },
   textContainer: { flex: 1 },
   title: { ...TEXT_STYLES.bodyBase },
@@ -413,7 +421,7 @@ const styles = StyleSheet.create({
     padding: SPACING.spacing16,
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.1)",
-    ...EFFECTS.softShadow,
+    ...EFFECTS.shadowLarge,
     marginTop: SPACING.spacing12,
   },
   topRow: {
@@ -451,7 +459,7 @@ const styles = StyleSheet.create({
     padding: SPACING.spacing16,
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.08)",
-    ...EFFECTS.softShadow,
+    ...EFFECTS.shadowLarge,
     marginBottom: SPACING.spacing12,
   },
   fitbitTopRow: {
@@ -480,7 +488,7 @@ const styles = StyleSheet.create({
   syncNow: {
     ...TEXT_STYLES.caption,
     color: COLORS.purple700,
-    fontWeight:"bold"
+    fontFamily: "WixMadeforDisplay-Bold",
   },
   fitbitMetricsRow: {
     flexDirection: "row",

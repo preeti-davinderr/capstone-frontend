@@ -16,6 +16,7 @@ import CommonButton from "../components/CommonButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS,
 EFFECTS,
+  GRADIENTS,
   RADIUS,
   SPACING,
   TEXT_STYLES,
@@ -138,8 +139,9 @@ export default function JournalScreen({ navigation }: any) {
           {/* Get Started Card */}
           <View style={styles.getStartedCard}>
             <LinearGradient
-              colors={["#E6D6F2", "#FAD9E6"]}
-              start={{ x: 0, y: 0 }}
+              colors={GRADIENTS.onboardingBackground}
+              // style={styles.fitbitCard}
+              start={{ x: 0, y: 0 }} 
               end={{ x: 1, y: 0 }}
               style={styles.getStartedGradient}
             />
@@ -283,6 +285,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "transparent",
     overflow: "hidden",
+    marginTop:SPACING.spacing6,
   },
   getStartedGradient: {
     ...StyleSheet.absoluteFillObject,

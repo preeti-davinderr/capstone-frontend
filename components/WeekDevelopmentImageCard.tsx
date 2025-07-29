@@ -25,7 +25,7 @@ const WeekDevelopmentImageCard: React.FC<WeekDevelopmentImageCardProps> = ({ ima
             <View style={styles.pill}>
               <Text style={styles.sizeText}>
                 {size && `Size: ${size}`}
-                {size && weight && '        '}
+                {size && weight && '\n'}
                 {weight && `Weight: ${weight}`}
               </Text>
             </View>
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.spacing8,
   },
   pill: {
+    width:"300",
     backgroundColor: COLORS.white,
     borderRadius: RADIUS.xl,
     paddingHorizontal: SPACING.spacing16,
@@ -90,6 +91,8 @@ const styles = StyleSheet.create({
   sizeText: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.gray700,
+    fontFamily:"WixMadeforDisplay-Bold",
+    textAlign:"center"
   },
 });
 

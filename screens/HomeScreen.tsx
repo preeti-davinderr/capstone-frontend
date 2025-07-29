@@ -3,15 +3,11 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import HorizontalScroll from "../components/HorizontalScroll";
 import PregnancyProgressCard from "../components/PregnancyProgressCard";
 import WeekDevelopmentCard from "../components/WeekDevelopmentCard";
-import HighlightsGrid from "../components/HighlightsGrid";
-import WeekHighlightsDetails from "../components/WeekHighlightsDetails";
 import WeekHighlightsList from "../components/WeekHighlightsList";
-import ArticleList from "../components/ArticleList";
 import { weekData, WeekDetails } from "../components/weekData";
 import FloatingBotButton from "../components/FloatingBotButton";
 import MainHeader from "../components/MainHeader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import GradientCard from "../components/GradientCard";
 import WeekDevelopmentInfo from "../components/WeekDevelopmentInfo";
 import TrimesterCare from "../components/TrimesterCare";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -145,7 +141,7 @@ const HomeScreen = () => {
             weekData={weekData}
             style={styles.horizontalScroll}
             onWeekChange={(week) => setSelectedWeek(week)}
-            initialWeek={selectedWeek}
+            selectedWeek={selectedWeek}
           />
           
           <PregnancyProgressCard
@@ -176,9 +172,6 @@ const HomeScreen = () => {
 
           <Text style={styles.sectionTitle}>This Week's Highlights</Text>
           <WeekHighlightsList highlights={currentWeekData.highlights} />
-
-          {/* <Text style={styles.sectionTitle}>Useful Articles</Text>
-          <ArticleList articles={currentWeekData.articles} /> */}
 
           <TrimesterCare
             title={

@@ -96,10 +96,10 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.profileCard}>
           <View style={styles.avatarWrapper}>
-            <Image
+            {/* <Image
               source={require("../assets/profile_images/avatar.png")}
               style={styles.avatar}
-            />
+            /> */}
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.profileName}>{profile?.name ?? "Name"}</Text>

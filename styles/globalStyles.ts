@@ -29,7 +29,7 @@ export const COLORS = {
     displayH2: "#101828",
 
     // Background
-    background: "#F9F9F9",
+    background: "#f7ff7f7",
 
     // Cards
     card: "#FFFFFF",
@@ -55,7 +55,7 @@ export const RADIUS = {
     sm: 4,
     md: 8,
     lg: 12,
-    xl:24,
+    xl: 24,
 };
 
 export const TEXT_STYLES = {
@@ -126,7 +126,7 @@ export const EFFECTS = {
         shadowOpacity: 0.1, // 10% opacity
         shadowRadius: 8, // blur
         elevation: 2, // optional for Android (tune based on visual)
-      },
+    },
     softShadow: {
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -139,11 +139,11 @@ export const EFFECTS = {
         backdropFilter: "blur(10px)",
     },
     shadowLarge: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.25, // 1A in hex is ~10% opacity
-        shadowRadius: 10,
-        elevation: 8, // Android
+        shadowColor: '#888888',
+        shadowOffset: { width: 1, height: 5 },
+        shadowOpacity: 0.4,
+        shadowRadius: 5,
+        elevation: 5,
     },
 };
 

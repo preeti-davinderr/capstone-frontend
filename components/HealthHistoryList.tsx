@@ -74,6 +74,7 @@ export default function HealthHistoryList<T>({
         <Text style={styles.emptyText}>No entries found.</Text>
       ) : (
         <FlatList
+        scrollEnabled={false}
           data={filteredData}
           keyExtractor={(_, idx) => idx.toString()}
           renderItem={({ item }) => (
