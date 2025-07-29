@@ -1,0 +1,604 @@
+@import url('https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400..800&display=swap');
+body {
+  color: #333;
+  line-height: 1.6;
+  font-family: Wix Madefor Display;
+  background-color: #F8F9FA;
+;
+}
+h2{
+  font-family: Wix Madefor Display;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 60px;
+  line-height: 120%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+.hero-text p{
+  font-family: Wix Madefor Display;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 20px;
+  line-height: 180%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+header {
+  background: #fff;
+  padding: 10px 0;
+  height: 20%;
+}
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 90vw;
+  margin: 0 auto;
+}
+.nav img{
+  width: 180px;
+}
+.logo {
+  font-size: 24px;
+  color: #9c27b0;
+}
+nav a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #555;
+  font-family: Wix Madefor Display;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+
+}
+.hamburger {
+  font-size: 2rem;
+  padding: 1rem;
+  cursor: pointer;
+  z-index: 10;
+  color: #9b59b6;
+  display: none; 
+}
+
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 80%;
+  max-width: 300px;
+  background-color: #f5f5f5;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 9;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.mobile-nav.active {
+  transform: translateX(0);
+}
+
+.mobile-nav .close-btn {
+  font-size: 1.5rem;
+  align-self: flex-end;
+  cursor: pointer;
+}
+
+.mobile-nav .logo {
+  font-size: 1.5rem;
+  color: #9b59b6;
+  font-weight: bold;
+}
+
+.mobile-nav nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mobile-nav nav a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+}
+
+.mobile-nav .btn {
+  background-color: #8C63C7;
+  color: white;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;}
+.btn {
+  padding: 10px 16px;
+  background: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: Wix Madefor Display;
+}
+ .hero {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px 60px;
+  background-image: url(../../assets/Landing/div.png);
+  background-size: cover;        
+  background-repeat: no-repeat;   
+  background-position: center; 
+  min-height: 500px;          
+  overflow: visible;         
+}
+
+.hero .content {
+  z-index: 2;
+  max-width: 600px;
+  animation: swipeRight 1s ease-out forwards;
+  opacity: 0;
+}
+
+.hero-text h2 {
+  font-size: 48px;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.hero-text p {
+  font-size: 18px;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.hero-text .btn {
+  background: white;
+  color: #9c27b0;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.mockup {
+  position: absolute;
+  bottom: -80px;             
+  right: 40px;
+  z-index: 1;
+}
+
+.mockup img {
+  height: 70vh;               
+  transform: rotateY(-10deg);
+  animation: swipeLeft 1s ease-out forwards;
+}
+
+.feature-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  max-width: 90%;
+  margin: 0 auto;
+}
+.container{
+  margin-top: 120px;
+}
+.containerText{
+  text-align: center;
+}
+.containerText-h3{
+  font-family: Wix Madefor Display;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 38px;
+  line-height: 40px;
+  letter-spacing: 0%;
+  text-align: center;
+}
+.containerText-p{
+  font-family: Wix Madefor Display;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  text-align: center;
+}
+.featuresAnimate {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.featuresAnimate:not(.visible) {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+
+.features {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 100px;
+  flex-wrap: wrap;
+}
+
+.features .text {
+  flex: 1;
+  min-width: 700px;
+  gap: 0;
+}
+.text div{
+  display: flex;
+  justify-content: left;
+  align-items: left;
+}
+.text h4{
+  font-family: Wix Madefor Display;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 38px;
+  line-height: 40px;
+  letter-spacing: 0%;
+  text-align: center;
+  margin-top: 30px;
+
+}
+.text p{
+  font-family: Wix Madefor Display;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 18px;
+  line-height: 30px;
+  letter-spacing: 0%;
+
+}
+
+.textImg {
+  display: flex;
+  justify-content: center; 
+  align-items: center;    
+  height: 15vh;  
+  border: 0 solid #E5E7EB;
+  width: 5.5vw;     
+}
+
+.textImg img {
+  max-width: 100%;
+  height: auto;
+}
+
+.features .image {
+  flex: 1;
+}
+.features img {
+  border-radius: 8px;
+  width: 70%;
+  height: 50%;
+}
+
+.features.reverse {
+  flex-direction: row-reverse;
+}
+.video-demo {
+  background: linear-gradient(135deg, #ce93d8, #ba68c8);
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.video-demo h3 {
+  font-family: 'Wix Madefor Display', sans-serif;
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 36px;
+  margin-bottom: 20px;
+}
+
+.video-demo p {
+  font-family: 'Wix Madefor Display', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 28px;
+  margin-bottom: 30px;
+}
+.video-placeholder {
+  display: inline-block;
+  background-color: white;
+  color: #9c27b0; 
+  padding: 15px 40px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.video-placeholder:hover {
+  background-color: #9c27b0;
+  color: white;
+  transform: scale(1.05);
+}
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.custom-button {
+  border-radius: 12px;
+  border: 0 solid #E5E7EB;
+  background: #FFF;
+  color: var(--Primary-Purple-700, #8C63C7);
+  text-align: center;
+  font-family: "Wix Madefor Display";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-decoration: none;
+  padding: 10px 30px;
+}
+
+.team {
+  padding: 60px 20px;
+  text-align: center;
+}
+.team h3{
+  font-family: Wix Madefor Display;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 38px;
+  line-height: 40px;
+  letter-spacing: 0%;
+  text-align: center;
+}
+.team-grid {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 30px;
+  gap: 40px; 
+}
+.team-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+}
+
+.team-member {
+  flex: 1 1 200px;
+  max-width: 220px;
+  text-align: center;
+}
+.team-member img {
+  width: 100px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+.team a{
+  text-decoration: none;
+  font-family: Wix Madefor Display;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 16px;
+  line-height: 120%;
+  letter-spacing: 0%;
+  text-align: center;
+  vertical-align: middle;
+}
+.name{
+  font-family: Wix Madefor Display;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 16px;
+  line-height: 120%;
+  letter-spacing: 0%;
+  text-align: center;
+  vertical-align: middle;
+}
+.role{
+  font-family: Wix Madefor Display;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 14px;
+  line-height: 120%;
+  letter-spacing: 0%;
+  text-align: center;
+  vertical-align: middle;
+  color: #CA3C9A;
+}
+footer {
+  background: #f5f5f5;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #777;
+}
+@keyframes swipeLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(300px) rotateY(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(-10deg);
+  }
+}
+@keyframes swipeRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+   .nav {
+    display: none;
+  }
+  .mobileHam {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9; 
+}
+
+.logomobile {
+  height: 40px; 
+}
+
+.hamburger {
+  font-size: 28px;
+  cursor: pointer;
+}
+
+  .logomobile{
+  display: block;
+  }
+  .hamburger {
+    display: block;
+  }
+   .hero {
+    flex-direction: column;
+    align-items: start;
+    padding: 30px 20px;
+  }
+
+  .mockup {
+    position: static;
+    margin-top: 30px;
+    text-align: start;
+  }
+
+  .mockup img {
+    height: auto;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .hero-text h2 {
+    font-size: 32px;
+    text-align: left;
+  }
+
+  .hero-text p {
+    font-size: 16px;
+    text-align: left;
+  }
+
+  .hero-text .btn {
+    display: block;
+    margin: 0 auto;
+    align-items: start;
+    justify-content: start;
+  }
+.features {
+    flex-direction: column !important;
+    gap: 20px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .features.reverse {
+    flex-direction: column !important;
+  }
+
+  .features .text,
+  .features .image {
+    flex: unset;
+    width: 100%;
+    min-width: unset;
+  }
+
+  .features img {
+    width: 100%;
+    height: auto;
+  }
+
+  .containerText-h3 {
+    font-size: 26px;
+    line-height: 32px;
+  }
+  .buttons-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+ }
+
+  .containerText-p {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .text h4 {
+    font-size: 22px;
+    line-height: 30px;
+    text-align: center;
+  }
+  .custom-button {
+  border-radius: 12px;
+  border: 0 solid #E5E7EB;
+  background: #FFF;
+  color: var(--Primary-Purple-700, #8C63C7);
+  text-align: center;
+  font-family: "Wix Madefor Display";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-decoration: none;
+  padding: 10px 30px;
+}
+
+  .text p {
+    font-size: 14px;
+    line-height: 24px;
+    padding: 0 10px;
+    text-align: center;
+  }
+
+  .text-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .textImg {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+  }
+
+  .textImg img {
+    max-width: 100%;
+    height: auto;
+  }
+  .team-member {
+    flex: 1 1 calc(50% - 30px); 
+  }
+}
