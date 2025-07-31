@@ -3,6 +3,7 @@
     "name": "capstonefrontend",
     "slug": "capstonefrontend",
     "scheme": "capstonefrontend",
+    "owner": "akshay1114",
     "platforms": [
       "ios",
       "android"
@@ -32,16 +33,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "fa3ca10b-9e57-413f-8a59-63f07d84cd4e"
-      }
-    },
+    "extra": {},
+    "projectId": "fa3ca10b-9e57-413f-8a59-63f07d84cd4e",
     "updates": {
       "enabled": false
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ]
   }
 }

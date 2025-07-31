@@ -17,10 +17,84 @@ import {
   SPACING,
   EFFECTS,
 } from "../../styles/globalStyles";
+import * as Google from "expo-auth-session/providers/google";
+import { useEffect } from "react";
+import { useGoogleAuth } from "../../utils/config";
+import { makeRedirectUri } from "expo-auth-session";
+import { useFirebaseGoogleLogin } from "../../utils/useGoogleLogin";
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const { request, response, promptAsync } = useGoogleAuth();
+
+  // const { request, promptAsync } = useFirebaseGoogleLogin(() => {
+  //   // Navigate after successful login
+  //   navigation.replace("MainApp");
+  // });
+  useEffect(() => {
+    const uri = makeRedirectUri({
+      useProxy: true,
+      scheme: "capstonefrontend"
+    } as any);
+    console.log("✅ Final redirect URI:", uri);
+  }, []);
+
+// useEffect(() => {
+//   if (response?.type === "success") {
+//     const { authentication } = response;
+//     if (authentication?.accessToken) {
+//       handleGoogleLogin(authentication.accessToken);
+//     }
+//   }
+// }, [response]);
+
+useEffect(() => {
+  console.log("🔁 Google OAuth response:", response);
+
+  if (response?.type === "success") {
+    const { id_token } = response.params;
+    console.log("✅ Received id_token from Google:", id_token);
+
+    if (id_token) {
+      handleGoogleLogin(id_token); // ✅ send to backend
+    }
+  } else {
+    console.log("❌ Google OAuth failed or canceled", response);
+  }
+}, [response]);
+
+const handleGoogleLogin = async (id_token: string) => {
+  try {
+    // const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/google`, {
+    const res = await fetch(`https://rsinnovates.com/api/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_token }), // send code, not token
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Google login failed");
+    console.log("JWT TOKEN:", data.token);
+    await AsyncStorage.setItem("token", data.token);
+    await AsyncStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: data.user.id,
+        role: data.user.role,
+        name: data.user.name,
+        familyCode: data.user.familyCode,
+      })
+    );
+
+    navigation.replace(data.user.role === "other" ? "FamilyApp" : "MainApp");
+  } catch (error: any) {
+    alert(error.message);
+  }
+};
+
+
 
   const handleLogin = async () => {
     const response = await fetch(
@@ -96,14 +170,17 @@ export default function SignInScreen({ navigation }: any) {
       <Text style={styles.orText}>- or continue with -</Text>
 
       <View style={styles.socialRow}>
-        <TouchableOpacity>
-          <View style={styles.socialCircle}>
-            <Image
-              source={require("../../assets/splash/google.png")}
-              style={styles.socialIcon}
-            />
-          </View>
-        </TouchableOpacity>
+      <TouchableOpacity
+  disabled={!request}
+  onPress={() => promptAsync()}
+>
+  <View style={styles.socialCircle}>
+    <Image
+      source={require("../../assets/splash/google.png")}
+      style={styles.socialIcon}
+    />
+  </View>
+</TouchableOpacity>
       </View>
     </ScrollView>
   );
