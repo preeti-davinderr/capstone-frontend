@@ -67,11 +67,11 @@ useEffect(() => {
 
 const handleGoogleLogin = async (id_token: string) => {
   try {
-    // const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/google`, {
-    const res = await fetch(`https://rsinnovates.com/api/auth/google`, {
+    const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/google`, {
+    // const res = await fetch(`https://rsinnovates.com/api/auth/google`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id_token }), // send code, not token
+      body: JSON.stringify({ id_token }), 
     });
 
     const data = await res.json();
