@@ -260,6 +260,12 @@ export default function JournalEntryScreen({ navigation }: any) {
         Alert.alert(
           isEdit ? "Journal updated!" : "Journal saved successfully!"
         );
+        
+        
+        navigation.navigate("MainApp", {
+          screen: "Journal",
+        });
+        
         setImagesByWeek({});
         setNote("");
       }

@@ -38,7 +38,7 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${AI_RECO_API_KEY}`,
+          Authorization: `Bearer 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`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -50,7 +50,7 @@ export default function HealthRecoAI({ bpReading, weightReading }: Props) {
             },
             { role: "user", content: prompt },
           ],
-          max_tokens: 200,
+          max_tokens: 80,
           temperature: 0.7,
         }),
       });

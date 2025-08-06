@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
+// import DropDownPicker from 'react-native-dropdown-picker';
 import { useRoute,RouteProp } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import Header from "./SubHeader";
@@ -43,7 +43,7 @@ const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>(
 
   const [index, setIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [selectedMusic, setSelectedMusic] = useState(musicOptions[0].value);
+  const [selectedMusic, setSelectedMusic] = useState(musicOptions[1].value);
   const [open, setOpen] = useState(false);
   const [musicItems, setMusicItems] = useState(musicOptions);
 
